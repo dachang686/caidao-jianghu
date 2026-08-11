@@ -110,15 +110,20 @@ html[data-reduced-motion="true"] *, html[data-reduced-motion="true"] *::before, 
     align-content: stretch;
     min-height: 100svh;
     padding: clamp(.55rem, 1vw, 1rem);
+    background-color: oklch(.64 .08 155);
+    background-image: linear-gradient(oklch(.74 .06 150 / .1), oklch(.22 .03 48 / .16)), var(--village-art);
+    background-position: center;
+    background-size: cover;
   }
 
+  .jianghu-screen::before { display: none; }
   .jianghu-header { position: relative; grid-column: 2; grid-row: 1; align-items: center; }
   .game-mark { margin: 0; font-size: clamp(2.8rem, 4vw, 4.25rem); }
   .header-tools { top: .45rem; right: .15rem; }
   .status-panel { grid-column: 1; grid-row: 1; align-self: stretch; }
   .quest-panel { grid-column: 1; grid-row: 2 / 4; align-self: stretch; margin-top: 0; }
   .rumor-panel { grid-column: 3; grid-row: 1; align-self: stretch; margin-bottom: 0; }
-  .village-stage { grid-column: 2; grid-row: 2; min-height: 0; height: 100%; margin: 0; border-radius: 1.1rem; }
+  .village-stage { grid-column: 2; grid-row: 2; min-height: 0; height: 100%; margin: 0; border: 2px solid oklch(.2 .03 48 / .52); border-radius: 1.1rem; background-color: oklch(.2 .03 48 / .08); background-image: linear-gradient(oklch(.9 .04 90 / .02), oklch(.16 .025 45 / .12)); }
   .scene-actions { grid-column: 2; grid-row: 3; align-self: start; margin: 0; }
   .skill-dock { grid-column: 2; grid-row: 3; align-self: end; width: 100%; }
   .action-stack { grid-column: 3; grid-row: 2 / 4; align-self: end; margin: 0 0 clamp(4.5rem, 9vh, 6rem); }
@@ -132,8 +137,13 @@ html[data-reduced-motion="true"] *, html[data-reduced-motion="true"] *::before, 
     gap: .65rem;
     min-height: 100svh;
     padding: .7rem;
+    background-color: oklch(.64 .08 155);
+    background-image: linear-gradient(oklch(.74 .06 150 / .1), oklch(.22 .03 48 / .16)), var(--village-art);
+    background-position: center;
+    background-size: cover;
   }
 
+  .jianghu-screen::before { display: none; }
   .jianghu-header { position: relative; grid-column: 2; grid-row: 1; align-items: center; }
   .game-mark { margin: 0; font-size: clamp(2.45rem, 5vw, 3.6rem); }
   .header-tools { top: .2rem; right: 0; gap: .2rem; }
@@ -144,7 +154,7 @@ html[data-reduced-motion="true"] *, html[data-reduced-motion="true"] *::before, 
   .rumor-panel { grid-column: 2; grid-row: 4; align-self: stretch; margin: 0; padding: .35rem .7rem; }
   .rumor-panel h2 { display: inline; margin: 0 .35rem 0 0; padding: 0; border: 0; color: oklch(.25 .04 51); background: none; font-size: .95rem; }
   .rumor-panel p { display: inline; margin: 0; font-size: .88rem; }
-  .village-stage { grid-column: 2; grid-row: 2; min-height: 0; height: 100%; margin: 0; border-radius: 1rem; }
+  .village-stage { grid-column: 2; grid-row: 2; min-height: 0; height: 100%; margin: 0; border: 2px solid oklch(.2 .03 48 / .52); border-radius: 1rem; background-color: oklch(.2 .03 48 / .08); background-image: linear-gradient(oklch(.9 .04 90 / .02), oklch(.16 .025 45 / .12)); }
   .scene-actions { grid-column: 2; grid-row: 3; align-self: start; margin: 0; }
   .skill-dock { grid-column: 2; grid-row: 3; align-self: end; width: 100%; }
   .action-stack { grid-column: 1; grid-row: 3 / 5; align-self: end; margin: 0; }

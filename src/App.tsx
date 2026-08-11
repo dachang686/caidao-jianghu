@@ -198,7 +198,7 @@ function JianghuScreen() {
   }
 
   return (
-    <main className="jianghu-screen scenic-surface">
+    <main className="jianghu-screen scenic-surface" style={{ '--village-art': `url(${villageBackground})` } as CSSProperties}>
       <header className="jianghu-header">
         <div className="game-mark"><span>菜刀</span>闯江湖<small>无厘头武侠单机小游戏</small></div>
         <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button></div>
@@ -217,7 +217,7 @@ function JianghuScreen() {
 
       <aside className="rumor-panel paper-panel"><h2>江湖传闻</h2><p>{world.baiDefeated ? '有人说白大侠最近开始研究菜刀。' : '听说镇外擂台有个高手出没，速去一探究竟！'}</p></aside>
 
-      <section className="village-stage" aria-label="小愚村悦来客栈" style={{ '--village-art': `url(${villageBackground})` } as CSSProperties}>
+      <section className="village-stage" aria-label="小愚村悦来客栈">
         <div className="inn-building"><span>悦来客栈</span><small>客栈</small></div>
         <button className="npc npc--elder" data-hotspot="old-man" onClick={() => interact('oldMan')}><i><img src={elderSprite} alt="" /></i><b>不正经老头</b><q>{world.oldManMet ? '少侠，别老点我。' : '少年，看你骨骼惊奇，拜我为师？'}</q></button>
         <button className="npc npc--hero" data-hotspot="hero" onClick={() => openDialogue('bai')}><i><img src={heroSprite} alt="" /></i><b>{player.name}</b></button>
