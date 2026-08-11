@@ -1,0 +1,1459 @@
+{
+  "schemaVersion": 1,
+  "sourcePlan": "docs/PLAN_v2.md",
+  "executorHint": "gpt 5.6-luna",
+  "taskCount": 107,
+  "coreTaskCount": 97,
+  "optionalTaskCount": 10,
+  "tasks": [
+    {
+      "id": "F001",
+      "title": "锁定 Demo 行为基线",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F001-baseline-characterization.md"
+    },
+    {
+      "id": "F002",
+      "title": "建立模块目录骨架与导入边界",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F001"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F002-module-skeleton.md"
+    },
+    {
+      "id": "F003",
+      "title": "定义领域 ID、核心类型与 ContentManifest",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F002"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F003-domain-types-content-manifest.md"
+    },
+    {
+      "id": "F004",
+      "title": "实现 Condition 纯函数求值器",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F003"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F004-condition-evaluator.md"
+    },
+    {
+      "id": "F005",
+      "title": "实现 Effect 执行器与奖励幂等",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F003",
+        "F004"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F005-effect-executor.md"
+    },
+    {
+      "id": "F006",
+      "title": "实现同步 Domain EventBus",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F003"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F006-domain-event-bus.md"
+    },
+    {
+      "id": "F007",
+      "title": "建立内容加载器与基础校验 CLI",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F003",
+        "F004"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F007-content-loader-validator-base.md"
+    },
+    {
+      "id": "F008",
+      "title": "定义 GameSaveV2 与运行状态边界",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F003"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F008-save-v2-schema.md"
+    },
+    {
+      "id": "F009",
+      "title": "实现多档位存储与安全导入导出",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F008"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F009-save-slots-import-export.md"
+    },
+    {
+      "id": "F010",
+      "title": "实现增量迁移与崩溃恢复",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F009"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F010-save-migration-session-recovery.md"
+    },
+    {
+      "id": "F011",
+      "title": "拆分 Zustand 领域 slices",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F005",
+        "F006",
+        "F008"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F011-zustand-domain-slices.md"
+    },
+    {
+      "id": "F012",
+      "title": "拆分 Screen 壳与 App 调度",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F011"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F012-screen-shell-decomposition.md"
+    },
+    {
+      "id": "F013",
+      "title": "实现 LocalTextProvider 统一文本出口",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F003",
+        "F006"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F013-local-text-provider.md"
+    },
+    {
+      "id": "F014",
+      "title": "实现 ComedyDirector 调度内核",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F004",
+        "F005",
+        "F006"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F014-comedy-director-kernel.md"
+    },
+    {
+      "id": "F015",
+      "title": "完成 M1 基础架构集成验收",
+      "phase": "foundation",
+      "status": "pending",
+      "dependsOn": [
+        "F007",
+        "F010",
+        "F012",
+        "F013",
+        "F014"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/01-foundation/F015-m1-foundation-integration.md"
+    },
+    {
+      "id": "G101",
+      "title": "实现可保存的确定性 RNG",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "F015"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G101-deterministic-rng.md"
+    },
+    {
+      "id": "G102",
+      "title": "实现战斗回合状态机",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G101",
+        "F005",
+        "F006"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G102-combat-turn-state-machine.md"
+    },
+    {
+      "id": "G103",
+      "title": "实现伤害、状态与冷却结算",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G102"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G103-damage-status-cooldown.md"
+    },
+    {
+      "id": "G104",
+      "title": "实现架势破防与意图模型",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G103"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G104-posture-intent.md"
+    },
+    {
+      "id": "G105",
+      "title": "实现敌人 AI、Boss 阶段与三档难度",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G104"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G105-enemy-ai-boss-difficulty.md"
+    },
+    {
+      "id": "G106",
+      "title": "实现武学注册表、技能点与六槽配置",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G103",
+        "F007"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G106-skill-registry-loadout.md"
+    },
+    {
+      "id": "G107",
+      "title": "配置 16 个 Core 主动技能",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G106",
+        "G104"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G107-core-active-skills.md"
+    },
+    {
+      "id": "G108",
+      "title": "实现 8 个 Core 被动节点",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G106",
+        "G107"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G108-core-passive-tree.md"
+    },
+    {
+      "id": "G109",
+      "title": "实现背包与六槽装备领域",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "F015"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G109-inventory-equipment-domain.md"
+    },
+    {
+      "id": "G110",
+      "title": "实现掉落、银两与阶段经济曲线",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G101",
+        "G109",
+        "G105"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G110-loot-economy.md"
+    },
+    {
+      "id": "G111",
+      "title": "实现确定性装备强化 +5",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G101",
+        "G109",
+        "G110"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G111-seeded-strengthening.md"
+    },
+    {
+      "id": "G116",
+      "title": "实现武学树与六槽配置页面",
+      "phase": "gameplay-ui",
+      "status": "pending",
+      "dependsOn": [
+        "G108",
+        "F012"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G116-skill-tree-screen.md"
+    },
+    {
+      "id": "G117",
+      "title": "实现背包与装备页面",
+      "phase": "gameplay-ui",
+      "status": "pending",
+      "dependsOn": [
+        "G109",
+        "G111",
+        "F012"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G117-inventory-equipment-screen.md"
+    },
+    {
+      "id": "W201",
+      "title": "实现世界地图、地点状态与区域懒加载",
+      "phase": "world",
+      "status": "pending",
+      "dependsOn": [
+        "F015"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W201-world-location-loader.md"
+    },
+    {
+      "id": "W202",
+      "title": "实现任务状态机与幂等交付",
+      "phase": "world",
+      "status": "pending",
+      "dependsOn": [
+        "F004",
+        "F005",
+        "F006",
+        "F007"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W202-quest-engine.md"
+    },
+    {
+      "id": "S241",
+      "title": "实现门派状态与四设施升级",
+      "phase": "sect",
+      "status": "pending",
+      "dependsOn": [
+        "G109",
+        "G110",
+        "W202"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/05-sect/S241-sect-state-facilities.md"
+    },
+    {
+      "id": "W203",
+      "title": "实现声明式对话引擎",
+      "phase": "world",
+      "status": "pending",
+      "dependsOn": [
+        "F004",
+        "F005",
+        "F013",
+        "W202"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W203-dialogue-engine.md"
+    },
+    {
+      "id": "W204",
+      "title": "实现跨区域 NPC 状态与关系",
+      "phase": "world",
+      "status": "pending",
+      "dependsOn": [
+        "F006",
+        "W202",
+        "W203"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W204-npc-state-relations.md"
+    },
+    {
+      "id": "H221",
+      "title": "实现跨系统情境组合引擎",
+      "phase": "humor",
+      "status": "pending",
+      "dependsOn": [
+        "F014",
+        "G103",
+        "W202",
+        "W204"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/04-humor/H221-situation-combo-engine.md"
+    },
+    {
+      "id": "S242",
+      "title": "实现门人招募、性格与派遣能力",
+      "phase": "sect",
+      "status": "pending",
+      "dependsOn": [
+        "S241",
+        "W204"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/05-sect/S242-disciple-recruitment-traits.md"
+    },
+    {
+      "id": "S243",
+      "title": "实现战斗场次 Tick 派遣",
+      "phase": "sect",
+      "status": "pending",
+      "dependsOn": [
+        "S242",
+        "F006",
+        "G101"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/05-sect/S243-sect-tick-dispatch.md"
+    },
+    {
+      "id": "S244",
+      "title": "实现种子化江湖委托引擎",
+      "phase": "sect",
+      "status": "pending",
+      "dependsOn": [
+        "G101",
+        "W202",
+        "S243"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/05-sect/S244-commission-engine.md"
+    },
+    {
+      "id": "S245",
+      "title": "实现门派经营与派遣页面",
+      "phase": "sect-ui",
+      "status": "pending",
+      "dependsOn": [
+        "S241",
+        "S243",
+        "S244",
+        "F012"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/05-sect/S245-sect-screen.md"
+    },
+    {
+      "id": "W205",
+      "title": "实现场景热点与探索交互",
+      "phase": "world",
+      "status": "pending",
+      "dependsOn": [
+        "W201",
+        "F005",
+        "F006"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W205-hotspot-exploration.md"
+    },
+    {
+      "id": "G112",
+      "title": "实现场景采集与节点刷新规则",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G101",
+        "W205"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G112-gathering-domain.md"
+    },
+    {
+      "id": "G113",
+      "title": "实现锻造配方与 12 个 Core 配方",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G109",
+        "G110",
+        "G112"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G113-forging-domain.md"
+    },
+    {
+      "id": "G114",
+      "title": "实现烹饪、食物持续场次与 8 个 Core 菜谱",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G103",
+        "G112",
+        "G113"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G114-cooking-domain.md"
+    },
+    {
+      "id": "G115",
+      "title": "实现完整 Battle Screen",
+      "phase": "gameplay-ui",
+      "status": "pending",
+      "dependsOn": [
+        "G105",
+        "G107",
+        "G114",
+        "F012"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G115-battle-screen.md"
+    },
+    {
+      "id": "G118",
+      "title": "实现锻造与烹饪页面",
+      "phase": "gameplay-ui",
+      "status": "pending",
+      "dependsOn": [
+        "G113",
+        "G114",
+        "F012"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G118-crafting-cooking-screens.md"
+    },
+    {
+      "id": "G119",
+      "title": "建立固定 RNG 战斗批量模拟器",
+      "phase": "gameplay",
+      "status": "pending",
+      "dependsOn": [
+        "G105",
+        "G108",
+        "G111",
+        "G114"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/02-gameplay/G119-balance-simulator.md"
+    },
+    {
+      "id": "H222",
+      "title": "实现递进互动反应链",
+      "phase": "humor",
+      "status": "pending",
+      "dependsOn": [
+        "F014",
+        "W204",
+        "W205"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/04-humor/H222-interaction-chain-engine.md"
+    },
+    {
+      "id": "W206",
+      "title": "实现图鉴、称号与基础成就框架",
+      "phase": "world",
+      "status": "pending",
+      "dependsOn": [
+        "F004",
+        "F006",
+        "W204",
+        "G106",
+        "G109"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W206-codex-title-achievement.md"
+    },
+    {
+      "id": "W207",
+      "title": "实现设置、输入映射与无障碍基础",
+      "phase": "ux",
+      "status": "pending",
+      "dependsOn": [
+        "F012",
+        "F013"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W207-settings-input-accessibility.md"
+    },
+    {
+      "id": "H224",
+      "title": "实现 memePack、三档密度与本地文案调度",
+      "phase": "humor",
+      "status": "pending",
+      "dependsOn": [
+        "F013",
+        "F014",
+        "W207"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/04-humor/H224-meme-pack-density.md"
+    },
+    {
+      "id": "S246",
+      "title": "制作 6 名 Core 门人与经营反馈内容",
+      "phase": "sect-content",
+      "status": "pending",
+      "dependsOn": [
+        "S242",
+        "S244",
+        "H221",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/05-sect/S246-six-core-disciples.md"
+    },
+    {
+      "id": "W208",
+      "title": "完成五档视口响应式应用壳",
+      "phase": "ux",
+      "status": "pending",
+      "dependsOn": [
+        "F012",
+        "W201",
+        "W207"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W208-responsive-app-shell.md"
+    },
+    {
+      "id": "W209",
+      "title": "实现区域资源与音频生命周期",
+      "phase": "platform",
+      "status": "pending",
+      "dependsOn": [
+        "W201",
+        "W207"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W209-asset-audio-lifecycle.md"
+    },
+    {
+      "id": "C301",
+      "title": "第1章 小愚村：场景、NPC 与素材",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "F015",
+        "W201",
+        "W204",
+        "W205",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C301-ch01-scene-assets.md"
+    },
+    {
+      "id": "C302",
+      "title": "第1章 小愚村：任务、对白与情境幽默",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C301",
+        "W202",
+        "W203",
+        "H221",
+        "H222",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C302-ch01-quests-dialogue.md"
+    },
+    {
+      "id": "H223",
+      "title": "实现喜剧演出节拍运行时",
+      "phase": "humor",
+      "status": "pending",
+      "dependsOn": [
+        "F014",
+        "G115",
+        "W207",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/04-humor/H223-presentation-cue-runtime.md"
+    },
+    {
+      "id": "H225",
+      "title": "实现四层幽默覆盖与安全校验",
+      "phase": "humor",
+      "status": "pending",
+      "dependsOn": [
+        "H221",
+        "H222",
+        "H223",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/04-humor/H225-four-layer-coverage-validator.md"
+    },
+    {
+      "id": "C303",
+      "title": "第1章 小愚村：敌人、白大侠 与章节集成",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C302",
+        "G105",
+        "G107",
+        "G115",
+        "G119",
+        "H223",
+        "H225",
+        "G109",
+        "G117"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C303-ch01-combat-integration.md"
+    },
+    {
+      "id": "C311",
+      "title": "第2章 清河县：场景、NPC 与素材",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C303",
+        "W201",
+        "W204",
+        "W205",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C311-ch02-scene-assets.md"
+    },
+    {
+      "id": "C312",
+      "title": "第2章 清河县：任务、对白与情境幽默",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C311",
+        "W202",
+        "W203",
+        "H221",
+        "H222",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C312-ch02-quests-dialogue.md"
+    },
+    {
+      "id": "C313",
+      "title": "第2章 清河县：敌人、榜下捕快 与章节集成",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C312",
+        "G105",
+        "G107",
+        "G115",
+        "G119",
+        "H223",
+        "H225",
+        "G111",
+        "G112",
+        "G113",
+        "G117",
+        "G118"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C313-ch02-combat-integration.md"
+    },
+    {
+      "id": "C321",
+      "title": "第3章 黑风寨：场景、NPC 与素材",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C313",
+        "W201",
+        "W204",
+        "W205",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C321-ch03-scene-assets.md"
+    },
+    {
+      "id": "C322",
+      "title": "第3章 黑风寨：任务、对白与情境幽默",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C321",
+        "W202",
+        "W203",
+        "H221",
+        "H222",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C322-ch03-quests-dialogue.md"
+    },
+    {
+      "id": "C323",
+      "title": "第3章 黑风寨：敌人、黑风寨主 与章节集成",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C322",
+        "G105",
+        "G107",
+        "G115",
+        "G119",
+        "H223",
+        "H225",
+        "G108",
+        "G114",
+        "G116",
+        "G118"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C323-ch03-combat-integration.md"
+    },
+    {
+      "id": "C331",
+      "title": "第4章 青云山：场景、NPC 与素材",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C323",
+        "W201",
+        "W204",
+        "W205",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C331-ch04-scene-assets.md"
+    },
+    {
+      "id": "C332",
+      "title": "第4章 青云山：任务、对白与情境幽默",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C331",
+        "W202",
+        "W203",
+        "H221",
+        "H222",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C332-ch04-quests-dialogue.md"
+    },
+    {
+      "id": "C333",
+      "title": "第4章 青云山：敌人、青云掌门 与章节集成",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C332",
+        "G105",
+        "G107",
+        "G115",
+        "G119",
+        "H223",
+        "H225",
+        "G104",
+        "G111"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C333-ch04-combat-integration.md"
+    },
+    {
+      "id": "C341",
+      "title": "第5章 西域驿路：场景、NPC 与素材",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C333",
+        "W201",
+        "W204",
+        "W205",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C341-ch05-scene-assets.md"
+    },
+    {
+      "id": "C342",
+      "title": "第5章 西域驿路：任务、对白与情境幽默",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C341",
+        "W202",
+        "W203",
+        "H221",
+        "H222",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C342-ch05-quests-dialogue.md"
+    },
+    {
+      "id": "C343",
+      "title": "第5章 西域驿路：敌人、驿路双煞 与章节集成",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C342",
+        "G105",
+        "G107",
+        "G115",
+        "G119",
+        "H223",
+        "H225",
+        "S241",
+        "S242",
+        "S243",
+        "S245"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C343-ch05-combat-integration.md"
+    },
+    {
+      "id": "C351",
+      "title": "第6章 东海镇：场景、NPC 与素材",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C343",
+        "W201",
+        "W204",
+        "W205",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C351-ch06-scene-assets.md"
+    },
+    {
+      "id": "C352",
+      "title": "第6章 东海镇：任务、对白与情境幽默",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C351",
+        "W202",
+        "W203",
+        "H221",
+        "H222",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C352-ch06-quests-dialogue.md"
+    },
+    {
+      "id": "C353",
+      "title": "第6章 东海镇：敌人、海潮帮主 与章节集成",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C352",
+        "G105",
+        "G107",
+        "G115",
+        "G119",
+        "H223",
+        "H225",
+        "S244",
+        "S246"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C353-ch06-combat-integration.md"
+    },
+    {
+      "id": "C361",
+      "title": "第7章 京城：场景、NPC 与素材",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C353",
+        "W201",
+        "W204",
+        "W205",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C361-ch07-scene-assets.md"
+    },
+    {
+      "id": "C362",
+      "title": "第7章 京城：任务、对白与情境幽默",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C361",
+        "W202",
+        "W203",
+        "H221",
+        "H222",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C362-ch07-quests-dialogue.md"
+    },
+    {
+      "id": "P381",
+      "title": "配置前四章 24 件 Core 装备",
+      "phase": "cross-content",
+      "status": "pending",
+      "dependsOn": [
+        "C333",
+        "G109",
+        "G110",
+        "G111"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/07-cross-content/P381-core-equipment-ch1-ch4.md"
+    },
+    {
+      "id": "W210",
+      "title": "实现全局错误恢复面板",
+      "phase": "ux",
+      "status": "pending",
+      "dependsOn": [
+        "F010",
+        "F012"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W210-error-boundary-recovery-ui.md"
+    },
+    {
+      "id": "W211",
+      "title": "实现老板键暂停与恢复",
+      "phase": "ux",
+      "status": "pending",
+      "dependsOn": [
+        "F012",
+        "W207",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W211-boss-key.md"
+    },
+    {
+      "id": "W212",
+      "title": "实现四结局判定引擎与 Ending Screen",
+      "phase": "world",
+      "status": "pending",
+      "dependsOn": [
+        "F004",
+        "F005",
+        "W202",
+        "F012"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/03-world-ui/W212-ending-engine-screen.md"
+    },
+    {
+      "id": "C363",
+      "title": "第7章 京城：敌人、榜司督主 与章节集成",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C362",
+        "G105",
+        "G107",
+        "G115",
+        "G119",
+        "H223",
+        "H225",
+        "W212"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C363-ch07-combat-integration.md"
+    },
+    {
+      "id": "C371",
+      "title": "第8章 武林大会：场景、NPC 与素材",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C363",
+        "W201",
+        "W204",
+        "W205",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C371-ch08-scene-assets.md"
+    },
+    {
+      "id": "C372",
+      "title": "第8章 武林大会：任务、对白与情境幽默",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C371",
+        "W202",
+        "W203",
+        "H221",
+        "H222",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C372-ch08-quests-dialogue.md"
+    },
+    {
+      "id": "C373",
+      "title": "第8章 武林大会：敌人、百晓榜主 与章节集成",
+      "phase": "chapter-content",
+      "status": "pending",
+      "dependsOn": [
+        "C372",
+        "G105",
+        "G107",
+        "G115",
+        "G119",
+        "H223",
+        "H225",
+        "W212"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/06-chapters/C373-ch08-combat-integration.md"
+    },
+    {
+      "id": "P382",
+      "title": "配置后四章 24 件 Core 装备",
+      "phase": "cross-content",
+      "status": "pending",
+      "dependsOn": [
+        "C373",
+        "P381"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/07-cross-content/P382-core-equipment-ch5-ch8.md"
+    },
+    {
+      "id": "P383",
+      "title": "补齐 12 模板与 24 个 Core 敌人变体",
+      "phase": "cross-content",
+      "status": "pending",
+      "dependsOn": [
+        "C373",
+        "G105"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/07-cross-content/P383-core-enemy-roster.md"
+    },
+    {
+      "id": "P384",
+      "title": "完成四结局文本、演出与可达路径",
+      "phase": "cross-content",
+      "status": "pending",
+      "dependsOn": [
+        "C373",
+        "W212",
+        "H223",
+        "H224"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/07-cross-content/P384-four-ending-content.md"
+    },
+    {
+      "id": "P385",
+      "title": "实现 Core 通关后继续与委托循环",
+      "phase": "postgame",
+      "status": "pending",
+      "dependsOn": [
+        "P384",
+        "S244",
+        "S245",
+        "S246"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/07-cross-content/P385-core-postgame-loop.md"
+    },
+    {
+      "id": "P386",
+      "title": "校准主线成长、经济与时长采样",
+      "phase": "cross-content",
+      "status": "pending",
+      "dependsOn": [
+        "P382",
+        "P383",
+        "P385",
+        "G119"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/07-cross-content/P386-progression-economy-instrumentation.md"
+    },
+    {
+      "id": "Q401",
+      "title": "完成发布级内容校验器",
+      "phase": "qa",
+      "status": "pending",
+      "dependsOn": [
+        "P386",
+        "H225"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q401-content-validator-release-gate.md"
+    },
+    {
+      "id": "Q402",
+      "title": "补齐系统单元与集成测试矩阵",
+      "phase": "qa",
+      "status": "pending",
+      "dependsOn": [
+        "Q401"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q402-unit-integration-test-gate.md"
+    },
+    {
+      "id": "Q403",
+      "title": "建立八章快照 E2E 套件",
+      "phase": "qa",
+      "status": "pending",
+      "dependsOn": [
+        "P386",
+        "Q401"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q403-chapter-snapshot-e2e.md"
+    },
+    {
+      "id": "Q404",
+      "title": "实现创角到结局的完整黄金路径 E2E",
+      "phase": "qa",
+      "status": "pending",
+      "dependsOn": [
+        "Q402",
+        "Q403",
+        "P384"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q404-full-golden-path-e2e.md"
+    },
+    {
+      "id": "Q405",
+      "title": "实现加辣梗与全迷惑选项作死路径",
+      "phase": "qa",
+      "status": "pending",
+      "dependsOn": [
+        "Q404",
+        "H225"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q405-chaos-humor-path-e2e.md"
+    },
+    {
+      "id": "Q406",
+      "title": "完成多档、迁移与异常恢复 E2E",
+      "phase": "qa",
+      "status": "pending",
+      "dependsOn": [
+        "Q404",
+        "F010",
+        "W210"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q406-save-recovery-e2e.md"
+    },
+    {
+      "id": "Q407",
+      "title": "完成五视口与无障碍验收",
+      "phase": "qa",
+      "status": "pending",
+      "dependsOn": [
+        "Q404",
+        "W208",
+        "W207"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q407-responsive-accessibility-audit.md"
+    },
+    {
+      "id": "Q408",
+      "title": "完成包体、加载与内存验收",
+      "phase": "qa",
+      "status": "pending",
+      "dependsOn": [
+        "Q404",
+        "W209"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q408-performance-resource-memory-audit.md"
+    },
+    {
+      "id": "Q409",
+      "title": "完成离线包与 GitHub Pages 发布流水线",
+      "phase": "release",
+      "status": "pending",
+      "dependsOn": [
+        "Q406",
+        "Q407",
+        "Q408"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q409-offline-pages-release-pipeline.md"
+    },
+    {
+      "id": "Q410",
+      "title": "执行 1.0 Core 最终验收",
+      "phase": "release",
+      "status": "pending",
+      "dependsOn": [
+        "Q405",
+        "Q409"
+      ],
+      "releaseBlocking": true,
+      "path": "tasks/09-qa-release/Q410-final-core-acceptance.md"
+    },
+    {
+      "id": "O601",
+      "title": "Optional：补齐 8 主动与 4 被动武学",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "Q410"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O601-expanded-skills-passives.md"
+    },
+    {
+      "id": "O602",
+      "title": "Optional：把装备扩展到约 80 件",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "Q410",
+        "O601"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O602-expanded-equipment.md"
+    },
+    {
+      "id": "O603",
+      "title": "Optional：补齐 24 锻造与 16 菜谱",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "Q410",
+        "O602"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O603-expanded-recipes.md"
+    },
+    {
+      "id": "O604",
+      "title": "Optional：补齐门人 7–12",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "Q410",
+        "S246"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O604-expanded-disciples.md"
+    },
+    {
+      "id": "O605",
+      "title": "Optional：扩展至 36 条支线/委托内容",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "Q410",
+        "S244"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O605-expanded-side-content.md"
+    },
+    {
+      "id": "O606",
+      "title": "Optional：制作前四区隐藏 Boss",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "Q410",
+        "O601",
+        "O602"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O606-hidden-bosses-early.md"
+    },
+    {
+      "id": "O607",
+      "title": "Optional：制作后四区隐藏 Boss",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "Q410",
+        "O601",
+        "O602"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O607-hidden-bosses-late.md"
+    },
+    {
+      "id": "O608",
+      "title": "Optional：制作三处通关后秘境",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "O606",
+        "O607",
+        "O603"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O608-three-postgame-dungeons.md"
+    },
+    {
+      "id": "O609",
+      "title": "Optional：完善图鉴、成就与稀有称号",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "O604",
+        "O605",
+        "O608"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O609-expanded-codex-achievements.md"
+    },
+    {
+      "id": "O610",
+      "title": "Optional：验收 5–8 小时通关后内容",
+      "phase": "optional",
+      "status": "pending",
+      "dependsOn": [
+        "O601",
+        "O602",
+        "O603",
+        "O604",
+        "O605",
+        "O606",
+        "O607",
+        "O608",
+        "O609"
+      ],
+      "releaseBlocking": false,
+      "path": "tasks/08-optional/O610-optional-postgame-acceptance.md"
+    }
+  ]
+}
