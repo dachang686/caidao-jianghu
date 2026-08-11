@@ -56,3 +56,43 @@ test('刷新页面后可以继续小愚村旅程', async ({ page }) => {
   await expect(page.getByText('续刀客', { exact: true }).first()).toBeVisible()
   await expect(page.getByText('和不正经老头聊聊')).toBeVisible()
 })
+
+test('江湖页会在宽屏与手机视口重新排布，不让场景与信息面板重叠', async ({ page }, testInfo) => {
+  const wide = testInfo.project.name === 'desktop'
+  await page.setViewportSize(wide ? { width: 1777, height: 965 } : { width: 412, height: 915 })
+  await page.getByRole('button', { name: /开始游戏/ }).click()
+  await page.getByRole('button', { name: '提刀入江湖' }).click()
+
+  const stage = await page.locator('.village-stage').boundingBox()
+  const header = await page.locator('.jianghu-header').boundingBox()
+  const actionStack = await page.locator('.action-stack').boundingBox()
+  const sceneActions = await page.locator('.scene-actions').boundingBox()
+  const skillDock = await page.locator('.skill-dock').boundingBox()
+  const narrator = await page.locator('.narrator-toast').boundingBox()
+  expect(stage).not.toBeNull()
+  expect(header).not.toBeNull()
+  expect(actionStack).not.toBeNull()
+  expect(sceneActions).not.toBeNull()
+  expect(skillDock).not.toBeNull()
+  expect(narrator).not.toBeNull()
+
+  if (wide) {
+    const status = await page.locator('.status-panel').boundingBox()
+    const rumor = await page.locator('.rumor-panel').boundingBox()
+    expect(status).not.toBeNull()
+    expect(rumor).not.toBeNull()
+    expect(stage!.x).toBeGreaterThanOrEqual(status!.x + status!.width)
+    expect(stage!.x + stage!.width).toBeLessThanOrEqual(rumor!.x + 1)
+    expect(header!.y + header!.height).toBeLessThanOrEqual(stage!.y + 1)
+    expect(actionStack!.x).toBeGreaterThanOrEqual(stage!.x + stage!.width)
+    expect(sceneActions!.y + sceneActions!.height).toBeLessThanOrEqual(skillDock!.y + 1)
+    expect(actionStack!.x).toBeGreaterThanOrEqual(narrator!.x + narrator!.width)
+  } else {
+    expect(header!.y + header!.height).toBeLessThanOrEqual(stage!.y + 1)
+    expect(actionStack!.y + actionStack!.height).toBeLessThanOrEqual(915)
+    expect(narrator!.y + narrator!.height).toBeLessThanOrEqual(skillDock!.y + 1)
+    await expect(page.locator('.action-stack button').first()).toHaveCSS('min-height', '44px')
+  }
+
+  await page.screenshot({ path: `output/playwright/responsive-${testInfo.project.name}.png`, fullPage: true })
+})
