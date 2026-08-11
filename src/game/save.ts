@@ -49,6 +49,7 @@ export const gameSaveSchema = z.object({
     damageTakenHits: z.number().int().nonnegative(),
     narratorSeen: z.array(z.string()),
     lastNarratorAt: z.number().nonnegative(),
+    tipsyNextBattle: z.boolean().default(false),
   }),
   settings: z.object({
     reducedMotion: z.boolean(),
@@ -114,4 +115,3 @@ export function parseImportedSave(text: string): GameSaveV1 {
   if (!parsed.success) throw new Error('这份江湖账本缺页了，不能导入。')
   return parsed.data
 }
-

@@ -31,6 +31,20 @@ describe('江湖状态机', () => {
     expect(state.quests.find((quest) => quest.id === 'findCat')?.status).toBe('complete')
   })
 
+  it('趣味消耗品会安全结算，二锅头只强化下一场战斗', () => {
+    let store = useGameStore.getState()
+    store.useItem('stalePill')
+    expect(useGameStore.getState().player?.hp).toBeGreaterThanOrEqual(1)
+    expect(useGameStore.getState().player?.inventory).not.toContain('stalePill')
+
+    store = useGameStore.getState()
+    store.useItem('erguotou')
+    expect(useGameStore.getState().world.tipsyNextBattle).toBe(true)
+    store.meetOldMan()
+    store.startBattle()
+    expect(useGameStore.getState().battle?.playerStatuses).toContainEqual({ id: 'tipsy', turns: 99 })
+  })
+
   it('白大侠战斗只在完成教学后开启，且嘴遁产生战斗反馈', () => {
     let store = useGameStore.getState()
     store.startBattle()

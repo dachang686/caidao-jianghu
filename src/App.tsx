@@ -330,6 +330,7 @@ function OverlayPanel() {
   const makeSave = useGameStore((state) => state.makeSave)
   const importSave = useGameStore((state) => state.importSave)
   const setSaveStatus = useGameStore((state) => state.setSaveStatus)
+  const useItem = useGameStore((state) => state.useItem)
   if (!activePanel) return null
   const save = makeSave()
   const downloadSave = () => {
@@ -354,7 +355,7 @@ function OverlayPanel() {
     }
   }
   return <div className="panel-layer" role="dialog" aria-modal="true"><section className="overlay-panel"><button className="dialogue-close" onClick={() => setPanel(null)}>×</button>
-    {activePanel === 'inventory' && <><h2>背包</h2><p>装得下江湖，也装得下王大娘的唠叨。</p><ItemList items={player?.inventory ?? []} /></>}
+    {activePanel === 'inventory' && <><h2>背包</h2><p>装得下江湖，也装得下王大娘的唠叨。</p><ItemList items={player?.inventory ?? []} onUse={useItem} /></>}
     {activePanel === 'skills' && <><h2>武功</h2><p>四格招式已装配，先把会的用顺手。</p><div className="detail-list">{(player?.activeSkills ?? []).map((skill) => <div key={skill}><b>{SKILLS[skill].name}</b><span>{SKILLS[skill].description}</span></div>)}</div></>}
     {activePanel === 'equipment' && <><h2>装备</h2><p>武器：{player?.equippedWeapon ? ITEMS[player.equippedWeapon].name : '赤手空拳'}</p><p>衣服：粗布短褂</p><p>饰品：王大娘的白眼</p></>}
     {activePanel === 'codex' && <><h2>小小图鉴</h2><p>遇见的人和惹出的事，都在这里记一笔。</p><div className="detail-list">{(player?.titles ?? []).length ? player!.titles.map((title) => <div key={title}><b>{TITLES[title].name}</b><span>{TITLES[title].description}，{TITLES[title].bonus}</span></div>) : <p>目前还没有称号，先去江湖里丢几次脸。</p>}</div></>}
@@ -363,9 +364,9 @@ function OverlayPanel() {
   </section></div>
 }
 
-function ItemList({ items }: { items: ItemId[] }) {
+function ItemList({ items, onUse }: { items: ItemId[]; onUse: (itemId: ItemId) => void }) {
   if (!items.length) return <p>背包空空如也，风从里面吹出来。</p>
-  return <div className="detail-list">{items.map((item) => <div key={item}><b>{ITEMS[item].name}</b><span>{ITEMS[item].description}</span></div>)}</div>
+  return <div className="detail-list">{items.map((item) => <div key={item}><b>{ITEMS[item].name}</b><span>{ITEMS[item].description}</span>{ITEMS[item].category === 'consumable' && <button className="item-use" onClick={() => onUse(item)}>使用</button>}</div>)}</div>
 }
 
 function BossKey() {

@@ -49,6 +49,7 @@ interface GameStore {
   recordNpcClick: (npcId: string) => void
   setPanel: (panel: PanelId) => void
   setSettings: (settings: Partial<GameSettings>) => void
+  useItem: (itemId: ItemId) => void
   toggleBossKey: () => void
   setSaveStatus: (status: GameStore['saveStatus']) => void
   maybeNarrate: (id: string, text: string) => void
@@ -76,6 +77,7 @@ const EMPTY_WORLD: WorldState = {
   damageTakenHits: 0,
   narratorSeen: [],
   lastNarratorAt: 0,
+  tipsyNextBattle: false,
 }
 
 const EMPTY_QUESTS: QuestState[] = [
@@ -148,7 +150,7 @@ function makePlayer(name: string, talent: TalentId): PlayerState {
     silver: 20,
     moral: 0,
     stats,
-    inventory: [],
+    inventory: ['stalePill', 'erguotou'],
     equippedWeapon: null,
     activeSkills: ['basicSlash', 'cleaverWhirl', 'mockery', 'playDead'],
     titles: [],
@@ -265,7 +267,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
   startBattle: () => {
     const state = get()
     if (!state.player || !state.world.oldManMet || state.world.baiDefeated) return
-    set({ screen: 'battle', battle: makeBattle(), activeDialogue: null, activePanel: null })
+    const battle = makeBattle()
+    if (state.world.tipsyNextBattle) {
+      battle.playerStatuses = [{ id: 'tipsy', turns: 99 }]
+      battle.logs = appendLog(battle.logs, '二锅头的勇气上头了：攻击更猛，准头随缘。', 'status')
+    }
+    set({ screen: 'battle', battle, world: { ...state.world, tipsyNextBattle: false }, activeDialogue: null, activePanel: null })
   },
   useSkill: (skillId) => {
     const state = get()
@@ -300,9 +307,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
       playerStatuses = [{ id: 'feignedDeath', turns: 1 }]
       logs = appendLog(logs, `${player.name}往地上一躺，演技让路边石头都想鼓掌。`, 'player')
     } else {
-      const hit = calculateDamage(nextPlayer.stats, nextEnemy.stats, definition.power, seed)
-      seed = hit.seed
-      if (hit.dodged) {
+      let attackStats = nextPlayer.stats
+      let wildMiss = false
+      if (hasStatus(playerStatuses, 'tipsy')) {
+        let tipsyRoll: number
+        ;[seed, tipsyRoll] = nextFloat(seed)
+        if (tipsyRoll < 0.15) {
+          logs = appendLog(logs, `${player.name}酒劲一上来，对着自己的影子挥了一刀。`, 'status')
+          wildMiss = true
+        }
+        attackStats = { ...attackStats, attack: attackStats.attack * 1.25 }
+      }
+      const hit = wildMiss ? null : calculateDamage(attackStats, nextEnemy.stats, definition.power, seed)
+      if (hit) seed = hit.seed
+      if (!hit || hit.dodged) {
         logs = appendLog(logs, `${player.name}一刀劈空，白大侠的发型毫发无伤。`, 'status')
       } else {
         nextEnemy = { ...nextEnemy, hp: Math.max(0, nextEnemy.hp - hit.damage) }
@@ -408,6 +426,35 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
   setPanel: (activePanel) => set({ activePanel }),
   setSettings: (settings) => set((state) => ({ settings: { ...state.settings, ...settings } })),
+  useItem: (itemId) => {
+    const state = get()
+    const player = state.player
+    if (!player || !player.inventory.includes(itemId) || state.screen === 'battle') return
+    if (itemId === 'stalePill') {
+      let seed: number
+      let roll: number
+      ;[seed, roll] = nextFloat(state.rngState)
+      const helps = roll >= 0.5
+      const hp = helps ? Math.min(player.maxHp, player.hp + 38) : Math.max(1, player.hp - 7)
+      set({
+        player: { ...player, hp, inventory: player.inventory.filter((item) => item !== itemId) },
+        rngState: seed,
+        narrator: helps ? '说书人：药居然还没彻底失效，今天算你赚到。' : '说书人：药效走偏了，但至少你还站着。',
+      })
+      return
+    }
+    if (itemId === 'erguotou') {
+      if (state.world.tipsyNextBattle) {
+        set({ narrator: '说书人：再喝就不是增益，是给白大侠加节目。' })
+        return
+      }
+      set({
+        player: { ...player, inventory: player.inventory.filter((item) => item !== itemId) },
+        world: { ...state.world, tipsyNextBattle: true },
+        narrator: '说书人：二锅头下肚，下一场攻击 +25%，但有 15% 概率砍向空气。',
+      })
+    }
+  },
   toggleBossKey: () => set((state) => ({ temporaryMode: !state.temporaryMode })),
   setSaveStatus: (saveStatus) => set({ saveStatus }),
   maybeNarrate: (id, text) => {
@@ -448,4 +495,3 @@ export const useGameStore = create<GameStore>((set, get) => ({
   }),
   importSave: (save) => get().hydrateSave(save),
 }))
-

@@ -56,6 +56,7 @@ export interface WorldState {
   damageTakenHits: number
   narratorSeen: string[]
   lastNarratorAt: number
+  tipsyNextBattle: boolean
 }
 
 export interface GameSettings {
