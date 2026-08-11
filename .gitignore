@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+output/
+.playwright-cli/
+src/assets/characters/*-chroma.png
+src/assets/backgrounds/*.png
+.DS_Store
