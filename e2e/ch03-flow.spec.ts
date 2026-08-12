@@ -1,14 +1,13 @@
 import { expect, test, type Page } from '@playwright/test'
-import { clearV2Save, wrapM1Snapshot, writeV2AutoSave } from './helpers/journey'
+import { buildV2SaveFromRuntime, clearV2Save, writeV2AutoSave } from './helpers/journey'
 
 async function clearSave(page: Page) {
   await clearV2Save(page)
 }
 
 async function seedChapterThreeSnapshot(page: Page) {
-  const m1 = await page.evaluate(() => {
+  const runtime = await page.evaluate(() => {
     const save = {
-      version: 1,
       savedAt: new Date().toISOString(),
       screen: 'jianghu',
       player: {
@@ -80,7 +79,7 @@ async function seedChapterThreeSnapshot(page: Page) {
     }
     return save
   })
-  await writeV2AutoSave(page, wrapM1Snapshot('ch03', m1))
+  await writeV2AutoSave(page, buildV2SaveFromRuntime('ch03', runtime))
   await page.reload()
 }
 
@@ -102,12 +101,21 @@ test.beforeEach(async ({ page }) => {
   await seedChapterThreeSnapshot(page)
 })
 
+test('第 3 章两类普通敌人可由黑风寨场景进入，并在首回合明示意图', async ({ page }) => {
+  await page.getByTestId('ch03-fortress-scout').click()
+  await expect(page.getByText('山寨巡哨', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('木棍点名', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '暂离擂台' }).click()
+
+  await page.getByTestId('ch03-kitchen-raider').click()
+  await expect(page.getByText('抢锅客', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('长勺横扫', { exact: true })).toBeVisible()
+})
+
 test('第 3 章快照可完成调查、黑风寨主、自动档并返回山寨', async ({ page }) => {
-  await expect(page.getByTestId('ch03-investigate')).toBeVisible()
   await expect(page.getByTestId('ch03-battle-call')).toBeDisabled()
 
-  await page.getByTestId('ch03-investigate').click()
-  await expect(page.getByTestId('ch03-investigate')).toBeDisabled()
+  for (const step of ['ch03-step-ledger', 'ch03-step-board', 'ch03-step-cook', 'ch03-step-runner']) await page.getByTestId(step).click()
   await page.getByTestId('ch03-battle-call').click()
   await expect(page.getByText('黑风寨主', { exact: true }).first()).toBeVisible()
   await expect(page.getByText(/空旗/).first()).toBeVisible()

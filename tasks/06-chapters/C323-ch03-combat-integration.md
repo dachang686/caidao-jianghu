@@ -3,7 +3,7 @@ id: C323
 title: 第3章 黑风寨：敌人、黑风寨主 与章节集成
 phase: chapter-content
 depends_on: [C322, G105, G107, G115, G119, H223, H225, G108, G114, G116, G118]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -56,6 +56,7 @@ pnpm build
 
 ## 验证记录
 
+- 2026-08-12：黑风寨声明式任务、热点、对白、两类普通敌人和 Boss 均由同一章节运行时驱动；`e2e/ch03-flow.spec.ts` 桌面/手机关键路径通过。
 - `pnpm lint`：通过。
 - `pnpm content:validate`：通过（3 chapters；仅 Node experimental loader warning）。
 - `pnpm test -- --reporter=dot`：67 个测试文件、210 个测试通过。

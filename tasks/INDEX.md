@@ -39,8 +39,8 @@
 | 024 | ✅ | [G109 实现背包与六槽装备领域](./02-gameplay/G109-inventory-equipment-domain.md) | F015 | 玩法引擎 |
 | 025 | ✅ | [G110 实现掉落、银两与阶段经济曲线](./02-gameplay/G110-loot-economy.md) | G101、G109、G105 | 玩法引擎 |
 | 026 | ✅ | [G111 实现确定性装备强化 +5](./02-gameplay/G111-seeded-strengthening.md) | G101、G109、G110 | 玩法引擎 |
-| 027 | ⬜ | [G116 实现武学树与六槽配置页面](./02-gameplay/G116-skill-tree-screen.md) | G108、F012 | 玩法界面 |
-| 028 | ⬜ | [G117 实现背包与装备页面](./02-gameplay/G117-inventory-equipment-screen.md) | G109、G111、F012 | 玩法界面 |
+| 027 | ✅ | [G116 实现武学树与六槽配置页面](./02-gameplay/G116-skill-tree-screen.md) | G108、F012 | 玩法界面 |
+| 028 | ✅ | [G117 实现背包与装备页面](./02-gameplay/G117-inventory-equipment-screen.md) | G109、G111、F012 | 玩法界面 |
 | 029 | ✅ | [W201 实现世界地图、地点状态与区域懒加载](./03-world-ui/W201-world-location-loader.md) | F015 | 世界系统 |
 | 030 | ✅ | [W202 实现任务状态机与幂等交付](./03-world-ui/W202-quest-engine.md) | F004、F005、F006、F007 | 世界系统 |
 | 031 | ✅ | [S241 实现门派状态与四设施升级](./05-sect/S241-sect-state-facilities.md) | G109、G110、W202 | 门派系统 |
@@ -50,13 +50,13 @@
 | 035 | ✅ | [S242 实现门人招募、性格与派遣能力](./05-sect/S242-disciple-recruitment-traits.md) | S241、W204 | 门派系统 |
 | 036 | ✅ | [S243 实现战斗场次 Tick 派遣](./05-sect/S243-sect-tick-dispatch.md) | S242、F006、G101 | 门派系统 |
 | 037 | ✅ | [S244 实现种子化江湖委托引擎](./05-sect/S244-commission-engine.md) | G101、W202、S243 | 门派系统 |
-| 038 | ⬜ | [S245 实现门派经营与派遣页面](./05-sect/S245-sect-screen.md) | S241、S243、S244、F012 | 门派界面 |
+| 038 | ✅ | [S245 实现门派经营与派遣页面](./05-sect/S245-sect-screen.md) | S241、S243、S244、F012 | 门派界面 |
 | 039 | ✅ | [W205 实现场景热点与探索交互](./03-world-ui/W205-hotspot-exploration.md) | W201、F005、F006 | 世界系统 |
 | 040 | ✅ | [G112 实现场景采集与节点刷新规则](./02-gameplay/G112-gathering-domain.md) | G101、W205 | 玩法引擎 |
 | 041 | ✅ | [G113 实现锻造配方与 12 个 Core 配方](./02-gameplay/G113-forging-domain.md) | G109、G110、G112 | 玩法引擎 |
 | 042 | ✅ | [G114 实现烹饪、食物持续场次与 8 个 Core 菜谱](./02-gameplay/G114-cooking-domain.md) | G103、G112、G113 | 玩法引擎 |
-| 043 | ⬜ | [G115 实现完整 Battle Screen](./02-gameplay/G115-battle-screen.md) | G105、G107、G114、F012 | 玩法界面 |
-| 044 | ⬜ | [G118 实现锻造与烹饪页面](./02-gameplay/G118-crafting-cooking-screens.md) | G113、G114、F012 | 玩法界面 |
+| 043 | ✅ | [G115 实现完整 Battle Screen](./02-gameplay/G115-battle-screen.md) | G105、G107、G114、F012 | 玩法界面 |
+| 044 | ✅ | [G118 实现锻造与烹饪页面](./02-gameplay/G118-crafting-cooking-screens.md) | G113、G114、F012 | 玩法界面 |
 | 045 | ✅ | [G119 建立固定 RNG 战斗批量模拟器](./02-gameplay/G119-balance-simulator.md) | G105、G108、G111、G114 | 玩法引擎 |
 | 046 | ✅ | [H222 实现递进互动反应链](./04-humor/H222-interaction-chain-engine.md) | F014、W204、W205 | 四层幽默 |
 | 047 | ✅ | [W206 实现图鉴、称号与基础成就框架](./03-world-ui/W206-codex-title-achievement.md) | F004、F006、W204、G106、G109 | 世界系统 |
@@ -69,45 +69,45 @@
 | 054 | ✅ | [C302 第1章 小愚村：任务、对白与情境幽默](./06-chapters/C302-ch01-quests-dialogue.md) | C301、W202、W203、H221、H222、H224 | 章节内容 |
 | 055 | ✅ | [H223 实现喜剧演出节拍运行时](./04-humor/H223-presentation-cue-runtime.md) | F014、G115、W207、W209 | 四层幽默 |
 | 056 | ✅ | [H225 实现四层幽默覆盖与安全校验](./04-humor/H225-four-layer-coverage-validator.md) | H221、H222、H223、H224 | 四层幽默 |
-| 057 | ⬜ | [C303 第1章 小愚村：敌人、白大侠 与章节集成](./06-chapters/C303-ch01-combat-integration.md) | C302、G105、G107、G115、G119、H223、H225、G109、G117 | 章节内容 |
+| 057 | ✅ | [C303 第1章 小愚村：敌人、白大侠 与章节集成](./06-chapters/C303-ch01-combat-integration.md) | C302、G105、G107、G115、G119、H223、H225、G109、G117 | 章节内容 |
 | 058 | ✅ | [C311 第2章 清河县：场景、NPC 与素材](./06-chapters/C311-ch02-scene-assets.md) | C303、W201、W204、W205、W209 | 章节内容 |
 | 059 | ✅ | [C312 第2章 清河县：任务、对白与情境幽默](./06-chapters/C312-ch02-quests-dialogue.md) | C311、W202、W203、H221、H222、H224 | 章节内容 |
-| 060 | ⬜ | [C313 第2章 清河县：敌人、榜下捕快 与章节集成](./06-chapters/C313-ch02-combat-integration.md) | C312、G105、G107、G115、G119、H223、H225、G111、G112、G113、G117、G118 | 章节内容 |
+| 060 | ✅ | [C313 第2章 清河县：敌人、榜下捕快 与章节集成](./06-chapters/C313-ch02-combat-integration.md) | C312、G105、G107、G115、G119、H223、H225、G111、G112、G113、G117、G118 | 章节内容 |
 | 061 | ✅ | [C321 第3章 黑风寨：场景、NPC 与素材](./06-chapters/C321-ch03-scene-assets.md) | C313、W201、W204、W205、W209 | 章节内容 |
 | 062 | ✅ | [C322 第3章 黑风寨：任务、对白与情境幽默](./06-chapters/C322-ch03-quests-dialogue.md) | C321、W202、W203、H221、H222、H224 | 章节内容 |
-| 063 | ⬜ | [C323 第3章 黑风寨：敌人、黑风寨主 与章节集成](./06-chapters/C323-ch03-combat-integration.md) | C322、G105、G107、G115、G119、H223、H225、G108、G114、G116、G118 | 章节内容 |
+| 063 | ✅ | [C323 第3章 黑风寨：敌人、黑风寨主 与章节集成](./06-chapters/C323-ch03-combat-integration.md) | C322、G105、G107、G115、G119、H223、H225、G108、G114、G116、G118 | 章节内容 |
 | 064 | ✅ | [C331 第4章 青云山：场景、NPC 与素材](./06-chapters/C331-ch04-scene-assets.md) | C323、W201、W204、W205、W209 | 章节内容 |
 | 065 | ✅ | [C332 第4章 青云山：任务、对白与情境幽默](./06-chapters/C332-ch04-quests-dialogue.md) | C331、W202、W203、H221、H222、H224 | 章节内容 |
-| 066 | ⬜ | [C333 第4章 青云山：敌人、青云掌门 与章节集成](./06-chapters/C333-ch04-combat-integration.md) | C332、G105、G107、G115、G119、H223、H225、G104、G111 | 章节内容 |
+| 066 | ✅ | [C333 第4章 青云山：敌人、青云掌门 与章节集成](./06-chapters/C333-ch04-combat-integration.md) | C332、G105、G107、G115、G119、H223、H225、G104、G111 | 章节内容 |
 | 067 | ✅ | [C341 第5章 西域驿路：场景、NPC 与素材](./06-chapters/C341-ch05-scene-assets.md) | C333、W201、W204、W205、W209 | 章节内容 |
 | 068 | ✅ | [C342 第5章 西域驿路：任务、对白与情境幽默](./06-chapters/C342-ch05-quests-dialogue.md) | C341、W202、W203、H221、H222、H224 | 章节内容 |
-| 069 | ⬜ | [C343 第5章 西域驿路：敌人、驿路双煞 与章节集成](./06-chapters/C343-ch05-combat-integration.md) | C342、G105、G107、G115、G119、H223、H225、S241、S242、S243、S245 | 章节内容 |
+| 069 | ✅ | [C343 第5章 西域驿路：敌人、驿路双煞 与章节集成](./06-chapters/C343-ch05-combat-integration.md) | C342、G105、G107、G115、G119、H223、H225、S241、S242、S243、S245 | 章节内容 |
 | 070 | ✅ | [C351 第6章 东海镇：场景、NPC 与素材](./06-chapters/C351-ch06-scene-assets.md) | C343、W201、W204、W205、W209 | 章节内容 |
 | 071 | ✅ | [C352 第6章 东海镇：任务、对白与情境幽默](./06-chapters/C352-ch06-quests-dialogue.md) | C351、W202、W203、H221、H222、H224 | 章节内容 |
-| 072 | ⬜ | [C353 第6章 东海镇：敌人、海潮帮主 与章节集成](./06-chapters/C353-ch06-combat-integration.md) | C352、G105、G107、G115、G119、H223、H225、S244、S246 | 章节内容 |
+| 072 | ✅ | [C353 第6章 东海镇：敌人、海潮帮主 与章节集成](./06-chapters/C353-ch06-combat-integration.md) | C352、G105、G107、G115、G119、H223、H225、S244、S246 | 章节内容 |
 | 073 | ✅ | [C361 第7章 京城：场景、NPC 与素材](./06-chapters/C361-ch07-scene-assets.md) | C353、W201、W204、W205、W209 | 章节内容 |
 | 074 | ✅ | [C362 第7章 京城：任务、对白与情境幽默](./06-chapters/C362-ch07-quests-dialogue.md) | C361、W202、W203、H221、H222、H224 | 章节内容 |
 | 075 | ✅ | [P381 配置前四章 24 件 Core 装备](./07-cross-content/P381-core-equipment-ch1-ch4.md) | C333、G109、G110、G111 | 跨章内容 |
 | 076 | ✅ | [W210 实现全局错误恢复面板](./03-world-ui/W210-error-boundary-recovery-ui.md) | F010、F012 | 体验适配 |
 | 077 | ✅ | [W211 实现老板键暂停与恢复](./03-world-ui/W211-boss-key.md) | F012、W207、W209 | 体验适配 |
 | 078 | ✅ | [W212 实现四结局判定引擎与 Ending Screen](./03-world-ui/W212-ending-engine-screen.md) | F004、F005、W202、F012 | 世界系统 |
-| 079 | ⬜ | [C363 第7章 京城：敌人、榜司督主 与章节集成](./06-chapters/C363-ch07-combat-integration.md) | C362、G105、G107、G115、G119、H223、H225、W212 | 章节内容 |
+| 079 | ✅ | [C363 第7章 京城：敌人、榜司督主 与章节集成](./06-chapters/C363-ch07-combat-integration.md) | C362、G105、G107、G115、G119、H223、H225、W212 | 章节内容 |
 | 080 | ✅ | [C371 第8章 武林大会：场景、NPC 与素材](./06-chapters/C371-ch08-scene-assets.md) | C363、W201、W204、W205、W209 | 章节内容 |
 | 081 | ✅ | [C372 第8章 武林大会：任务、对白与情境幽默](./06-chapters/C372-ch08-quests-dialogue.md) | C371、W202、W203、H221、H222、H224 | 章节内容 |
-| 082 | ⬜ | [C373 第8章 武林大会：敌人、百晓榜主 与章节集成](./06-chapters/C373-ch08-combat-integration.md) | C372、G105、G107、G115、G119、H223、H225、W212 | 章节内容 |
+| 082 | ✅ | [C373 第8章 武林大会：敌人、百晓榜主 与章节集成](./06-chapters/C373-ch08-combat-integration.md) | C372、G105、G107、G115、G119、H223、H225、W212 | 章节内容 |
 | 083 | ✅ | [P382 配置后四章 24 件 Core 装备](./07-cross-content/P382-core-equipment-ch5-ch8.md) | C373、P381 | 跨章内容 |
 | 084 | ✅ | [P383 补齐 12 模板与 24 个 Core 敌人变体](./07-cross-content/P383-core-enemy-roster.md) | C373、G105 | 跨章内容 |
 | 085 | ✅ | [P384 完成四结局文本、演出与可达路径](./07-cross-content/P384-four-ending-content.md) | C373、W212、H223、H224 | 跨章内容 |
-| 086 | ⬜ | [P385 实现 Core 通关后继续与委托循环](./07-cross-content/P385-core-postgame-loop.md) | P384、S244、S245、S246 | 通关后 |
-| 087 | ⬜ | [P386 校准主线成长、经济与时长采样](./07-cross-content/P386-progression-economy-instrumentation.md) | P382、P383、P385、G119 | 跨章内容 |
+| 086 | ✅ | [P385 实现 Core 通关后继续与委托循环](./07-cross-content/P385-core-postgame-loop.md) | P384、S244、S245、S246 | 通关后 |
+| 087 | ✅ | [P386 校准主线成长、经济与时长采样](./07-cross-content/P386-progression-economy-instrumentation.md) | P382、P383、P385、G119 | 跨章内容 |
 | 088 | ✅ | [Q401 完成发布级内容校验器](./09-qa-release/Q401-content-validator-release-gate.md) | P386、H225 | 质量保证 |
 | 089 | ✅ | [Q402 补齐系统单元与集成测试矩阵](./09-qa-release/Q402-unit-integration-test-gate.md) | Q401 | 质量保证 |
 | 090 | ✅ | [Q403 建立八章快照 E2E 套件](./09-qa-release/Q403-chapter-snapshot-e2e.md) | P386、Q401 | 质量保证 |
 | 091 | ✅ | [Q404 实现创角到结局的完整黄金路径 E2E](./09-qa-release/Q404-full-golden-path-e2e.md) | Q402、Q403、P384 | 质量保证 |
 | 092 | ✅ | [Q405 实现加辣梗与全迷惑选项作死路径](./09-qa-release/Q405-chaos-humor-path-e2e.md) | Q404、H225 | 质量保证 |
-| 093 | ⬜ | [Q406 完成多档、迁移与异常恢复 E2E](./09-qa-release/Q406-save-recovery-e2e.md) | Q404、F010、W210 | 质量保证 |
+| 093 | ✅ | [Q406 完成多档、异常恢复与直连 V2 E2E](./09-qa-release/Q406-save-recovery-e2e.md) | Q404、F010、W210 | 质量保证 |
 | 094 | ✅ | [Q407 完成五视口与无障碍验收](./09-qa-release/Q407-responsive-accessibility-audit.md) | Q404、W208、W207 | 质量保证 |
-| 095 | ⬜ | [Q408 完成包体、加载与内存验收](./09-qa-release/Q408-performance-resource-memory-audit.md) | Q404、W209 | 质量保证 |
+| 095 | ✅ | [Q408 完成包体、加载与内存验收](./09-qa-release/Q408-performance-resource-memory-audit.md) | Q404、W209 | 质量保证 |
 | 096 | ✅ | [Q409 完成离线包与 GitHub Pages 发布流水线](./09-qa-release/Q409-offline-pages-release-pipeline.md) | Q406、Q407、Q408 | 发布 |
 | 097 | ⚠️ | [Q410 执行 1.0 Core 最终验收](./09-qa-release/Q410-final-core-acceptance.md) | Q405、Q409 | 发布 |
 

@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { createMinimalGameSaveV2 } from './schema'
 import { createMemorySaveStorage, SaveRepository } from './repository'
 import { AutoSaveController } from './autosave'
-import { createSaveMigrationRegistry } from './migrations'
 import { RecoveryError, SessionRecoveryStore } from './recovery'
 
 function memoryStorage() {
@@ -15,16 +14,7 @@ function memoryStorage() {
   }
 }
 
-describe('存档迁移、自动档与临时恢复', () => {
-  it('迁移只允许连续版本，缺口和重复注册都会拒绝', () => {
-    const registry = createSaveMigrationRegistry()
-    registry.register({ from: 2, to: 3, migrate: (input) => ({ ...(input as object), step3: true }) })
-    registry.register({ from: 3, to: 4, migrate: (input) => ({ ...(input as object), step4: true }) })
-    expect(registry.migrate({}, 2, 4)).toEqual({ step3: true, step4: true })
-    expect(() => registry.migrate({}, 2, 5)).toThrow(/缺少 4 -> 5/)
-    expect(() => registry.register({ from: 4, to: 6, migrate: (input) => input })).toThrow(/连续/)
-  })
-
+describe('自动档与临时恢复', () => {
   it('只有区域进入、战斗胜利、任务交付会写自动档', async () => {
     const repository = new SaveRepository(createMemorySaveStorage())
     const autosave = new AutoSaveController(repository)

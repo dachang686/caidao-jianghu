@@ -1,0 +1,32 @@
+
+Running 1 test using 1 worker
+
+  x  1 [desktop] › e2e\golden-path.spec.ts:7:3 › 完整黄金路径 › 从空存档完成八章、结局、通关后循环并刷新恢复 (3.0m)
+
+
+  1) [desktop] › e2e\golden-path.spec.ts:7:3 › 完整黄金路径 › 从空存档完成八章、结局、通关后循环并刷新恢复 ─────────────────────
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.waitFor: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for getByText(/江湖传闻|章节传闻/) to be visible
+
+
+      10 |       await page.reload()
+      11 |       await page.waitForLoadState('domcontentloaded')
+    > 12 |       await page.getByText(/江湖传闻|章节传闻/).waitFor()
+         |                                         ^
+      13 |     }
+      14 |   })
+      15 | })
+        at C:\kevin\caidao-jianghu\e2e\golden-path.spec.ts:12:41
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\golden-path-完整黄金路径-从空存档完成八章、结局、通关后循环并刷新恢复-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\golden-path-完整黄金路径-从空存档完成八章、结局、通关后循环并刷新恢复-desktop\error-context.md
+
+  1 failed
+    [desktop] › e2e\golden-path.spec.ts:7:3 › 完整黄金路径 › 从空存档完成八章、结局、通关后循环并刷新恢复 ──────────────────────

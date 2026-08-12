@@ -56,7 +56,7 @@ button:disabled { cursor: not-allowed; opacity: .52; }
 .scene-actions { z-index: 3; grid-column: 2; grid-row: 3; align-self: start; justify-self: center; display: flex; gap: .8rem; margin-top: -.4rem; }.battle-call { min-width: 13rem; font-size: 1.6rem; }.action-stack { z-index: 3; grid-column: 3; grid-row: 2 / 4; align-self: end; display: grid; gap: .6rem; margin-bottom: .4rem; }.action-stack .ink-button { min-height: 3.4rem; font-size: 1.25rem; }.skill-dock { z-index: 3; grid-column: 2; grid-row: 3; align-self: end; justify-self: center; display: grid; grid-template-columns: repeat(4, minmax(4rem, 1fr)); gap: .55rem; width: min(47rem, 90%); }.skill-dock button { display: grid; gap: .22rem; padding: .35rem; border: 3px solid oklch(.21 .03 48); border-radius: .55rem; color: oklch(.92 .06 81); background: oklch(.24 .032 49); font-weight: 900; }.skill-dock i { display: grid; width: 3.6rem; height: 3.6rem; place-self: center; place-items: center; border: 2px solid oklch(.75 .12 75); border-radius: .45rem; color: oklch(.9 .12 80); background: oklch(.34 .1 235); font-size: 1.8rem; font-style: normal; }.skill-dock button:nth-child(2) i { background: oklch(.43 .14 150); }.skill-dock button:nth-child(3) i { background: oklch(.45 .14 25); }.skill-dock button:nth-child(4) i { background: oklch(.4 .13 300); }.boss-key-button { position: absolute; z-index: 4; right: .8rem; bottom: .6rem; min-width: 44px; min-height: 44px; width: 44px; height: 44px; border: 0; color: oklch(.7 .04 82); background: transparent; opacity: .35; }.boss-key-button:hover { opacity: 1; }
 
 /* overlays */
-.dialogue-layer, .panel-layer { position: fixed; inset: 0; z-index: 20; display: grid; place-items: end center; padding: 1rem; background: oklch(.14 .02 44 / .42); }.dialogue-box { position: relative; width: min(46rem, 100%); padding: 1.3rem 1.5rem 1.15rem; border: 3px solid oklch(.22 .03 47); border-radius: 1rem 1rem .4rem .4rem; background: oklch(.93 .055 86); box-shadow: 0 -5px 0 oklch(.25 .035 47 / .4); }.dialogue-box > b { display: inline-block; margin-bottom: .45rem; padding: .15rem .65rem; border-radius: .25rem; color: oklch(.92 .06 82); background: oklch(.29 .05 48); }.dialogue-box p { margin: 0 2rem .9rem 0; font-size: 1.1rem; font-weight: 800; line-height: 1.65; }.dialogue-box > div { display: flex; flex-wrap: wrap; gap: .6rem; }.dialogue-close { position: absolute; top: .5rem; right: .6rem; width: 2rem; height: 2rem; border: 0; border-radius: 50%; color: oklch(.9 .06 80); background: oklch(.35 .07 40); font-size: 1.25rem; font-weight: 900; }.narrator-toast { position: fixed; z-index: 15; right: 1rem; bottom: 1rem; max-width: min(25rem, calc(100% - 2rem)); padding: .8rem 1rem; border: 2px solid oklch(.25 .04 50); border-radius: .5rem; color: oklch(.18 .025 48); background: oklch(.92 .065 84); box-shadow: 3px 4px 0 oklch(.22 .03 46 / .5); font-weight: 800; text-align: left; }.narrator-toast small { display: block; margin-top: .25rem; color: oklch(.45 .07 51); font-weight: 600; }.overlay-panel { position: relative; width: min(38rem, 100%); max-height: min(80vh, 44rem); overflow: auto; padding: 1.6rem; border: 3px solid oklch(.24 .035 49); border-radius: .85rem; background: oklch(.92 .055 85); box-shadow: 8px 10px 0 oklch(.2 .03 45 / .45); }.overlay-panel h2 { margin-top: 0; font-size: 2rem; }.detail-list { display: grid; gap: .6rem; }.detail-list div { padding: .7rem .8rem; border: 1px solid oklch(.48 .06 58); border-radius: .45rem; background: oklch(.86 .06 79); }.detail-list b, .detail-list span { display: block; }.detail-list span { margin-top: .25rem; font-size: .9rem; }.setting-row { display: flex; justify-content: space-between; margin: .65rem 0; padding-bottom: .55rem; border-bottom: 1px solid oklch(.55 .05 58); font-weight: 800; }.panel-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.2rem; }.panel-actions input[type="file"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.dialogue-layer, .panel-layer { position: fixed; inset: 0; z-index: 20; display: grid; place-items: end center; padding: 1rem; background: oklch(.14 .02 44 / .42); }.dialogue-box { position: relative; width: min(46rem, 100%); padding: 1.3rem 1.5rem 1.15rem; border: 3px solid oklch(.22 .03 47); border-radius: 1rem 1rem .4rem .4rem; background: oklch(.93 .055 86); box-shadow: 0 -5px 0 oklch(.25 .035 47 / .4); }.dialogue-box > b { display: inline-block; margin-bottom: .45rem; padding: .15rem .65rem; border-radius: .25rem; color: oklch(.92 .06 82); background: oklch(.29 .05 48); }.dialogue-box p { margin: 0 2rem .9rem 0; font-size: 1.1rem; font-weight: 800; line-height: 1.65; }.dialogue-box > div { display: flex; flex-wrap: wrap; gap: .6rem; }.dialogue-close { position: absolute; top: .5rem; right: .6rem; width: 2rem; height: 2rem; border: 0; border-radius: 50%; color: oklch(.9 .06 80); background: oklch(.35 .07 40); font-size: 1.25rem; font-weight: 900; }.narrator-toast { position: fixed; z-index: 15; right: 1rem; bottom: 1rem; max-width: min(25rem, calc(100% - 2rem)); padding: .8rem 1rem; border: 2px solid oklch(.25 .04 50); border-radius: .5rem; color: oklch(.18 .025 48); background: oklch(.92 .065 84); box-shadow: 3px 4px 0 oklch(.22 .03 46 / .5); font-weight: 800; pointer-events: none; text-align: left; }.overlay-panel { position: relative; width: min(38rem, 100%); max-height: min(80vh, 44rem); overflow: auto; padding: 1.6rem; border: 3px solid oklch(.24 .035 49); border-radius: .85rem; background: oklch(.92 .055 85); box-shadow: 8px 10px 0 oklch(.2 .03 45 / .45); }.overlay-panel h2 { margin-top: 0; font-size: 2rem; }.detail-list { display: grid; gap: .6rem; }.detail-list div { padding: .7rem .8rem; border: 1px solid oklch(.48 .06 58); border-radius: .45rem; background: oklch(.86 .06 79); }.detail-list b, .detail-list span { display: block; }.detail-list span { margin-top: .25rem; font-size: .9rem; }.setting-row { display: flex; justify-content: space-between; margin: .65rem 0; padding-bottom: .55rem; border-bottom: 1px solid oklch(.55 .05 58); font-weight: 800; }.panel-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.2rem; }.panel-actions input[type="file"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
 
 /* Codex: compact, keyboard-friendly browsing for people, foes, skills, titles and achievements. */
 .codex-screen { display: grid; gap: .9rem; min-width: 0; }
@@ -131,6 +131,12 @@ html[data-reduced-motion="true"] *, html[data-reduced-motion="true"] *::before, 
 
 @media (max-width: 600px) {
   .battle-screen--complete { gap: .55rem; padding: .55rem; }.battle-top--complete { align-items: start; }.battle-top--complete h1 { font-size: 1.05rem; }.battle-breadcrumb { font-size: .68rem; }.battle-top__actions { gap: .35rem; }.battle-top__actions .ink-button { min-height: 2.75rem; padding: .35rem .55rem; font-size: .78rem; }.battle-turn-indicator { display: none; }.battle-phase-banner { gap: .25rem .6rem; padding: .5rem .65rem; }.battle-phase-banner strong { font-size: .9rem; }.battle-phase-banner span { font-size: .7rem; }.battle-arena { grid-template-columns: minmax(0, 1fr) minmax(6.3rem, 8rem) minmax(0, 1fr); gap: .3rem; padding: .45rem; border-radius: .7rem; }.battle-combatant { padding: .45rem .3rem; border-radius: .55rem; box-shadow: 3px 3px 0 oklch(.08 .02 45 / .35); }.battle-combatant__portrait { width: clamp(4.5rem, 20vw, 6rem); height: clamp(4.5rem, 20vw, 6rem); }.battle-combatant__portrait > span { top: -.4rem; right: -.4rem; font-size: 1.25rem; }.battle-combatant h2 { font-size: .84rem; }.battle-combatant__subtitle { min-height: 3.4em; margin-bottom: .35rem; font-size: .62rem; }.battle-resource-row { grid-template-columns: 1.8rem minmax(0, 1fr); gap: .2rem; font-size: .6rem; }.battle-resource-row strong { grid-column: 2; min-width: 0; margin-top: -.22rem; font-size: .58rem; text-align: left; }.battle-statuses { gap: .18rem; min-height: 1.45rem; }.battle-status, .battle-statuses__empty { padding: .18rem .22rem; font-size: .56rem; }.battle-status b { font-size: .53rem; }.battle-arena__center { gap: .25rem; }.battle-versus { font-size: 2.4rem; }.battle-arena__center > span { font-size: .62rem; }.battle-intent { padding: .4rem; }.battle-intent__heading { font-size: .55rem; }.battle-intent__heading b { padding: .08rem .2rem; }.battle-intent__label { margin-top: .3rem; font-size: .75rem; }.battle-intent p { min-height: 6.5em; margin: .2rem 0 .35rem; font-size: .58rem; }.battle-intent__numbers { font-size: .55rem; }.battle-log-panel__heading, .battle-skill-panel__heading { padding: .4rem .55rem; }.battle-log-panel__heading h2, .battle-skill-panel__heading h2 { font-size: .82rem; }.battle-log-panel__heading span, .battle-skill-panel__heading span { font-size: .6rem; }.battle-log-panel__body { min-height: 7rem; max-height: 9.5rem; padding: .4rem .55rem; }.battle-log-entry { font-size: .68rem; }.battle-skill-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .3rem; padding: .45rem; }.battle-skill-slot { min-height: 4.8rem; padding: .25rem .12rem; }.battle-skill-slot i { font-size: 1.1rem; }.battle-skill-slot strong { font-size: .66rem; }.battle-skill-slot small, .battle-skill-slot em { font-size: .55rem; }.battle-outcome { padding: 1rem; }.battle-outcome h2 { font-size: 1.12rem; }
+}
+
+@media (max-width: 600px) and (max-height: 820px) {
+  .battle-screen--complete { gap: .4rem; padding: .4rem; }
+  .battle-log-panel__body { min-height: 6rem; max-height: 7rem; }
+  .battle-skill-panel { padding-bottom: .4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) { .battle-skill-slot:not(:disabled):hover { transform: none; } }
@@ -304,10 +310,13 @@ html[data-reduced-motion="true"] *, html[data-reduced-motion="true"] *::before, 
 .sect-empty { padding: .6rem 0; font-size: .85rem; }
 .sect-dispatch-list { margin-top: .7rem; }
 .sect-dispatch-row, .sect-commission-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: .6rem; align-items: center; padding: .65rem; border: 1px solid oklch(.33 .045 46 / .15); border-radius: .7rem; background: oklch(1 0 0 / .28); }
+.save-slot-actions { display: grid; gap: .45rem; width: 100%; }
+.save-slot-actions > span { display: flex; gap: .45rem; flex-wrap: wrap; }
 .sect-dispatch-row > div, .sect-commission-row > div { display: grid; gap: .2rem; min-width: 0; }
 .sect-dispatch-row span, .sect-commission-row span, .sect-dispatch-progress small { color: oklch(.48 .04 47); font-size: .75rem; overflow-wrap: anywhere; }
 .sect-dispatch-progress b { color: oklch(.45 .1 34); font-size: .78rem; }
 .sect-commission-block { display: grid; gap: .5rem; margin-top: 1rem; padding-top: .75rem; border-top: 1px solid oklch(.33 .045 46 / .16); }
+.sect-commission-controls, .sect-commission-controls [role="group"] { display: flex; gap: .45rem; flex-wrap: wrap; }
 .sect-inline-heading { align-items: center; }
 .sect-inline-heading h3 { font-size: 1rem; }
 .sect-close:focus-visible, .sect-screen button:focus-visible { outline: 3px solid oklch(.55 .16 220); outline-offset: 3px; }
@@ -492,9 +501,52 @@ button, [role="button"] { min-height: var(--touch-target); touch-action: manipul
 .world-region-card--locked { background: oklch(.88 .035 80 / .75); }
 
 @media (max-width: 768px) {
+  .jianghu-screen {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(19rem, 48svh) auto auto auto auto;
+    align-content: start;
+    gap: .65rem;
+    min-height: 100svh;
+    padding: .55rem .55rem calc(5.35rem + var(--safe-bottom));
+  }
+  .jianghu-header { position: relative; grid-column: 1; grid-row: 1; display: grid; grid-template-columns: minmax(0, 1fr); gap: .35rem; min-height: 0; }
+  .game-mark { margin: 0; padding-right: 0; font-size: clamp(2rem, 10vw, 2.8rem); text-align: center; }
+  .header-tools { position: static; display: grid; grid-template-columns: repeat(5, minmax(44px, 1fr)); gap: .1rem; width: 100%; }
+  .header-tools button { min-width: 44px; min-height: 44px; padding: 0; font-size: 1.12rem; }
+  .header-tools span { display: none; }
+  .status-panel { grid-column: 1; grid-row: 2; align-self: stretch; }
+  .village-stage { grid-column: 1; grid-row: 3; min-height: 19rem; height: auto; margin: 0; border-radius: .85rem; }
+  .scene-actions {
+    position: static;
+    grid-column: 1;
+    grid-row: 5;
+    justify-self: stretch;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .5rem;
+    width: 100%;
+    margin: 0;
+  }
+  .scene-actions .ink-button, .battle-call { min-width: 0; min-height: 2.75rem; padding: .45rem .5rem; font-size: .86rem; line-height: 1.3; }
+  .narrator-toast { position: static; grid-column: 1; grid-row: 4; width: auto; max-width: none; margin: 0; }
+  .quest-panel { grid-column: 1; grid-row: 6; align-self: stretch; margin: 0; }
+  .rumor-panel { grid-column: 1; grid-row: 7; align-self: stretch; margin: 0; }
+  .action-stack {
+    position: fixed;
+    z-index: 12;
+    right: 3.7rem;
+    bottom: calc(.55rem + var(--safe-bottom));
+    left: .55rem;
+    grid-column: auto;
+    grid-row: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .4rem;
+    margin: 0;
+  }
+  .action-stack .ink-button { min-width: 0; min-height: 2.75rem; padding: .35rem .25rem; font-size: .88rem; }
+  .boss-key-button { position: fixed; z-index: 13; right: .55rem; bottom: calc(.55rem + var(--safe-bottom)); }
   .menu-screen { padding-bottom: calc(4rem + var(--safe-bottom)); }
   .creation-screen { padding-bottom: calc(1rem + var(--safe-bottom)); }
-  .jianghu-screen { padding-bottom: calc(8.7rem + var(--safe-bottom)); }
   .battle-screen--complete,
   .recipe-screen,
   .sect-screen,
@@ -502,10 +554,7 @@ button, [role="button"] { min-height: var(--touch-target); touch-action: manipul
   .world-map-screen { padding-bottom: calc(1rem + var(--safe-bottom)); }
   .panel-layer, .dialogue-layer { align-items: end; }
   .dialogue-box, .overlay-panel { width: 100%; max-height: calc(100svh - var(--safe-top) - var(--safe-bottom) - 1rem); }
-  .scene-actions { bottom: calc(5.45rem + var(--safe-bottom)); }
   .skill-dock { bottom: calc(8.9rem + var(--safe-bottom)); }
-  .action-stack { bottom: calc(.55rem + var(--safe-bottom)); }
-  .narrator-toast { bottom: calc(14rem + var(--safe-bottom)); }
   .world-region-card { grid-template-columns: 1fr; }
   .world-region-card button { width: 100%; }
   .location-navigation { width: 100%; }

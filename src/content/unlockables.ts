@@ -2,7 +2,7 @@ import type { UnlockableDefinition } from '../types/unlockable'
 import { OPTIONAL_UNLOCKABLES } from './unlockables-optional'
 
 /**
- * M1 的图鉴目录只收录当前 Demo 已经能触发的条目。
+ * 图鉴目录只收录当前版本已经能触发的条目。
  * 条件、事件和奖励声明在内容层，解锁与派生逻辑留在 systems/unlocks。
  */
 export const CORE_UNLOCKABLES = [

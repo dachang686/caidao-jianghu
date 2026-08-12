@@ -5,7 +5,7 @@ import { Button, Meter } from '../components/game-ui'
 import { useRootGameStore } from '../stores'
 import { audioDirector } from '../systems/audio'
 import { SKILLS } from '../game/data'
-import type { SkillId } from '../game/types'
+import { coreActiveSkills } from '../content/skills'
 
 export function BattleScreen() {
   const player = useRootGameStore((state) => state.player)!
@@ -40,7 +40,8 @@ function Combatant({ name, hp, maxHp, qi, maxQi, side, phase }: { name: string; 
   return <div className={`combatant combatant--${side}`}><div className="combatant-avatar"><img src={side === 'player' ? heroSprite : baiSprite} alt="" /><span>{side === 'enemy' && phase === 2 ? '💢' : '✦'}</span></div><b>{name}</b><small>{side === 'enemy' && phase === 2 ? '认真了三成' : '蓄势待发'}</small><div>生命 <Meter value={hp} max={maxHp} /></div><div>内力 <Meter value={qi} max={maxQi} tone="blue" /></div></div>
 }
 
-function BattleSkill({ skill, cooldown, onUse }: { skill: SkillId; cooldown: number; onUse: () => void }) {
-  const item = SKILLS[skill]
+function BattleSkill({ skill, cooldown, onUse }: { skill: string; cooldown: number; onUse: () => void }) {
+  const item = coreActiveSkills.find((candidate) => String(candidate.id) === skill) ?? SKILLS[skill as keyof typeof SKILLS]
+  if (!item) return null
   return <button className="battle-skill" disabled={cooldown > 0} onClick={onUse}><i>{skill === 'basicSlash' ? '〽' : skill === 'cleaverWhirl' ? '✦' : skill === 'mockery' ? '☄' : '☯'}</i><b>{item.name}</b><small>{cooldown ? `冷却 ${cooldown}` : item.qiCost ? `内力 ${item.qiCost}` : '不耗内力'}</small></button>
 }

@@ -1,12 +1,12 @@
 import { asItemId, asRecipeId, asWorldRegionId } from '../../types/ids'
 import type { SectFacilityDefinition } from '../../types/sect'
 
-const timber = asItemId('material:timber')
-const ironScrap = asItemId('material:iron-scrap')
-const spiritStone = asItemId('material:spirit-stone')
-const herb = asItemId('material:herb')
-const spice = asItemId('material:spice')
-const ink = asItemId('material:ink')
+const timber = asItemId('item:wood')
+const ironScrap = asItemId('item:iron-scrap')
+const spiritStone = asItemId('item:spirit-stone')
+const herb = asItemId('item:herb')
+const spice = asItemId('item:spice')
+const ink = asItemId('item:spirit-stone-powder')
 
 export const sectFacilityDefinitions: readonly SectFacilityDefinition[] = [
   {
@@ -44,9 +44,9 @@ export const sectFacilityDefinitions: readonly SectFacilityDefinition[] = [
     name: '情报堂',
     description: '把听来的风声整理成可行动的区域情报。',
     levels: [
-      { level: 1, requiredChapter: 5, cost: { silver: 70, materials: [{ itemId: ink, count: 2 }] }, grantKey: 'sect:intel:1', effects: [{ type: 'change_stat', stat: 'fame', delta: 1 }], benefits: [{ type: 'commission_quality_bonus', delta: 1 }] },
-      { level: 2, requiredChapter: 5, cost: { silver: 200, materials: [{ itemId: ink, count: 5 }] }, prerequisite: { facilityId: 'intel', level: 1 }, grantKey: 'sect:intel:2', effects: [{ type: 'change_stat', stat: 'fame', delta: 2 }], benefits: [{ type: 'reveal_region', regionId: asWorldRegionId('qinghe-county') }] },
-      { level: 3, requiredChapter: 5, cost: { silver: 450, materials: [{ itemId: ink, count: 8 }, { itemId: spiritStone, count: 2 }] }, prerequisite: { facilityId: 'intel', level: 2 }, grantKey: 'sect:intel:3', effects: [{ type: 'change_stat', stat: 'fame', delta: 4 }], benefits: [{ type: 'commission_quality_bonus', delta: 2 }, { type: 'reveal_region', regionId: asWorldRegionId('black-wind-fort') }] },
+      { level: 1, requiredChapter: 5, cost: { silver: 70, materials: [{ itemId: ink, count: 2 }] }, grantKey: 'sect:intel:1', effects: [{ type: 'change_stat', stat: 'fame', delta: 1 }], benefits: [{ type: 'commission_quality_bonus', delta: 1 }, { type: 'fame_bonus', delta: 1 }] },
+      { level: 2, requiredChapter: 5, cost: { silver: 200, materials: [{ itemId: ink, count: 5 }] }, prerequisite: { facilityId: 'intel', level: 1 }, grantKey: 'sect:intel:2', effects: [{ type: 'change_stat', stat: 'fame', delta: 2 }], benefits: [{ type: 'reveal_region', regionId: asWorldRegionId('qinghe-county') }, { type: 'fame_bonus', delta: 2 }] },
+      { level: 3, requiredChapter: 5, cost: { silver: 450, materials: [{ itemId: ink, count: 8 }, { itemId: spiritStone, count: 2 }] }, prerequisite: { facilityId: 'intel', level: 2 }, grantKey: 'sect:intel:3', effects: [{ type: 'change_stat', stat: 'fame', delta: 4 }], benefits: [{ type: 'commission_quality_bonus', delta: 2 }, { type: 'reveal_region', regionId: asWorldRegionId('black-wind-fort') }, { type: 'fame_bonus', delta: 4 }] },
     ],
   },
 ]

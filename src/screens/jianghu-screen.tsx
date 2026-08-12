@@ -64,10 +64,10 @@ export function JianghuScreen() {
   const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
   const activeDialogue = useRootGameStore((state) => state.activeDialogue)
   const narrator = useRootGameStore((state) => state.narrator)
-  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
   const openCrafting = useRootGameStore((state) => state.openCrafting)
   const openCooking = useRootGameStore((state) => state.openCooking)
   const startChapterTwo = useRootGameStore((state) => state.startChapterTwo)
+  const startBattle = useRootGameStore((state) => state.startBattle)
 
   if (world.currentChapter === 'ch02') return <QingheScreen />
   if (world.currentChapter === 'ch03') return <BlackwindScreen />
@@ -112,13 +112,13 @@ export function JianghuScreen() {
         <div className="village-controls" aria-label="场景移动提示"><span>↑</span><span>←</span><span>→</span><span>↓</span></div>
       </section>
 
-      <div className="scene-actions"><Button className="battle-call" onClick={() => openDialogue('bai')} disabled={!world.oldManMet || world.baiDefeated}>⚔ {world.baiDefeated ? '白大侠服了' : '进入战斗'}</Button>{world.baiDefeated && <Button data-testid="open-ch02" onClick={startChapterTwo}>→ 前往清河县</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
+      <div className="scene-actions"><Button className="battle-call" onClick={() => openDialogue('bai')} disabled={!world.oldManMet || world.baiDefeated}>⚔ {world.baiDefeated ? '白大侠服了' : '进入战斗'}</Button>{!world.baiDefeated && <><Button data-testid="ch01-river-thug" onClick={() => startBattle('ch01:river-thug')} disabled={!world.oldManMet}>⚔ 教训河边醉汉</Button><Button data-testid="ch01-pantry-pickpocket" onClick={() => startBattle('ch01:pantry-pickpocket')} disabled={!world.oldManMet}>⚔ 追回后厨扒手</Button></>}{world.baiDefeated && <Button data-testid="open-ch02" onClick={startChapterTwo}>→ 前往清河县</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
       <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')}>📘 武功</Button><Button onClick={() => setPanel('equipment')}>⚔ 装备</Button></nav>
       <button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
 
       {activeDialogue && <DialogueOverlay />}
-      {narrator && <button className="narrator-toast" onClick={dismissNarrator} aria-label="关闭旁白">{narrator}<small>点此收起</small></button>}
-      <OverlayPanel />
+      {narrator && <aside className="narrator-toast" aria-live="polite">{narrator}</aside>}
+      <ChapterDialogueOverlay /><OverlayPanel />
     </main>
   )
 }
@@ -129,8 +129,8 @@ function QingheScreen() {
   const setPanel = useRootGameStore((state) => state.setPanel)
   const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
   const narrator = useRootGameStore((state) => state.narrator)
-  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
-  const completeInvestigation = useRootGameStore((state) => state.completeChapterTwoInvestigation)
+  const interactWithChapterNpc = useRootGameStore((state) => state.interactWithChapterNpc)
+  const activateChapterHotspot = useRootGameStore((state) => state.activateChapterHotspot)
   const startBattle = useRootGameStore((state) => state.startBattle)
   const openCrafting = useRootGameStore((state) => state.openCrafting)
   const openCooking = useRootGameStore((state) => state.openCooking)
@@ -143,19 +143,19 @@ function QingheScreen() {
         <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div>
       </header>
       <aside className="status-panel paper-panel"><div className="status-person"><div className="portrait">侠</div><div><b>{player.name}</b><span className="rank-badge">清河访客</span><p>等级：{player.level}</p><p>生命：{player.hp}/{player.maxHp}<Meter value={player.hp} max={player.maxHp} /></p><p>内力：{player.qi}/{player.maxQi}<Meter value={player.qi} max={player.maxQi} tone="blue" /></p></div></div><div className="currency-row">🪙 银两：{player.silver}<span>🏆 {player.titles.length}</span></div></aside>
-      <aside className="quest-panel paper-panel"><h2>清河县主线</h2><div className={`quest-row quest-row--${world.ch02MainlineComplete ? 'complete' : 'active'}`}><b>[主线] 百晓榜缺页</b><span>{world.ch02MainlineComplete ? '线索已经对上，准备接受核验' : '调查榜单、茶摊和河边药篮'}</span><em>{world.ch02MainlineComplete ? '✓' : '0/1'}</em></div></aside>
+      <aside className="quest-panel paper-panel"><ChapterQuestProgress chapter="ch02" title="百晓榜缺页" complete={world.ch02MainlineComplete} fallbackTotal={4} /></aside>
       <aside className="rumor-panel paper-panel"><h2>县城传闻</h2><p>{world.ch02BangsiDefeated ? '榜下捕快已经盖章：这位菜刀客暂时可以上榜。' : '榜下捕快正在街口等人，把每一条线索都要盖章。'}</p></aside>
       <section className="village-stage" aria-label="清河县百晓榜街市">
         <div className="inn-building"><span>清河县街市</span><small>百晓榜告示台</small></div>
-        <button className="npc npc--elder" data-hotspot="qinghe-board" onClick={completeInvestigation}><i><span aria-hidden="true">榜</span></i><b>百晓榜告示台</b><q>{world.ch02MainlineComplete ? '线索已齐，去找榜下捕快。' : '缺页一张，谁看谁补。'}</q></button>
+        <button className="npc npc--elder" data-hotspot="qinghe-board" onClick={() => activateChapterHotspot('ch02:ranking-board')}><i><span aria-hidden="true">榜</span></i><b>百晓榜告示台</b><q>{world.ch02MainlineComplete ? '线索已齐，去找榜下捕快。' : '缺页一张，谁看谁补。'}</q></button>
         <button className="npc npc--bai" data-hotspot="qinghe-bangsi" onClick={() => startBattle('ch02')} disabled={!world.ch02BossReady || world.ch02BangsiDefeated}><i><img src={bangsiSprite} alt="" /></i><b>榜下捕快</b><q>{world.ch02BangsiDefeated ? '已核验，暂不复查。' : world.ch02BossReady ? '出示线索，接受核验！' : '先把线索整理齐。'}</q></button>
         <div className="village-controls" aria-label="街市移动提示"><span>↑</span><span>←</span><span>→</span><span>↓</span></div>
       </section>
-      <div className="scene-actions"><Button className="battle-call" data-testid="ch02-investigate" onClick={completeInvestigation} disabled={world.ch02MainlineComplete}>🔎 调查百晓榜</Button><Button data-testid="ch02-battle-call" onClick={() => startBattle('ch02')} disabled={!world.ch02BossReady || world.ch02BangsiDefeated}>⚔ {world.ch02BangsiDefeated ? '榜下捕快服了' : '挑战榜下捕快'}</Button>{world.ch02BangsiDefeated && <Button data-testid="open-ch03" onClick={startChapterThree}>→ 前往黑风寨</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
+      <div className="scene-actions"><ChapterDialogueButton chapter="ch02" /><Button data-testid="ch02-step-registrar" onClick={() => interactWithChapterNpc('qinghe-registrar')}>💬 向沈青禾核对榜单</Button><Button data-testid="ch02-step-board" onClick={() => activateChapterHotspot('ch02:ranking-board')}>🔎 调查百晓榜</Button><Button data-testid="ch02-step-boatwoman" onClick={() => interactWithChapterNpc('qinghe-boatwoman')}>💬 向柳婶询问河岸路线</Button><Button data-testid="ch02-step-tea" onClick={() => interactWithChapterNpc('qinghe-tea-keeper')}>💬 向陆掌柜确认口供</Button><Button data-testid="ch02-battle-call" onClick={() => startBattle('ch02')} disabled={!world.ch02BossReady || world.ch02BangsiDefeated}>⚔ {world.ch02BangsiDefeated ? '榜下捕快服了' : '挑战榜下捕快'}</Button>{!world.ch02BangsiDefeated && <><Button data-testid="ch02-ranking-scribe" onClick={() => startBattle('ch02:ranking-scribe')}>⚔ 赶走榜纸抄手</Button><Button data-testid="ch02-bridge-skulker" onClick={() => startBattle('ch02:bridge-skulker')}>⚔ 拦下桥边扒手</Button></>}{world.ch02BangsiDefeated && <Button data-testid="open-ch03" onClick={startChapterThree}>→ 前往黑风寨</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
       <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')}>📘 武功</Button><Button onClick={() => setPanel('equipment')} disabled={!world.systemUnlocks.equipment}>⚔ 装备</Button></nav>
       <button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
-      {narrator && <button className="narrator-toast" onClick={dismissNarrator} aria-label="关闭旁白">{narrator}<small>点此收起</small></button>}
-      <OverlayPanel />
+      {narrator && <aside className="narrator-toast" aria-live="polite">{narrator}</aside>}
+      <ChapterDialogueOverlay /><OverlayPanel />
     </main>
   )
 }
@@ -166,8 +166,9 @@ function BlackwindScreen() {
   const setPanel = useRootGameStore((state) => state.setPanel)
   const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
   const narrator = useRootGameStore((state) => state.narrator)
-  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
-  const completeInvestigation = useRootGameStore((state) => state.completeChapterThreeInvestigation)
+  const interactWithChapterNpc = useRootGameStore((state) => state.interactWithChapterNpc)
+  const activateChapterHotspot = useRootGameStore((state) => state.activateChapterHotspot)
+  const collectChapterNode = useRootGameStore((state) => state.collectChapterNode)
   const startBattle = useRootGameStore((state) => state.startBattle)
   const openCrafting = useRootGameStore((state) => state.openCrafting)
   const openCooking = useRootGameStore((state) => state.openCooking)
@@ -180,22 +181,22 @@ function BlackwindScreen() {
         <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div>
       </header>
       <aside className="status-panel paper-panel"><div className="status-person"><div className="portrait">侠</div><div><b>{player.name}</b><span className="rank-badge">黑风来客</span><p>等级：{player.level}</p><p>生命：{player.hp}/{player.maxHp}<Meter value={player.hp} max={player.maxHp} /></p><p>内力：{player.qi}/{player.maxQi}<Meter value={player.qi} max={player.maxQi} tone="blue" /></p></div></div><div className="currency-row">🪙 银两：{player.silver}<span>🏆 {player.titles.length}</span></div></aside>
-      <aside className="quest-panel paper-panel"><h2>黑风寨主线</h2><div className={`quest-row quest-row--${world.ch03MainlineComplete ? 'complete' : 'active'}`}><b>[主线] 山寨也要冲榜</b><span>{world.ch03MainlineComplete ? '账榜、百味刀谱与传令已经对齐' : '调查账榜、灶房和瞭望台'}</span><em>{world.ch03MainlineComplete ? '✓' : '0/1'}</em></div></aside>
+      <aside className="quest-panel paper-panel"><ChapterQuestProgress chapter="ch03" title="山寨也要冲榜" complete={world.ch03MainlineComplete} fallbackTotal={4} /></aside>
       <aside className="rumor-panel paper-panel"><h2>山寨传闻</h2><p>{world.ch03BlackwindLeaderDefeated ? '黑风寨主宣布：败北归山风，技能树与烹饪归你。' : '山寨空旗正在冲榜，黑风寨主等着最后一声鼓。'}</p></aside>
       <section className="village-stage" aria-label="黑风寨山寨门">
         <div className="inn-building"><span>黑风寨</span><small>山寨账榜</small></div>
-        <button className="npc npc--elder" data-hotspot="blackwind-ledger" onClick={completeInvestigation}><i><img src={blackwindLedgerKeeperSprite} alt="" /></i><b>曹掌柜</b><q>{world.ch03MainlineComplete ? '账榜已齐，去找寨主验收。' : '先登记，再谈冲榜。'}</q></button>
-        <button className="npc npc--aunt" data-hotspot="blackwind-cook" onClick={completeInvestigation}><i><img src={blackwindCookSprite} alt="" /></i><b>胡大勺</b><q>{world.ch03MainlineComplete ? '火候和前置都齐了。' : '山椒先别自己跳进锅。'}</q></button>
-        <button className="npc npc--bai" data-hotspot="blackwind-runner" onClick={completeInvestigation}><i><img src={blackwindRunnerSprite} alt="" /></i><b>小顺</b><q>{world.ch03MainlineComplete ? '最后一声鼓，寨主听见了。' : '三条路，我都跑过。'}</q></button>
+        <button className="npc npc--elder" data-hotspot="blackwind-ledger" onClick={() => interactWithChapterNpc('blackwind-ledger-keeper')}><i><img src={blackwindLedgerKeeperSprite} alt="" /></i><b>曹掌柜</b><q>{world.ch03MainlineComplete ? '账榜已齐，去找寨主验收。' : '先登记，再谈冲榜。'}</q></button>
+        <button className="npc npc--aunt" data-hotspot="blackwind-cook" onClick={() => interactWithChapterNpc('blackwind-cook')}><i><img src={blackwindCookSprite} alt="" /></i><b>胡大勺</b><q>{world.ch03MainlineComplete ? '火候和前置都齐了。' : '山椒先别自己跳进锅。'}</q></button>
+        <button className="npc npc--bai" data-hotspot="blackwind-runner" onClick={() => interactWithChapterNpc('blackwind-runner')}><i><img src={blackwindRunnerSprite} alt="" /></i><b>小顺</b><q>{world.ch03MainlineComplete ? '最后一声鼓，寨主听见了。' : '三条路，我都跑过。'}</q></button>
         <button className="npc npc--hero" data-hotspot="blackwind-leader" onClick={() => startBattle('ch03')} disabled={!world.ch03BossReady || world.ch03BlackwindLeaderDefeated}><i><img src={blackwindLeaderSprite} alt="" /></i><b>黑风寨主</b><q>{world.ch03BlackwindLeaderDefeated ? '空旗收好，败北有效。' : world.ch03BossReady ? '来验收你的冲榜方案！' : '先把账榜和刀谱对齐。'}</q></button>
         <div className="village-controls" aria-label="山寨移动提示"><span>↑</span><span>←</span><span>→</span><span>↓</span></div>
       </section>
-      <div className="scene-actions"><Button className="battle-call" data-testid="ch03-investigate" onClick={completeInvestigation} disabled={world.ch03MainlineComplete}>🔎 调查黑风寨账榜</Button><Button data-testid="ch03-battle-call" onClick={() => startBattle('ch03')} disabled={!world.ch03BossReady || world.ch03BlackwindLeaderDefeated}>⚔ {world.ch03BlackwindLeaderDefeated ? '黑风寨主服了' : '挑战黑风寨主'}</Button>{world.ch03BlackwindLeaderDefeated && <Button data-testid="open-ch04" onClick={startChapterFour}>→ 前往青云山</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
+      <div className="scene-actions"><ChapterDialogueButton chapter="ch03" /><Button data-testid="ch03-step-ledger" onClick={() => interactWithChapterNpc('blackwind-ledger-keeper')}>💬 向曹掌柜登记账榜</Button><Button data-testid="ch03-step-board" onClick={() => activateChapterHotspot('ch03:gate-ledger-board')}>🔎 调查山寨账榜</Button><Button data-testid="ch03-step-cook" onClick={() => interactWithChapterNpc('blackwind-cook')}>💬 向胡大勺确认灶房路线</Button><Button data-testid="ch03-step-runner" onClick={() => interactWithChapterNpc('blackwind-runner')}>💬 向小顺核对传令</Button><Button data-testid="ch03-side-pepper" onClick={() => collectChapterNode('ch03:mountain-pepper')}>🌶 采集黑风山椒</Button><Button data-testid="ch03-battle-call" onClick={() => startBattle('ch03')} disabled={!world.ch03BossReady || world.ch03BlackwindLeaderDefeated}>⚔ {world.ch03BlackwindLeaderDefeated ? '黑风寨主服了' : '挑战黑风寨主'}</Button>{!world.ch03BlackwindLeaderDefeated && <><Button data-testid="ch03-fortress-scout" onClick={() => startBattle('ch03:fortress-scout')}>⚔ 躲开山寨巡哨</Button><Button data-testid="ch03-kitchen-raider" onClick={() => startBattle('ch03:kitchen-raider')}>⚔ 赶走抢锅客</Button></>}{world.ch03BlackwindLeaderDefeated && <Button data-testid="open-ch04" onClick={startChapterFour}>→ 前往青云山</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
       {world.ch03BlackwindLeaderDefeated && <div className="paper-panel" data-testid="ch03-unlocks"><strong>技能树、烹饪已解锁</strong><span>{world.nextChapterUnlocked ? '下一章与结局资格已开放。' : '自动存档点已写入。'}</span></div>}
       <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')} disabled={!world.systemUnlocks.skillTree}>📘 武功</Button><Button onClick={() => setPanel('equipment')} disabled={!world.systemUnlocks.equipment}>⚔ 装备</Button></nav>
       <button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
-      {narrator && <button className="narrator-toast" onClick={dismissNarrator} aria-label="关闭旁白">{narrator}<small>点此收起</small></button>}
-      <OverlayPanel />
+      {narrator && <aside className="narrator-toast" aria-live="polite">{narrator}</aside>}
+      <ChapterDialogueOverlay /><OverlayPanel />
     </main>
   )
 }
@@ -206,8 +207,9 @@ function QingyunScreen() {
   const setPanel = useRootGameStore((state) => state.setPanel)
   const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
   const narrator = useRootGameStore((state) => state.narrator)
-  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
-  const completeInvestigation = useRootGameStore((state) => state.completeChapterFourInvestigation)
+  const interactWithChapterNpc = useRootGameStore((state) => state.interactWithChapterNpc)
+  const activateChapterHotspot = useRootGameStore((state) => state.activateChapterHotspot)
+  const collectChapterNode = useRootGameStore((state) => state.collectChapterNode)
   const startBattle = useRootGameStore((state) => state.startBattle)
   const startChapterFive = useRootGameStore((state) => state.startChapterFive)
   const openCrafting = useRootGameStore((state) => state.openCrafting)
@@ -220,32 +222,32 @@ function QingyunScreen() {
         <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div>
       </header>
       <aside className="status-panel paper-panel"><div className="status-person"><div className="portrait">侠</div><div><b>{player.name}</b><span className="rank-badge">青云访客</span><p>等级：{player.level}</p><p>生命：{player.hp}/{player.maxHp}<Meter value={player.hp} max={player.maxHp} /></p><p>内力：{player.qi}/{player.maxQi}<Meter value={player.qi} max={player.maxQi} tone="blue" /></p></div></div><div className="currency-row">🪙 银两：{player.silver}<span>🏆 {player.titles.length}</span></div></aside>
-      <aside className="quest-panel paper-panel"><h2>青云山主线</h2><div className={`quest-row quest-row--${world.ch04MainlineComplete ? 'complete' : 'active'}`}><b>[主线] 门规也要讲证据</b><span>{world.ch04MainlineComplete ? '名册、药圃与听云钟已经对齐' : '调查山门、云台药圃和听云台'}</span><em>{world.ch04MainlineComplete ? '✓' : '0/1'}</em></div></aside>
+      <aside className="quest-panel paper-panel"><ChapterQuestProgress chapter="ch04" title="门规也要讲证据" complete={world.ch04MainlineComplete} fallbackTotal={4} /></aside>
       <aside className="rumor-panel paper-panel"><h2>青云传闻</h2><p>{world.ch04QingyunMasterDefeated ? '青云掌门承认：门面验收通过，规则终于写短了。' : '青云山的门规有三尺厚，掌门正等人来补最后一页。'}</p></aside>
       <section className="village-stage" aria-label="青云山门石阶">
         <div className="inn-building"><span>青云山门</span><small>门规验收处</small></div>
-        <button className="npc npc--elder" data-hotspot="qingyun-disciple" onClick={completeInvestigation}><i><img src={qingyunDiscipleSprite} alt="" /></i><b>林小门</b><q>{world.ch04MainlineComplete ? '名册已齐，去找掌门验收。' : '先登记，再谈上山。'}</q></button>
-        <button className="npc npc--aunt" data-hotspot="qingyun-herbalist" onClick={completeInvestigation}><i><img src={qingyunHerbalistSprite} alt="" /></i><b>苏青禾</b><q>{world.ch04MainlineComplete ? '药圃也盖章了。' : '青蘅草别拿去当门簪。'}</q></button>
-        <button className="npc npc--bai" data-hotspot="qingyun-bell-keeper" onClick={completeInvestigation}><i><img src={qingyunBellKeeperSprite} alt="" /></i><b>钟小响</b><q>{world.ch04MainlineComplete ? '回声已经作证。' : '钟响三次，门规才算听见。'}</q></button>
+        <button className="npc npc--elder" data-hotspot="qingyun-disciple" onClick={() => interactWithChapterNpc('qingyun-gate-disciple')}><i><img src={qingyunDiscipleSprite} alt="" /></i><b>林小门</b><q>{world.ch04MainlineComplete ? '名册已齐，去找掌门验收。' : '先登记，再谈上山。'}</q></button>
+        <button className="npc npc--aunt" data-hotspot="qingyun-herbalist" onClick={() => interactWithChapterNpc('qingyun-herbalist')}><i><img src={qingyunHerbalistSprite} alt="" /></i><b>苏青禾</b><q>{world.ch04MainlineComplete ? '药圃也盖章了。' : '青蘅草别拿去当门簪。'}</q></button>
+        <button className="npc npc--bai" data-hotspot="qingyun-bell-keeper" onClick={() => interactWithChapterNpc('qingyun-bell-keeper')}><i><img src={qingyunBellKeeperSprite} alt="" /></i><b>钟小响</b><q>{world.ch04MainlineComplete ? '回声已经作证。' : '钟响三次，门规才算听见。'}</q></button>
         <button className="npc npc--hero" data-hotspot="qingyun-master" onClick={() => startBattle('ch04')} disabled={!world.ch04BossReady || world.ch04QingyunMasterDefeated}><i><img src={qingyunMasterSprite} alt="" /></i><b>青云掌门</b><q>{world.ch04QingyunMasterDefeated ? '名帖留下，规则写短。' : world.ch04BossReady ? '来验收最后一条门规！' : '先把山门证据对齐。'}</q></button>
         <div className="village-controls" aria-label="山门移动提示"><span>↑</span><span>←</span><span>→</span><span>↓</span></div>
       </section>
-      <div className="scene-actions"><Button className="battle-call" data-testid="ch04-investigate" onClick={completeInvestigation} disabled={world.ch04MainlineComplete}>🔎 调查青云山门规</Button><Button data-testid="ch04-battle-call" onClick={() => startBattle('ch04')} disabled={!world.ch04BossReady || world.ch04QingyunMasterDefeated}>⚔ {world.ch04QingyunMasterDefeated ? '青云掌门服了' : '挑战青云掌门'}</Button>{world.ch04QingyunMasterDefeated && <Button data-testid="open-ch05" onClick={startChapterFive}>→ 前往西域驿路</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
+      <div className="scene-actions"><ChapterDialogueButton chapter="ch04" /><Button data-testid="ch04-step-disciple" onClick={() => interactWithChapterNpc('qingyun-gate-disciple')}>💬 向林小门登记名号</Button><Button data-testid="ch04-step-inscription" onClick={() => activateChapterHotspot('ch04:gate-inscription')}>🔎 调查山门石刻</Button><Button data-testid="ch04-step-herbalist" onClick={() => interactWithChapterNpc('qingyun-herbalist')}>💬 向苏青禾确认药圃路线</Button><Button data-testid="ch04-step-bell" onClick={() => interactWithChapterNpc('qingyun-bell-keeper')}>💬 向钟小响核对传令</Button><Button data-testid="ch04-side-herb" onClick={() => collectChapterNode('ch04:cloud-herb')}>🌿 采集云台青蘅</Button><Button data-testid="ch04-battle-call" onClick={() => startBattle('ch04')} disabled={!world.ch04BossReady || world.ch04QingyunMasterDefeated}>⚔ {world.ch04QingyunMasterDefeated ? '青云掌门服了' : '挑战青云掌门'}</Button>{!world.ch04QingyunMasterDefeated && <><Button data-testid="ch04-gate-disciple" onClick={() => startBattle('ch04:gate-disciple')}>⚔ 通过山门复核</Button><Button data-testid="ch04-mist-sword-disciple" onClick={() => startBattle('ch04:mist-sword-disciple')}>⚔ 躲开雾阶剑童</Button></>}{world.ch04QingyunMasterDefeated && <Button data-testid="open-ch05" onClick={startChapterFive}>→ 前往西域驿路</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
       {world.ch04QingyunMasterDefeated && <div className="paper-panel" data-testid="ch04-unlocks"><strong>意图进阶、装备强化已解锁</strong><span>{world.nextChapterUnlocked ? '下一章与结局资格已开放。' : '自动存档点已写入。'}</span></div>}
       <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')} disabled={!world.systemUnlocks.skillTree}>📘 武功</Button><Button onClick={() => setPanel('equipment')} disabled={!world.systemUnlocks.equipmentStrengthening}>⚔ 装备强化</Button></nav>
       <button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
-      {narrator && <button className="narrator-toast" onClick={dismissNarrator} aria-label="关闭旁白">{narrator}<small>点此收起</small></button>}
-      <OverlayPanel />
+      {narrator && <aside className="narrator-toast" aria-live="polite">{narrator}</aside>}
+      <ChapterDialogueOverlay /><OverlayPanel />
     </main>
   )
 }
 
 type LaterChapterId = 'ch05' | 'ch06' | 'ch07' | 'ch08'
 const LATER_CHAPTER_CONFIG = {
-  ch05: { title: '西域驿路', subtitle: '第五章 · 刀谱物流之谜', rank: '驿路来客', art: westernRelayBackground, npcNames: ['洛小铃', '白沙姑', '驼背老关'], npcSprites: [westernCourierSprite, westernTeaKeeperSprite, westernGuardSprite], bossName: '驿路双煞', bossSprite: twinBanditsSprite, investigation: '调查货单、补给路线与封条', unlocks: '自建门派、Tick 派遣', mainlineKey: 'ch05MainlineComplete', readyKey: 'ch05BossReady', defeatedKey: 'ch05TwinBanditsDefeated', startBattleChapter: 'ch05' },
-  ch06: { title: '东海镇', subtitle: '第六章 · 留影石带货乱象', rank: '东海访客', art: donghaiTownBackground, npcNames: ['海棠', '贝小满', '潮生'], npcSprites: [donghaiBoatwomanSprite, shellVendorSprite, tideBellKeeperSprite], bossName: '海潮帮主', bossSprite: tideMasterSprite, investigation: '调查船单、贝壳市场与潮汐记录', unlocks: '委托进阶、门人事件', mainlineKey: 'ch06MainlineComplete', readyKey: 'ch06BossReady', defeatedKey: 'ch06TideMasterDefeated', startBattleChapter: 'ch06' },
-  ch07: { title: '京城', subtitle: '第七章 · 百晓榜幕后交易', rank: '京城查榜客', art: capitalRankingBackground, npcNames: ['小吏阿文', '冯榜', '阿墨'], npcSprites: [capitalClerkSprite, capitalRegistrarSprite, capitalStorytellerSprite], bossName: '榜司督主', bossSprite: rankingGovernorSprite, investigation: '调查入场牌、交易账与原始墨迹', unlocks: '结局路线锁定', mainlineKey: 'ch07MainlineComplete', readyKey: 'ch07BossReady', defeatedKey: 'ch07RankingGovernorDefeated', startBattleChapter: 'ch07' },
-  ch08: { title: '武林大会', subtitle: '第八章 · 刀谱与江湖定义权', rank: '大会记录员', art: martialConventionBackground, npcNames: ['顾门牌', '叶青锋', '面摊小周', '司空秤'], npcSprites: [conventionUsherSprite, sectRepresentativeSprite, noodleVendorSprite, conventionJudgeSprite], bossName: '百晓榜主', bossSprite: rankingMasterSprite, investigation: '调查登记、评判台、门派说法与厨房秩序', unlocks: '四结局、通关后继续', mainlineKey: 'ch08MainlineComplete', readyKey: 'ch08BossReady', defeatedKey: 'ch08RankingMasterDefeated', startBattleChapter: 'ch08' },
+  ch05: { title: '西域驿路', subtitle: '第五章 · 刀谱物流之谜', rank: '驿路来客', art: westernRelayBackground, npcNames: ['洛小铃', '白沙姑', '驼背老关'], npcIds: ['western-courier', 'western-tea-keeper', 'western-guard'], npcSprites: [westernCourierSprite, westernTeaKeeperSprite, westernGuardSprite], bossName: '驿路双煞', bossSprite: twinBanditsSprite, investigation: '调查货单、补给路线与封条', unlocks: '自建门派、Tick 派遣', mainlineKey: 'ch05MainlineComplete', readyKey: 'ch05BossReady', defeatedKey: 'ch05TwinBanditsDefeated', startBattleChapter: 'ch05', normalBattles: [{ id: 'ch05:road-raider', label: '驱走车辙劫匪' }, { id: 'ch05:masked-raider', label: '拦下蒙面驿盗' }], steps: [{ kind: 'npc', id: 'western-courier', label: '向洛小铃核对货单' }, { kind: 'hotspot', id: 'ch05:station:manifest', label: '调查驿站货单' }, { kind: 'npc', id: 'western-guard', label: '向驼背老关核对封条' }, { kind: 'gathering', id: 'ch05:sand-herb', label: '采集西域沙参' }] },
+  ch06: { title: '东海镇', subtitle: '第六章 · 留影石带货乱象', rank: '东海访客', art: donghaiTownBackground, npcNames: ['海棠', '贝小满', '潮生'], npcIds: ['donghai-boatwoman', 'donghai-shell-vendor', 'donghai-tide-bell-keeper'], npcSprites: [donghaiBoatwomanSprite, shellVendorSprite, tideBellKeeperSprite], bossName: '海潮帮主', bossSprite: tideMasterSprite, investigation: '调查船单、贝壳市场与潮汐记录', unlocks: '委托进阶、门人事件', mainlineKey: 'ch06MainlineComplete', readyKey: 'ch06BossReady', defeatedKey: 'ch06TideMasterDefeated', startBattleChapter: 'ch06', normalBattles: [{ id: 'ch06:dock-smuggler', label: '拦住码头私运客' }, { id: 'ch06:hook-raider', label: '避开钩浪劫客' }], steps: [{ kind: 'npc', id: 'donghai-boatwoman', label: '向海棠核对船单' }, { kind: 'hotspot', id: 'ch06:market:shells', label: '调查贝壳市场' }, { kind: 'gathering', id: 'ch06:sea-salt', label: '采集东海潮盐' }] },
+  ch07: { title: '京城', subtitle: '第七章 · 百晓榜幕后交易', rank: '京城查榜客', art: capitalRankingBackground, npcNames: ['小吏阿文', '冯榜', '阿墨'], npcIds: ['capital-clerk', 'capital-registrar', 'capital-storyteller'], npcSprites: [capitalClerkSprite, capitalRegistrarSprite, capitalStorytellerSprite], bossName: '榜司督主', bossSprite: rankingGovernorSprite, investigation: '调查入场牌、交易账与原始墨迹', unlocks: '结局路线锁定', mainlineKey: 'ch07MainlineComplete', readyKey: 'ch07BossReady', defeatedKey: 'ch07RankingGovernorDefeated', startBattleChapter: 'ch07', normalBattles: [{ id: 'ch07:archive-guard', label: '通过档案守门人' }, { id: 'ch07:ranking-enforcer', label: '避开榜司执行客' }], steps: [{ kind: 'npc', id: 'capital-clerk', label: '向小吏阿文核对入场牌' }, { kind: 'hotspot', id: 'ch07:office:ledger', label: '调查榜司账册' }, { kind: 'gathering', id: 'ch07:capital-ink', label: '收集档案房余墨' }] },
+  ch08: { title: '武林大会', subtitle: '第八章 · 刀谱与江湖定义权', rank: '大会记录员', art: martialConventionBackground, npcNames: ['顾门牌', '叶青锋', '面摊小周', '司空秤'], npcIds: ['convention-usher', 'convention-sect-representative', 'convention-noodle-vendor', 'convention-judge'], npcSprites: [conventionUsherSprite, sectRepresentativeSprite, noodleVendorSprite, conventionJudgeSprite], bossName: '百晓榜主', bossSprite: rankingMasterSprite, investigation: '调查登记、评判台、门派说法与厨房秩序', unlocks: '四结局、通关后继续', mainlineKey: 'ch08MainlineComplete', readyKey: 'ch08BossReady', defeatedKey: 'ch08RankingMasterDefeated', startBattleChapter: 'ch08', normalBattles: [{ id: 'ch08:rival-martialist', label: '应战争榜武人' }, { id: 'ch08:convention-enforcer', label: '通过会场执事复核' }], steps: [{ kind: 'npc', id: 'convention-usher', label: '向顾门牌登记身份' }, { kind: 'hotspot', id: 'ch08:stage:arena', label: '调查武林大会评判台' }, { kind: 'gathering', id: 'ch08:convention-pepper', label: '采集会场椒香' }] },
 } as const
 
 function LaterChapterScreen({ chapter }: { chapter: LaterChapterId }) {
@@ -254,34 +256,57 @@ function LaterChapterScreen({ chapter }: { chapter: LaterChapterId }) {
   const setPanel = useRootGameStore((state) => state.setPanel)
   const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
   const narrator = useRootGameStore((state) => state.narrator)
-  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
   const startBattle = useRootGameStore((state) => state.startBattle)
-  const completeFive = useRootGameStore((state) => state.completeChapterFiveInvestigation)
-  const completeSix = useRootGameStore((state) => state.completeChapterSixInvestigation)
-  const completeSeven = useRootGameStore((state) => state.completeChapterSevenInvestigation)
-  const completeEight = useRootGameStore((state) => state.completeChapterEightInvestigation)
+  const interactWithChapterNpc = useRootGameStore((state) => state.interactWithChapterNpc)
+  const activateChapterHotspot = useRootGameStore((state) => state.activateChapterHotspot)
+  const collectChapterNode = useRootGameStore((state) => state.collectChapterNode)
   const startSix = useRootGameStore((state) => state.startChapterSix)
   const startSeven = useRootGameStore((state) => state.startChapterSeven)
   const startEight = useRootGameStore((state) => state.startChapterEight)
+  const setScreen = useRootGameStore((state) => state.setScreen)
   const config = LATER_CHAPTER_CONFIG[chapter]
   const mainlineComplete = world[config.mainlineKey]
   const ready = world[config.readyKey]
   const defeated = world[config.defeatedKey]
-  const completeInvestigation = chapter === 'ch05' ? completeFive : chapter === 'ch06' ? completeSix : chapter === 'ch07' ? completeSeven : completeEight
   const openNext = chapter === 'ch05' ? startSix : chapter === 'ch06' ? startSeven : chapter === 'ch07' ? startEight : undefined
   return (
     <main className={`jianghu-screen scenic-surface later-chapter-screen later-${chapter}`} style={{ '--village-art': `url(${config.art})` } as CSSProperties}>
       <header className="jianghu-header"><div className="game-mark"><span>菜刀</span>闯江湖<small>{config.subtitle}</small></div><div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div></header>
       <aside className="status-panel paper-panel"><div className="status-person"><div className="portrait">侠</div><div><b>{player.name}</b><span className="rank-badge">{config.rank}</span><p>等级：{player.level}</p><p>生命：{player.hp}/{player.maxHp}<Meter value={player.hp} max={player.maxHp} /></p><p>内力：{player.qi}/{player.maxQi}<Meter value={player.qi} max={player.maxQi} tone="blue" /></p></div></div><div className="currency-row">🪙 银两：{player.silver}<span>🏆 {player.titles.length}</span></div></aside>
-      <aside className="quest-panel paper-panel"><h2>{config.title}主线</h2><div className={`quest-row quest-row--${mainlineComplete ? 'complete' : 'active'}`}><b>[主线] {config.subtitle.replace(/^第[五六七八]章 · /, '')}</b><span>{mainlineComplete ? '证据已经对齐，准备接受 Boss 验收' : config.investigation}</span><em>{mainlineComplete ? '✓' : '0/1'}</em></div></aside>
+      <aside className="quest-panel paper-panel"><ChapterQuestProgress chapter={chapter} title={config.subtitle.replace(/^第[五六七八]章 · /, '')} complete={mainlineComplete} fallbackTotal={config.steps.length} /></aside>
       <aside className="rumor-panel paper-panel"><h2>章节传闻</h2><p>{defeated ? `${config.bossName}已经承认：${config.unlocks}可以正式落地。` : `${config.bossName}正在等你把最后一条证据写进刀谱。`}</p></aside>
-      <section className="village-stage later-chapter-stage" aria-label={`${config.title}场景`}><div className="inn-building"><span>{config.title}</span><small>{config.investigation}</small></div>{config.npcNames.map((name, index) => <button className={`npc npc--${index === 0 ? 'elder' : index === 1 ? 'aunt' : 'bai'}`} key={name} data-hotspot={`${chapter}-${index}`} onClick={completeInvestigation}><i><img src={config.npcSprites[index]} alt="" /></i><b>{name}</b><q>{mainlineComplete ? '证据已齐，去找 Boss 验收。' : '这条线索还需要你的菜刀。'}</q></button>)}<button className="npc npc--hero later-boss" data-hotspot={`${chapter}-boss`} onClick={() => startBattle(config.startBattleChapter)} disabled={!ready || defeated}><i><img src={config.bossSprite} alt="" /></i><b>{config.bossName}</b><q>{defeated ? '验收完毕，继续写下一页。' : ready ? '来公开验收最后一条规则！' : '先把章节证据对齐。'}</q></button></section>
-      <div className="scene-actions"><Button className="battle-call" data-testid={`${chapter}-investigate`} onClick={completeInvestigation} disabled={mainlineComplete}>🔎 {config.investigation}</Button><Button data-testid={`${chapter}-battle-call`} onClick={() => startBattle(config.startBattleChapter)} disabled={!ready || defeated}>⚔ {defeated ? `${config.bossName}服了` : `挑战${config.bossName}`}</Button>{defeated && openNext && <Button data-testid={`open-${chapter === 'ch05' ? 'ch06' : chapter === 'ch06' ? 'ch07' : 'ch08'}`} onClick={openNext}>→ 前往下一章</Button>}</div>
+      <section className="village-stage later-chapter-stage" aria-label={`${config.title}场景`}><div className="inn-building"><span>{config.title}</span><small>{config.investigation}</small></div>{config.npcNames.map((name, index) => <button className={`npc npc--${index === 0 ? 'elder' : index === 1 ? 'aunt' : 'bai'}`} key={name} data-hotspot={`${chapter}-${index}`} onClick={() => interactWithChapterNpc(config.npcIds[index])}><i><img src={config.npcSprites[index]} alt="" /></i><b>{name}</b><q>{mainlineComplete ? '证据已齐，去找 Boss 验收。' : '这条线索还需要你的菜刀。'}</q></button>)}<button className="npc npc--hero later-boss" data-hotspot={`${chapter}-boss`} onClick={() => startBattle(config.startBattleChapter)} disabled={!ready || defeated}><i><img src={config.bossSprite} alt="" /></i><b>{config.bossName}</b><q>{defeated ? '验收完毕，继续写下一页。' : ready ? '来公开验收最后一条规则！' : '先把章节证据对齐。'}</q></button></section>
+      <div className="scene-actions"><ChapterDialogueButton chapter={chapter} />{config.steps.map((step) => <Button key={step.id} data-testid={`${chapter}-step-${step.id}`} onClick={() => { if (step.kind === 'npc') interactWithChapterNpc(step.id); else if (step.kind === 'hotspot') activateChapterHotspot(step.id); else collectChapterNode(step.id) }}>{step.kind === 'npc' ? '💬' : step.kind === 'hotspot' ? '🔎' : '🧺'} {step.label}</Button>)}<Button data-testid={`${chapter}-battle-call`} onClick={() => startBattle(config.startBattleChapter)} disabled={!ready || defeated}>⚔ {defeated ? `${config.bossName}服了` : `挑战${config.bossName}`}</Button>{!defeated && config.normalBattles.map((normal) => <Button key={normal.id} data-testid={normal.id} onClick={() => startBattle(normal.id)}>⚔ {normal.label}</Button>)}{defeated && openNext && <Button data-testid={`open-${chapter === 'ch05' ? 'ch06' : chapter === 'ch06' ? 'ch07' : 'ch08'}`} onClick={openNext}>→ 前往下一章</Button>}</div>
       {defeated && <div className="paper-panel" data-testid={`${chapter}-unlocks`}><strong>{config.unlocks}已解锁</strong><span>{world.nextChapterUnlocked ? '自动存档点已写入，下一章入口开放。' : '自动存档点已写入。'}</span></div>}
-      <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')} disabled={!world.systemUnlocks.skillTree}>📘 武功</Button><Button onClick={() => setPanel('equipment')} disabled={!world.systemUnlocks.equipmentStrengthening}>⚔ 装备强化</Button></nav><button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
-      {narrator && <button className="narrator-toast" onClick={dismissNarrator} aria-label="关闭旁白">{narrator}<small>点此收起</small></button>}<OverlayPanel />
+      <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')} disabled={!world.systemUnlocks.skillTree}>📘 武功</Button><Button onClick={() => setPanel('equipment')} disabled={!world.systemUnlocks.equipmentStrengthening}>⚔ 装备强化</Button><Button data-testid="open-sect" onClick={() => setScreen('sect')} disabled={!world.systemUnlocks.sectCreation}>🏯 门派</Button></nav><button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
+      {narrator && <aside className="narrator-toast" aria-live="polite">{narrator}</aside>}<ChapterDialogueOverlay /><OverlayPanel />
     </main>
   )
+}
+
+function ChapterDialogueButton({ chapter }: { chapter: 'ch02' | 'ch03' | 'ch04' | 'ch05' | 'ch06' | 'ch07' | 'ch08' }) {
+  const openChapterDialogue = useRootGameStore((state) => state.openChapterDialogue)
+  return <Button data-testid={`${chapter}-dialogue`} onClick={openChapterDialogue}>💬 翻阅章节对白</Button>
+}
+
+function ChapterDialogueOverlay() {
+  const activeChapterDialogue = useRootGameStore((state) => state.activeChapterDialogue)
+  const chapterRuntime = useRootGameStore((state) => state.chapterRuntime)
+  const closeChapterDialogue = useRootGameStore((state) => state.closeChapterDialogue)
+  const chooseChapterDialogue = useRootGameStore((state) => state.chooseChapterDialogue)
+  const getActiveChapterDialogueView = useRootGameStore((state) => state.getActiveChapterDialogueView)
+  const view = activeChapterDialogue && chapterRuntime ? getActiveChapterDialogueView() : null
+
+  if (!activeChapterDialogue || !view?.node) return null
+  return <div className="dialogue-layer" data-testid="chapter-dialogue-overlay" role="dialog" aria-modal="true" aria-label="章节对白"><section className="dialogue-box"><button className="dialogue-close" onClick={closeChapterDialogue} aria-label="关闭章节对白">×</button><b>章节对白 · {view.node.speakerNpcId ?? '江湖线索'}</b><p>{view.node.text}</p><div>{view.choices.map((choice) => <Button key={choice.optionId} disabled={!choice.enabled} title={choice.reason} onClick={() => chooseChapterDialogue(choice.optionId, choice.requiresConfirmation ? globalThis.confirm('这是不可逆选择，确认继续吗？') : false)}>{choice.choice.label}</Button>)}</div>{view.status === 'diagnostic' && <small>{view.diagnostic}</small>}</section></div>
+}
+
+function ChapterQuestProgress({ chapter, title, complete, fallbackTotal }: { chapter: 'ch02' | 'ch03' | 'ch04' | 'ch05' | 'ch06' | 'ch07' | 'ch08'; title: string; complete: boolean; fallbackTotal: number }) {
+  const snapshot = useRootGameStore((state) => state.chapterRuntime.quests[chapter])
+  const mainlineTasks = (snapshot?.tasks ?? []).filter((task) => String(task.questId).includes(':mainline:'))
+  const completed = mainlineTasks.filter((task) => task.status === 'completed').length
+  const total = mainlineTasks.length || fallbackTotal
+  return <><h2>章节主线</h2><div className={`quest-row quest-row--${complete ? 'complete' : 'active'}`}><b>[主线] {title}</b><span>{complete ? '证据已经对齐，准备接受 Boss 验收' : '按顺序完成当前章节线索'}</span><em>{complete ? '✓' : `${completed}/${total}`}</em></div></>
 }
 
 function QuestRow({ id, status }: { id: 'firstSteps' | 'findCat' | 'challengeBai'; status: 'locked' | 'active' | 'complete' }) {

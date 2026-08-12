@@ -3,7 +3,7 @@ id: C353
 title: 第6章 东海镇：敌人、海潮帮主 与章节集成
 phase: chapter-content
 depends_on: [C352, G105, G107, G115, G119, H223, H225, S244, S246]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -55,6 +55,7 @@ pnpm build
 
 ## 验证记录
 
+- 2026-08-12：东海镇任务、对白、热点、两类普通敌人与海潮帮主均由章节运行时驱动；`e2e/ch05-08-flow.spec.ts` 桌面/手机关键路径通过。
 - `pnpm lint` 通过。
 - `pnpm content:validate` 通过。
 - `pnpm test -- --reporter=dot` 通过（74 files / 227 tests）。

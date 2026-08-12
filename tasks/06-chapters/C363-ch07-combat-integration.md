@@ -3,7 +3,7 @@ id: C363
 title: 第7章 京城：敌人、榜司督主 与章节集成
 phase: chapter-content
 depends_on: [C362, G105, G107, G115, G119, H223, H225, W212]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -55,6 +55,7 @@ pnpm build
 
 ## 验证记录
 
+- 2026-08-12：京城任务、对白、热点、两类普通敌人与榜司督主均由章节运行时驱动；`e2e/ch05-08-flow.spec.ts` 桌面/手机关键路径通过。
 - `pnpm lint` 通过。
 - `pnpm content:validate` 通过。
 - `pnpm test -- --reporter=dot` 通过（74 files / 227 tests）。

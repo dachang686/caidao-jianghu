@@ -3,7 +3,7 @@ id: G118
 title: 实现锻造与烹饪页面
 phase: gameplay-ui
 depends_on: [G113, G114, F012]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -61,6 +61,8 @@ pnpm build
 - `pnpm test:e2e` ✅（16 个桌面/移动 E2E）
 - `pnpm build` ✅
 
-## 风险与边界
+## 本次接线与复验
 
-- 当前仓库仍保留旧 Demo 的 V1 玩家物品数组；工作台使用 G113/G114 的 canonical InventoryState 作为本地工作台库存，页面制作链路已闭环，跨 V1 玩家数组与 GameSaveV2 的统一迁移不在本任务范围内。
+- 已删除独立 `recipe-store`；锻造和烹饪直接读取根库存、当前章节与根配方快照，失败不会扣除材料，快速重复提交由领域动作幂等处理。
+- 食物成品可从背包使用，buff 会在战斗结算时消耗持续场次并存入 V2 存档；配方解锁原因与 `aria-live` 提示保持可见。
+- 验证：`pnpm lint`、`pnpm test`（80 files / 245 tests）、`pnpm test:e2e`（65 passed / 1 skipped）和 `pnpm build` 均通过。

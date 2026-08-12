@@ -3,7 +3,7 @@ id: C303
 title: 第1章 小愚村：敌人、白大侠 与章节集成
 phase: chapter-content
 depends_on: [C302, G105, G107, G115, G119, H223, H225, G109, G117]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -55,16 +55,18 @@ pnpm build
 - 新增章节敌人内容校验与失败夹具，检查普通敌人数量、招式引用、Boss 阶段、20% 欺骗上限、专属规则数量和演出 cue 引用字段。
 - 新增 `settleCh01BossVictory` 原子胜利事务：幂等发放经验、银两、生锈菜刀和称号，完成任务，设置对话/基础战斗/背包解锁、下一章/结局门槛和自动档检查点；现有 App 存档副作用在状态变更后写入账本。
 - 新增第 1 章标准构筑固定 RNG 批量模拟入口 `pnpm simulate:battles -- --ch01-bai`，并补充桌面/手机章节战斗返回场景 E2E。
+- 将河边醉汉、后厨扒手从“内容目录/模拟器专用”接入小愚村场景：两者直接读取 `CH01_ENEMY_DEFINITIONS` 的数值、招式和意图，使用和 Boss 相同的 `CombatTurnEngine`，胜利只结算普通遭遇的经验和银两，不触发白大侠的章节结算。
+- 普通遭遇进入战斗时即计算首个意图，河边醉汉显示「横着拍」、后厨扒手显示「抄锅铲」；补充桌面与手机 E2E，覆盖两个场景入口及其诚实初始意图。
 
 ## 验证结果
 
 - `pnpm lint`：通过。
-- `pnpm content:validate`：通过（1 chapter）；Node loader 仅输出 ExperimentalWarning。
-- `pnpm test`：通过，54 个文件、178 个测试。
-- `pnpm test:e2e -- e2e/game-flow.spec.ts --workers=1 --retries=0 --reporter=list`：通过，21 passed、1 skipped（项目配置跳过移动端五档矩阵重复执行）。
+- `pnpm content:validate`：通过（8 chapters）。
+- `pnpm test`：通过，80 个文件、247 个测试。
+- `pnpm test:e2e`：通过，67 passed、1 skipped（项目配置跳过移动端五档矩阵重复执行）。
 - `pnpm simulate:battles -- --ch01-bai --start=1 --end=100`：标准难度 100 场胜率 89%，最长 13 回合，破防窗口存在，Boss 阶段转换均不超过 1 次，无超时。
-- `pnpm build`：通过，Vite 转换 168 个模块。
+- `pnpm build`：通过；仅保留 Vite 主 chunk 超过 500 kB 的体积警告。
 
 ## 边界与风险
 
-- 下一章内容与 Optional 隐藏 Boss 未提前制作；本任务只写入下一章/结局可达门槛，后续章节任务负责消费该门槛。普通敌人已进入第 1 章内容目录、校验和模拟器，当前 Demo 场景仍以白大侠主线擂台作为可视化入口。
+- 下一章内容与 Optional 隐藏 Boss 未提前制作；本任务只写入下一章/结局可达门槛，后续章节任务负责消费该门槛。任务/对白/热点的通用运行时迁移仍由 Q406 统一处理，本章已有的可玩任务路径不以兼容导出承载。

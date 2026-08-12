@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test'
 import { calculateSaveChecksum, createMinimalGameSaveV2, parseGameSaveV2 } from '../../src/systems/save'
-import { m1RuntimeSaveSchema } from '../../src/game/save'
+import { gameplayRuntimeSaveSchema } from '../../src/game/save'
 import type { GameSaveV2 } from '../../src/types/save'
 
 export async function clearV2Save(page: Page): Promise<void> {
@@ -46,30 +46,48 @@ export async function writeV2AutoSave(page: Page, save: GameSaveV2): Promise<voi
   }), record)
 }
 
-export function wrapM1Snapshot(chapterId: GameSaveV2['chapterId'], input: unknown): GameSaveV2 {
-  const m1 = m1RuntimeSaveSchema.parse(input)
+type RuntimeFixtureInput = {
+  readonly savedAt: string
+  readonly screen: unknown
+  readonly player: unknown
+  readonly quests: unknown
+  readonly world: unknown
+  readonly settings: unknown
+  readonly rngState: unknown
+  readonly unlockables: unknown
+  readonly ending?: unknown
+}
+
+export function buildV2SaveFromRuntime(chapterId: GameSaveV2['chapterId'], input: RuntimeFixtureInput): GameSaveV2 {
+  const runtime = gameplayRuntimeSaveSchema.parse({
+    screen: input.screen,
+    player: input.player,
+    quests: input.quests,
+    world: input.world,
+    ending: input.ending ?? { seenIds: [], chosenId: null, claimedGrantKeys: [], postgameContinues: false },
+  })
   const itemCounts = new Map<string, number>()
-  m1.player.inventory.forEach((itemId) => itemCounts.set(itemId, (itemCounts.get(itemId) ?? 0) + 1))
+  runtime.player.inventory.forEach((itemId) => itemCounts.set(itemId, (itemCounts.get(itemId) ?? 0) + 1))
   const base = createMinimalGameSaveV2()
   return parseGameSaveV2({
     ...base,
-    savedAt: m1.savedAt,
+    savedAt: input.savedAt,
     chapterId,
     player: {
-      level: m1.player.level,
-      experience: m1.player.experience,
-      moral: m1.player.moral,
+      level: runtime.player.level,
+      experience: runtime.player.experience,
+      moral: runtime.player.moral,
       fame: 0,
-      wealth: m1.player.silver,
+      wealth: runtime.player.silver,
       sectProsperity: 0,
     },
-    tasks: m1.quests.map((quest) => ({ questId: quest.id, status: quest.status === 'complete' ? 'completed' : quest.status, progress: quest.progress })),
+    tasks: runtime.quests.map((quest) => ({ questId: quest.id, status: quest.status === 'complete' ? 'completed' : quest.status, progress: quest.progress })),
     items: [...itemCounts.entries()].map(([itemId, count]) => ({ itemId, count })),
-    skills: { unlockedSkillIds: m1.player.activeSkills, activeSkillIds: m1.player.activeSkills, skillPoints: 0 },
-    settings: m1.settings,
-    unlockables: m1.unlockables,
-    rng: { algorithm: 'mulberry32', seed: 987654321, state: m1.rngState },
-    m1,
+    skills: { unlockedSkillIds: runtime.player.activeSkills, activeSkillIds: runtime.player.activeSkills, skillPoints: 0 },
+    settings: input.settings,
+    unlockables: input.unlockables,
+    rng: { algorithm: 'mulberry32', seed: 987654321, state: input.rngState },
+    runtime,
   })
 }
 
@@ -106,8 +124,18 @@ export async function finishBattle(page: Page, maxTurns = 420): Promise<void> {
   await expect(page.getByTestId('battle-victory')).toBeVisible()
 }
 
+const CHAPTER_MAINLINE_STEPS: Readonly<Record<string, readonly string[]>> = {
+  ch02: ['ch02-step-registrar', 'ch02-step-board', 'ch02-step-boatwoman', 'ch02-step-tea'],
+  ch03: ['ch03-step-ledger', 'ch03-step-board', 'ch03-step-cook', 'ch03-step-runner'],
+  ch04: ['ch04-step-disciple', 'ch04-step-inscription', 'ch04-step-herbalist', 'ch04-step-bell'],
+  ch05: ['ch05-step-western-courier', 'ch05-step-ch05:station:manifest', 'ch05-step-western-guard', 'ch05-step-ch05:sand-herb'],
+  ch06: ['ch06-step-donghai-boatwoman', 'ch06-step-ch06:market:shells', 'ch06-step-ch06:sea-salt'],
+  ch07: ['ch07-step-capital-clerk', 'ch07-step-ch07:office:ledger', 'ch07-step-ch07:capital-ink'],
+  ch08: ['ch08-step-convention-usher', 'ch08-step-ch08:stage:arena', 'ch08-step-ch08:convention-pepper'],
+}
+
 async function finishChapterBoss(page: Page, chapter: string, returnLabel: string): Promise<void> {
-  await page.getByTestId(`${chapter}-investigate`).click()
+  for (const step of CHAPTER_MAINLINE_STEPS[chapter] ?? []) await page.getByTestId(step).click()
   await expect(page.getByTestId(`${chapter}-battle-call`)).toBeEnabled()
   await page.getByTestId(`${chapter}-battle-call`).click()
   await expect(page.locator('.battle-screen')).toBeVisible()

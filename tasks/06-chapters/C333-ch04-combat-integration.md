@@ -3,7 +3,7 @@ id: C333
 title: 第4章 青云山：敌人、青云掌门 与章节集成
 phase: chapter-content
 depends_on: [C332, G105, G107, G115, G119, H223, H225, G104, G111]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -56,6 +56,7 @@ pnpm build
 
 ## 验证记录
 
+- 2026-08-12：青云山声明式任务、热点、对白、两类普通敌人和 Boss 均由同一章节运行时驱动；`e2e/ch04-flow.spec.ts` 桌面/手机关键路径通过。
 - `pnpm lint`：通过。
 - `pnpm content:validate`：通过（4 chapters；仅 Node experimental loader warning）。
 - `pnpm test -- --reporter=dot`：74 个测试文件、227 个测试通过。

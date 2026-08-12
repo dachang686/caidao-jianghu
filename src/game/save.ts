@@ -28,26 +28,8 @@ const playerSchema = z.object({
   titles: z.array(z.enum(['cleaverNovice', 'catScratchTrial', 'chatterboxBane', 'punchingBag'])),
 })
 
-const keyBindingsSchema = z.object({
-  confirm: z.array(z.string().min(1)).default(['Enter', 'Space']),
-  cancel: z.array(z.string().min(1)).default(['Escape']),
-  nextTab: z.array(z.string().min(1)).default(['Tab']),
-  skill1: z.array(z.string().min(1)).default(['Digit1']),
-  skill2: z.array(z.string().min(1)).default(['Digit2']),
-  skill3: z.array(z.string().min(1)).default(['Digit3']),
-  skill4: z.array(z.string().min(1)).default(['Digit4']),
-  skill5: z.array(z.string().min(1)).default(['Digit5']),
-  skill6: z.array(z.string().min(1)).default(['Digit6']),
-}).strict().default({
-  confirm: ['Enter', 'Space'], cancel: ['Escape'], nextTab: ['Tab'], skill1: ['Digit1'], skill2: ['Digit2'], skill3: ['Digit3'], skill4: ['Digit4'], skill5: ['Digit5'], skill6: ['Digit6'],
-})
-
-/**
- * M1 运行态的内部持久化 schema。它嵌入 V2 存档，不能单独读写浏览器存储。
- */
-export const m1RuntimeSaveSchema = z.object({
-  version: z.literal(1),
-  savedAt: z.string().datetime(),
+/** V2 存档直接持久化的可恢复游戏运行态。 */
+export const gameplayRuntimeSaveSchema = z.object({
   screen: z.enum(['menu', 'creation', 'jianghu', 'ending']),
   player: playerSchema,
   quests: z.array(z.object({
@@ -118,33 +100,10 @@ export const m1RuntimeSaveSchema = z.object({
     ch08RankingMasterDefeated: z.boolean().default(false),
     ch08AutosaveCheckpoint: z.boolean().default(false),
   }),
-  settings: z.object({
-    reducedMotion: z.boolean(),
-    masterMuted: z.boolean(),
-    bgmEnabled: z.boolean(),
-    sfxEnabled: z.boolean(),
-    sillySfxEnabled: z.boolean(),
-    masterVolume: z.number().min(0).max(1).default(1),
-    musicVolume: z.number().min(0).max(1).default(.55),
-    sfxVolume: z.number().min(0).max(1).default(.75),
-    sillyVolume: z.number().min(0).max(1).default(.8),
-    memeDensity: z.enum(['mild', 'standard', 'spicy']).default('standard'),
-    textSpeed: z.enum(['slow', 'standard', 'fast']).default('standard'),
-    difficulty: z.enum(['story', 'standard', 'expert']).default('standard'),
-    keyBindings: keyBindingsSchema,
-    aiEnhancement: z.object({ enabled: z.literal(false), provider: z.literal('none') }).strict().default({ enabled: false, provider: 'none' }),
-  }).strict(),
-  rngState: z.number().int().nonnegative(),
-  unlockables: z.object({
-    version: z.literal(1),
-    unlockedIds: z.array(z.string().min(1)),
-    claimedRewardIds: z.array(z.string().min(1)),
-    processedEventIds: z.array(z.string().min(1)),
-  }).default({ version: 1, unlockedIds: [], claimedRewardIds: [], processedEventIds: [] }),
   ending: z.object({
     seenIds: z.array(z.string().min(1)),
     chosenId: z.string().min(1).nullable(),
     claimedGrantKeys: z.array(z.string().min(1)),
     postgameContinues: z.boolean(),
-  }).optional(),
-})
+  }).strict(),
+}).strict()

@@ -1,14 +1,13 @@
 import { expect, test, type Page } from '@playwright/test'
-import { clearV2Save, wrapM1Snapshot, writeV2AutoSave } from './helpers/journey'
+import { buildV2SaveFromRuntime, clearV2Save, writeV2AutoSave } from './helpers/journey'
 
 async function clearSave(page: Page) {
   await clearV2Save(page)
 }
 
 async function seedChapterTwoSnapshot(page: Page) {
-  const m1 = await page.evaluate(() => {
+  const runtime = await page.evaluate(() => {
     const save = {
-      version: 1,
       savedAt: new Date().toISOString(),
       screen: 'jianghu',
       player: {
@@ -76,7 +75,7 @@ async function seedChapterTwoSnapshot(page: Page) {
     }
     return save
   })
-  await writeV2AutoSave(page, wrapM1Snapshot('ch02', m1))
+  await writeV2AutoSave(page, buildV2SaveFromRuntime('ch02', runtime))
   await page.reload()
 }
 
@@ -98,12 +97,28 @@ test.beforeEach(async ({ page }) => {
   await seedChapterTwoSnapshot(page)
 })
 
+test('第 2 章两类普通敌人可由清河县场景进入，并在首回合明示意图', async ({ page }) => {
+  await page.getByTestId('ch02-ranking-scribe').click()
+  await expect(page.getByText('榜纸抄手', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('朱笔横批', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '暂离擂台' }).click()
+
+  await page.getByTestId('ch02-bridge-skulker').click()
+  await expect(page.getByText('桥边扒手', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('油纸伞戳', { exact: true })).toBeVisible()
+})
+
 test('第 2 章快照可完成调查、榜下捕快、自动档并返回清河县', async ({ page }) => {
-  await expect(page.getByTestId('ch02-investigate')).toBeVisible()
   await expect(page.getByTestId('ch02-battle-call')).toBeDisabled()
 
-  await page.getByTestId('ch02-investigate').click()
-  await expect(page.getByTestId('ch02-investigate')).toBeDisabled()
+  await page.getByTestId('ch02-dialogue').click()
+  const dialogue = page.getByTestId('chapter-dialogue-overlay')
+  await expect(dialogue).toContainText('清河县的街市')
+  await dialogue.getByRole('button', { name: '问沈青禾百晓榜怎么记名' }).click()
+  await expect(dialogue).toContainText('空白竹册')
+  await dialogue.getByRole('button', { name: '关闭章节对白' }).click()
+
+  for (const step of ['ch02-step-registrar', 'ch02-step-board', 'ch02-step-boatwoman', 'ch02-step-tea']) await page.getByTestId(step).click()
   await page.getByTestId('ch02-battle-call').click()
   await expect(page.getByText('榜下捕快', { exact: true }).first()).toBeVisible()
   await expect(page.getByText(/空白卷宗/)).toBeVisible()

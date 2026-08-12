@@ -8,7 +8,7 @@ describe('江湖账本', () => {
     const save = useRootGameStore.getState().makeSaveV2()
     expect(save?.schemaVersion).toBe(2)
     expect(save).not.toBeNull()
-    expect(parseGameSaveExport(exportGameSave(save!))).toMatchObject({ schemaVersion: 2, m1: { player: { name: '存档侠' } } })
+    expect(parseGameSaveExport(exportGameSave(save!))).toMatchObject({ schemaVersion: 2, runtime: { player: { name: '存档侠' } } })
   })
 
   it('拒绝损坏或缺少版本号的存档', () => {

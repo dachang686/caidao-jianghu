@@ -3,7 +3,7 @@ id: C313
 title: 第2章 清河县：敌人、榜下捕快 与章节集成
 phase: chapter-content
 depends_on: [C312, G105, G107, G115, G119, H223, H225, G111, G112, G113, G117, G118]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -52,20 +52,22 @@ pnpm build
 
 - 新增 `src/content/enemies/ch02.ts`，配置榜纸抄手、桥边扒手两类普通敌人和榜下捕快；三者均复用统一敌人行为模板、招式引用和诚实意图字段，Boss 仅配置一个「空白卷宗」反套路规则与双阶段。
 - 新增 `CH02_BOSS_REWARD` 与 `settleCh02BossVictory`，把清河榜牌、经验、银两、装备/采集/锻造解锁、下一章/结局门槛和自动档检查点放进同一幂等结算事务；失败重试只恢复本局资源，不丢线索或关键物品。
-- 扩展 Demo 状态机支持第 2 章快照入口、调查、榜下捕快战斗、二阶段、规则反馈、Boss 专属败北演出和返回清河县；旧第 1 章入口与存档字段保留默认兼容值。
+- 扩展运行时支持第 2 章快照入口、调查、榜下捕快战斗、二阶段、规则反馈、Boss 专属败北演出和返回清河县。
 - 新增 `e2e/ch02-flow.spec.ts`，直接写入章首 IndexedDB 快照，覆盖桌面/手机调查、战斗、自动档刷新和返回场景，不重跑第 1 章剧情；同时更新历史 C311/Manifest 测试中已过期的“仅场景、无任务/敌人”断言。
 - 新增 `pnpm simulate:battles -- --ch02-bangsi` 内置标准构筑，作为本章 Boss 的固定种子批量平衡入口。
+- 将榜纸抄手、桥边扒手从内容目录接入清河县场景：两者读取 `CH02_ENEMY_DEFINITIONS` 的数值、招式和意图，使用同一 `CombatTurnEngine`，普通胜利不触发榜下捕快结算；初始意图分别为「朱笔横批」与「油纸伞戳」。
+- 补充桌面/手机 E2E 与根状态测试，覆盖两种普通敌人的场景入口、诚实首回合意图、普通结算边界和返回清河县。
 
 ## 验证结果
 
 - `pnpm lint`：通过。
-- `pnpm content:validate`：通过（2 chapters）；Node loader 仅输出 ExperimentalWarning。
-- `pnpm test`：通过，60 个文件、193 个测试。
-- `pnpm test:e2e -- --workers=1 --retries=0 --reporter=list`：通过，23 passed、1 skipped（既有移动端五档矩阵按项目配置跳过）。其中新增清河县快照流桌面/手机均通过。
+- `pnpm content:validate`：通过（8 chapters）。
+- `pnpm test`：通过，80 个文件、248 个测试。
+- `pnpm test:e2e`：通过，69 passed、1 skipped（既有移动端五档矩阵按项目配置跳过）；新增清河县普通敌人与完整快照流的桌面/手机路径均通过。
 - `pnpm simulate:battles -- --ch02-bangsi --start=1 --end=100`：标准难度 100 场胜率 95%，最长 12 回合，平均 8.79 回合，存在破防窗口，无超时、固定必败或 never-break 检查异常。
-- `pnpm build`：通过，Vite 转换 182 个模块，并包含清河县背景、NPC/Boss WebP 素材。
+- `pnpm build`：通过；仅保留 Vite 主 chunk 超过 500 kB 的体积警告。
 
 ## 边界与风险
 
 - 本任务没有提前制作第 3 章内容或 Optional 隐藏 Boss；胜利只写入下一章/结局可达门槛，后续章节任务负责消费该门槛。
-- 两类普通敌人已进入第 2 章内容目录、内容校验和模拟器；Demo 可视化入口聚焦清河县主线 Boss，普通敌人暂未另做独立场景入口。
+- 两类普通敌人的可见场景入口与普通结算已完成；本任务不提前制作第 3 章或 Optional 隐藏 Boss。

@@ -1,14 +1,13 @@
 import { expect, test, type Page } from '@playwright/test'
-import { clearV2Save, wrapM1Snapshot, writeV2AutoSave } from './helpers/journey'
+import { buildV2SaveFromRuntime, clearV2Save, writeV2AutoSave } from './helpers/journey'
 
 async function clearSave(page: Page) {
   await clearV2Save(page)
 }
 
 async function seedChapterFourSnapshot(page: Page) {
-  const m1 = await page.evaluate(() => {
+  const runtime = await page.evaluate(() => {
     const save = {
-      version: 1,
       savedAt: new Date().toISOString(),
       screen: 'jianghu',
       player: {
@@ -84,7 +83,7 @@ async function seedChapterFourSnapshot(page: Page) {
     }
     return save
   })
-  await writeV2AutoSave(page, wrapM1Snapshot('ch04', m1))
+  await writeV2AutoSave(page, buildV2SaveFromRuntime('ch04', runtime))
   await page.reload()
 }
 
@@ -106,12 +105,21 @@ test.beforeEach(async ({ page }) => {
   await seedChapterFourSnapshot(page)
 })
 
+test('第 4 章两类普通敌人可由青云山场景进入，并在首回合明示意图', async ({ page }) => {
+  await page.getByTestId('ch04-gate-disciple').click()
+  await expect(page.getByText('山门执事', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('门规点名', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '暂离擂台' }).click()
+
+  await page.getByTestId('ch04-mist-sword-disciple').click()
+  await expect(page.getByText('雾阶剑童', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('云步点剑', { exact: true })).toBeVisible()
+})
+
 test('第 4 章快照可完成调查、青云掌门、自动档并返回青云山', async ({ page }) => {
-  await expect(page.getByTestId('ch04-investigate')).toBeVisible()
   await expect(page.getByTestId('ch04-battle-call')).toBeDisabled()
 
-  await page.getByTestId('ch04-investigate').click()
-  await expect(page.getByTestId('ch04-investigate')).toBeDisabled()
+  for (const step of ['ch04-step-disciple', 'ch04-step-inscription', 'ch04-step-herbalist', 'ch04-step-bell']) await page.getByTestId(step).click()
   await page.getByTestId('ch04-battle-call').click()
   await expect(page.getByText('青云掌门', { exact: true }).first()).toBeVisible()
   await expect(page.getByText(/礼法|门规/).first()).toBeVisible()

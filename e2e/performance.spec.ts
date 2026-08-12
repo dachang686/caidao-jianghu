@@ -10,6 +10,7 @@ test.describe('性能与资源预算', () => {
     const resources = await page.evaluate(() => performance.getEntriesByType('resource').map((entry) => ({ name: entry.name, transferSize: (entry as PerformanceResourceTiming).transferSize })))
     expect(resources.some((resource) => /https?:\/\/(?!127\.0\.0\.1)/.test(resource.name))).toBe(false)
     expect(resources.reduce((sum, resource) => sum + resource.transferSize, 0)).toBeLessThan(5 * 1024 * 1024)
+    expect(resources.some((resource) => /(?:western-relay|martial-convention|capital-ranking|donghai-town|blackwind-fortress|qingyun-mountain)-.*\.webp/.test(resource.name))).toBe(false)
 
     const initialListeners = await page.evaluate(() => performance.getEntriesByType('resource').length)
     for (let cycle = 0; cycle < 12; cycle += 1) {

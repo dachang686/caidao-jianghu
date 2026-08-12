@@ -1,4 +1,4 @@
-export type ScreenId = 'menu' | 'creation' | 'jianghu' | 'battle' | 'crafting' | 'cooking' | 'ending' | 'worldMap' | 'location'
+export type ScreenId = 'menu' | 'creation' | 'jianghu' | 'battle' | 'crafting' | 'cooking' | 'sect' | 'ending' | 'worldMap' | 'location'
 
 export type TalentId = 'reckless' | 'clever' | 'thickSkinned'
 
@@ -101,7 +101,8 @@ export interface BattleStatus {
 }
 
 export interface EnemyState {
-  id: 'baiDaxia' | 'bangsi' | 'blackwindLeader' | 'qingyunMaster' | 'twinBandits' | 'tideMaster' | 'rankingGovernor' | 'rankingMaster'
+  id: 'baiDaxia' | 'bangsi' | 'blackwindLeader' | 'qingyunMaster' | 'twinBandits' | 'tideMaster' | 'rankingGovernor' | 'rankingMaster' | 'riverThug' | 'pantryPickpocket' | 'rankingScribe' | 'bridgeSkulker' | 'fortressScout' | 'kitchenRaider' | 'gateDisciple' | 'mistSwordDisciple' | 'roadRaider' | 'maskedRaider' | 'dockSmuggler' | 'hookRaider' | 'archiveGuard' | 'rankingEnforcer' | 'rivalMartialist' | 'conventionEnforcer'
+  normalChapter?: WorldState['currentChapter']
   name: string
   hp: number
   maxHp: number
@@ -152,17 +153,3 @@ export type GameEvent =
   | { type: 'cat_grabbed' }
   | { type: 'battle_won'; enemyId: EnemyState['id'] }
   | { type: 'damage_taken'; amount: number }
-
-export interface GameSaveV1 {
-  version: 1
-  savedAt: string
-  screen: Exclude<ScreenId, 'battle' | 'crafting' | 'cooking'>
-  player: PlayerState
-  quests: QuestState[]
-  world: WorldState
-  settings: GameSettings
-  rngState: number
-  unlockables: import('../types/unlockable').UnlockableSnapshot
-  /** 旧存档可缺省；首次进入结局页时由运行时补齐。 */
-  ending?: import('../types/ending').EndingRecordState
-}

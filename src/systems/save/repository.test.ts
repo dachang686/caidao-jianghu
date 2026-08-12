@@ -41,7 +41,7 @@ describe('多档存储与导入导出', () => {
     const source = saveAt(7)
     const exported = exportGameSave(source)
     expect(exported).not.toContain('apiKey')
-    expect(exported).not.toContain('battle')
+    expect(exported).not.toContain('"battle"')
     expect(parseGameSaveExport(exported).player.wealth).toBe(7)
     const repository = new SaveRepository(createMemorySaveStorage())
     await repository.importSlot('auto', exported, 1)

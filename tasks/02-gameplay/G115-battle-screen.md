@@ -3,7 +3,7 @@ id: G115
 title: 实现完整 Battle Screen
 phase: gameplay-ui
 depends_on: [G105, G107, G114, F012]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -64,4 +64,10 @@ pnpm build
 
 ## 风险与边界
 
-- 当前页面接入的是仓库已有的 Demo Zustand 战斗状态；后续章节 Boss、完整 16 技能内容和食物领域在其对应任务接入，页面不自行复制领域公式。
+- 页面只渲染 selector 和派发根动作；`CombatTurnEngine` 已成为回合、冷却、阶段与重试的状态边界。伤害与章节结算仍在 RootGameStore 的领域适配层完成。
+
+## 本次接线与复验
+
+- 已将 `CombatTurnEngine` 接入根战斗流程，并让战败重试按当前最大生命/内力重建战斗，修复跨章节低生命导致无法重试的问题。
+- 6 槽装配、装备和食物 buff 都会进入实际战斗计算；组件没有新增伤害公式。
+- 验证：`pnpm lint`、`pnpm test`（80 files / 245 tests）、`pnpm test:e2e`（65 passed / 1 skipped）和 `pnpm build` 均通过。

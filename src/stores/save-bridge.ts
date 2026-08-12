@@ -1,4 +1,4 @@
-import type { GameSaveV1, QuestState, WorldState } from '../game/types'
+import type { QuestState, WorldState } from '../game/types'
 import { createMinimalGameSaveV2, parseGameSaveV2 } from '../systems/save'
 import type { GameSaveV2 } from '../types/save'
 import type { RootGameStore } from './root-store'
@@ -35,15 +35,21 @@ function defeatedEnemyIds(world: WorldState): string[] {
 
 /**
  * 将当前运行态编码进受 schema 约束的 V2 存档。
- * 服务对象不参与序列化；剧情与战斗运行态由 m1 快照恢复。
+ * 服务对象不参与序列化；章节任务、探索与采集状态写入 V2 存档。
  */
-export function makeGameSaveV2(state: RootGameStore, m1: GameSaveV1 | null): GameSaveV2 | null {
-  if (!m1 || !state.player) return null
+function persistedScreen(screen: RootGameStore['screen']): GameSaveV2['runtime']['screen'] {
+  return screen === 'battle' || screen === 'crafting' || screen === 'cooking' || screen === 'sect' || screen === 'worldMap' || screen === 'location'
+    ? 'jianghu'
+    : screen
+}
+
+export function makeGameSaveV2(state: RootGameStore): GameSaveV2 | null {
+  if (!state.player) return null
   const base = createMinimalGameSaveV2()
   const defeated = defeatedEnemyIds(state.world)
   return parseGameSaveV2({
     ...base,
-    savedAt: m1.savedAt,
+    savedAt: new Date().toISOString(),
     chapterId: state.world.currentChapter,
     world: state.worldNavigation,
     npcs: {
@@ -62,9 +68,10 @@ export function makeGameSaveV2(state: RootGameStore, m1: GameSaveV1 | null): Gam
       moral: state.player.moral,
       fame: defeated.length * 5 + state.player.titles.length * 2,
       wealth: state.player.silver,
-      sectProsperity: state.world.systemUnlocks.sectCreation ? 8 : 0,
+      sectProsperity: Object.values(state.sect.facilities).reduce((total, level) => total + level, 0),
     },
     tasks: state.quests.map((quest) => ({ questId: quest.id, status: taskStatus(quest.status), progress: quest.progress })),
+    chapterRuntime: state.chapterRuntime,
     items: state.inventoryState.stacks,
     skills: {
       unlockedSkillIds: state.skillProgress.unlockedSkillIds,
@@ -82,13 +89,19 @@ export function makeGameSaveV2(state: RootGameStore, m1: GameSaveV1 | null): Gam
     foodBuffs: state.foodBuffSnapshot,
     recipeIds: [...Object.keys(state.forgingSnapshot.craftedCounts), ...Object.keys(state.cookingSnapshot.cookedCounts)],
     sect: {
-      unlocked: state.world.systemUnlocks.sectCreation,
-      facilities: { training: 0, kitchen: 0, forge: 0, intel: 0 },
-      discipleIds: [],
-      seenDiscipleDialogueIds: [],
-      dispatches: [],
+      unlocked: state.sect.unlocked,
+      facilities: state.sect.facilities,
+      discipleIds: state.sect.discipleIds,
+      seenDiscipleDialogueIds: state.sect.seenDiscipleDialogueIds,
+      benefits: state.sect.benefits,
+      claimedUpgradeGrantKeys: state.sect.claimedUpgradeGrantKeys,
+      dispatch: state.dispatch,
     },
-    commissions: { activeIds: [], completedIds: [] },
+    commissions: {
+      activeIds: state.postgame.commission.active.filter((task) => task.status !== 'claimed').map((task) => task.instanceId),
+      completedIds: state.postgame.commission.active.filter((task) => task.status === 'claimed').map((task) => task.instanceId),
+    },
+    postgame: state.postgame,
     endings: {
       seenIds: state.endingRecordState.seenIds,
       chosenId: state.endingRecordState.chosenId,
@@ -101,15 +114,12 @@ export function makeGameSaveV2(state: RootGameStore, m1: GameSaveV1 | null): Gam
     settings: state.settings,
     contentKeys: state.unlockables.unlockedIds,
     defeatedEnemyIds: defeated,
-    m1,
+    runtime: {
+      screen: persistedScreen(state.screen),
+      player: state.player,
+      quests: state.quests,
+      world: state.world,
+      ending: state.endingRecordState,
+    },
   })
-}
-
-/**
- * M1 画面尚未由 V2 领域对象直接渲染；拒绝不含运行态快照的通用 V2 文件，
- * 以免猜测角色战斗数值并覆盖有效进度。
- */
-export function toM1RuntimeSave(save: GameSaveV2): GameSaveV1 {
-  if (!save.m1) throw new Error('这份 V2 存档不含 M1 恢复快照，不能安全载入当前版本。')
-  return save.m1
 }

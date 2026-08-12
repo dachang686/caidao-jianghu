@@ -8,7 +8,7 @@ import {
   validateSectFacilityDefinitions,
 } from './facilities'
 
-const timber = asItemId('material:timber')
+const timber = asItemId('item:wood')
 
 function unlockedState() {
   return createInitialSectUpgradeState({

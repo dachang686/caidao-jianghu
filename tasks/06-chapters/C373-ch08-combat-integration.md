@@ -3,7 +3,7 @@ id: C373
 title: 第8章 武林大会：敌人、百晓榜主 与章节集成
 phase: chapter-content
 depends_on: [C372, G105, G107, G115, G119, H223, H225, W212]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -55,6 +55,7 @@ pnpm build
 
 ## 验证记录
 
+- 2026-08-12：武林大会任务、对白、热点、两类普通敌人与百晓榜主均由章节运行时驱动，结局和通关后入口可达；`e2e/ch05-08-flow.spec.ts` 桌面/手机关键路径通过。
 - `pnpm lint` 通过。
 - `pnpm content:validate` 通过。
 - `pnpm test -- --reporter=dot` 通过（74 files / 227 tests）。

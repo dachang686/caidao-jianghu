@@ -3,7 +3,7 @@ id: P386
 title: 校准主线成长、经济与时长采样
 phase: cross-content
 depends_on: [P382, P383, P385, G119]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -52,4 +52,5 @@ pnpm build
 
 ## 验证记录
 
+- 2026-08-12：`pnpm report:progression` 通过，四种固定种子构筑均可通过八章样本，未发现资源断点；该报告明确标注为自动估算，真人时长由 Q410 单独验收。
 - `pnpm report:progression`、`pnpm content:validate`、全量单测连续 3 次和 `pnpm build` 均通过；真人时长另由 Q410 标记阻塞。

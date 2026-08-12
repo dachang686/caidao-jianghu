@@ -3,7 +3,7 @@ id: G116
 title: 实现武学树与六槽配置页面
 phase: gameplay-ui
 depends_on: [G108, F012]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -51,3 +51,9 @@ pnpm build
 - 实现：新增四系技能树面板，接入 16 个 Core 技能和 G106/G108 领域动作，支持系别筛选、前置/预览/状态说明、六槽装配/卸下/前移和免费重置确认；触摸与键盘均使用可聚焦按钮，无 hover-only 信息。
 - 验证：`pnpm lint`、`pnpm test`（25 files / 72 tests）、`pnpm test:e2e`（8 passed）、`pnpm build` 均通过。
 - 备注：构建仍提示 `ch01.ts` 同时被静态和动态导入的既有 Vite 分包警告，不影响构建结果。
+
+## 本次接线与复验
+
+- 技能进度已移入 `RootGameStore`：解锁、装配、卸下、排序和免费重置都会同步 `player.activeSkills`，并写入 V2 存档；不再使用组件临时进度。
+- 初始六槽与战斗初始四技能一致，Core 技能装配后会直接出现在 Battle Screen。
+- 验证：`pnpm lint`、`pnpm test`（80 files / 245 tests）、`pnpm test:e2e`（65 passed / 1 skipped）和 `pnpm build` 均通过。

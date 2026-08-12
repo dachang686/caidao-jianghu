@@ -1,20 +1,36 @@
 import { create } from 'zustand'
+import { CHAPTER_GATHERING_ITEMS, activateChapterHotspot, chooseChapterDialogue, collectChapterNode, createChapterRuntimeSnapshot, getChapterDialogueView, interactWithChapterNpc, isRuntimeChapterId } from './chapter-runtime'
+import type { ChapterRuntimeSnapshot } from './chapter-runtime'
 import { CORE_ENDINGS } from '../content/endings/core'
 import { contentManifest } from '../content/manifest'
 import { coreCookingItems, coreCookingRecipes, coreFoodBuffs } from '../content/recipes/cooking'
 import { coreForgingEquipment, coreForgingItems, coreForgingRecipes } from '../content/recipes/forging'
 import { coreActiveSkills } from '../content/skills'
+import { CH01_ENEMY_DEFINITIONS } from '../content/enemies/ch01'
+import { CH02_ENEMY_DEFINITIONS } from '../content/enemies/ch02'
+import { CH03_ENEMY_DEFINITIONS } from '../content/enemies/ch03'
+import { CH04_ENEMY_DEFINITIONS } from '../content/enemies/ch04'
+import { CH05_ENEMY_DEFINITIONS } from '../content/enemies/ch05'
+import { CH06_ENEMY_DEFINITIONS } from '../content/enemies/ch06'
+import { CH07_ENEMY_DEFINITIONS } from '../content/enemies/ch07'
+import { CH08_ENEMY_DEFINITIONS } from '../content/enemies/ch08'
+import { discipleDefinitions, discipleTraitDefinitions } from '../content/sect/disciples'
+import { sectFacilityDefinitions } from '../content/sect/facilities'
 import { ALL_UNLOCKABLES } from '../content/unlockables'
+import { POSTGAME_COMMISSION_PACK } from '../content/commissions/postgame'
 import { EMPTY_UNLOCKABLE_SNAPSHOT, createUnlockableEngine, deriveTitleCombatStats } from '../systems/unlocks'
 import { DEFAULT_KEY_BINDINGS, updateGameSettings } from '../systems/input'
 import { applyEndingChoice, createEndingState, selectEnding } from '../systems/endings'
 import { createCookingEngine } from '../systems/crafting/cooking'
 import { createForgingEngine } from '../systems/crafting/forging'
 import { CombatTurnEngine, createFoodBuffEngine } from '../systems/combat'
+import { createPostgameLoopEngine } from '../systems/postgame'
+import { advanceDispatch, claimDispatch, createDispatchEngine, previewDiscipleDispatch, recruitDisciple, upgradeFacility } from '../systems/sect'
 import { addItem, createEquipmentLoadout, createInventoryState, equipEquipment, recalculateEquipmentStats, removeItem, unequipEquipment } from '../systems/inventory'
 import { applyStrengtheningBonuses, attemptStrengthening, createStrengtheningState } from '../systems/equipment'
 import { SkillLoadoutError, SkillRegistry, createSkillProgressState, equipSkill, reorderSkillSlots, resetSkillPoints, unlockSkill, unequipSkill } from '../systems/skills'
 import type { DomainEvent } from '../types/events'
+import type { DialogueView } from '../types/dialogue'
 import type { UnlockableSnapshot } from '../types/unlockable'
 import type { ConditionContext } from '../types/conditions'
 import type { EndingRecordResult, EndingRecordState, EndingSelection } from '../types/ending'
@@ -27,25 +43,30 @@ import { settleCh05BossVictory } from '../game/chapter-combat-ch05'
 import { settleCh06BossVictory } from '../game/chapter-combat-ch06'
 import { settleCh07BossVictory } from '../game/chapter-combat-ch07'
 import { settleCh08BossVictory } from '../game/chapter-combat-ch08'
-import { makeGameSaveV2, toM1RuntimeSave } from './save-bridge'
+import { makeGameSaveV2 } from './save-bridge'
 import type { GameSaveV2 } from '../types/save'
 import { createWorldContentCatalog, enterRegion as enterWorldRegionState, getLocationAvailability, listRegionAvailability, restoreWorldNavigationState } from '../systems/world'
 import { getStoreServices } from './services'
 import type { WorldConditionContext, WorldLocationRecord, WorldNavigationState, RegionLoadError } from '../types/world'
 import type { WorldRegionId } from '../types/ids'
+import type { GatheringNodeId, HotspotId, NpcId } from '../types/ids'
 import type { EquipmentLoadout, EquipmentSlot } from '../types/equipment'
 import type { InventoryState, ItemDefinition } from '../types/item'
 import type { CookResult, CookingSnapshot, ForgeResult, ForgingSnapshot } from '../types/recipe'
 import type { DerivedCombatStats, SkillDefinition as ActiveSkillDefinition, SkillProgressState } from '../types/skill'
 import type { FoodBuffSnapshot } from '../types/food'
+import type { ChapterEnemyDefinition } from '../types/chapter-combat'
 import type { StrengtheningState } from '../types/strengthening'
+import { createSectState } from '../types/sect'
+import type { SectFacilityId, SectState } from '../types/sect'
+import type { SectDispatchSnapshot } from '../types/dispatch'
+import type { PostgameDifficulty, PostgameState } from '../types/postgame'
 import type {
   BattleLogEntry,
   BattleState,
   BattleStatus,
   CombatStats,
   EnemyState,
-  GameSaveV1,
   GameSettings,
   ItemId,
   PlayerState,
@@ -70,6 +91,7 @@ export interface RootGameStore {
   worldLocation: WorldLocationRecord | null
   worldLocationLoadState: 'idle' | 'loading' | 'ready' | 'error'
   worldLocationError: RegionLoadError | null
+  chapterRuntime: ChapterRuntimeSnapshot
   settings: GameSettings
   rngState: number
   battle: BattleState | null
@@ -82,8 +104,13 @@ export interface RootGameStore {
   cookingSnapshot: CookingSnapshot
   foodBuffSnapshot: FoodBuffSnapshot
   workshopMessage: string
+  sect: SectState
+  dispatch: SectDispatchSnapshot
+  postgame: PostgameState
+  sectMessage: string
   activePanel: PanelId
   activeDialogue: 'oldMan' | 'aunt' | 'cat' | 'bai' | null
+  activeChapterDialogue: import('./chapter-runtime').RuntimeChapterId | null
   narrator: string | null
   temporaryMode: boolean
   unlockables: UnlockableSnapshot
@@ -94,29 +121,33 @@ export interface RootGameStore {
   startNewGame: (name: string, talent: TalentId) => void
   openDialogue: (dialogue: RootGameStore['activeDialogue']) => void
   closeDialogue: () => void
+  openChapterDialogue: () => void
+  closeChapterDialogue: () => void
+  getActiveChapterDialogueView: () => DialogueView | null
+  chooseChapterDialogue: (choiceId: string, confirmed?: boolean) => void
   meetOldMan: () => void
   acceptCatQuest: () => void
   resolveCatQuest: (choice: CatChoice) => void
   startChapterTwo: () => void
-  completeChapterTwoInvestigation: () => void
   startChapterThree: () => void
-  completeChapterThreeInvestigation: () => void
   startChapterFour: () => void
-  completeChapterFourInvestigation: () => void
   startChapterFive: () => void
-  completeChapterFiveInvestigation: () => void
   startChapterSix: () => void
-  completeChapterSixInvestigation: () => void
   startChapterSeven: () => void
-  completeChapterSevenInvestigation: () => void
   startChapterEight: () => void
-  completeChapterEightInvestigation: () => void
-  startBattle: (chapterId?: 'ch01' | 'ch02' | 'ch03' | 'ch04' | 'ch05' | 'ch06' | 'ch07' | 'ch08') => void
+  interactWithChapterNpc: (npcId: string) => void
+  activateChapterHotspot: (hotspotId: string) => void
+  collectChapterNode: (nodeId: string) => void
+  startBattle: (battleId?: StoreBattleId) => void
   useSkill: (skillId: string) => void
   retryBattle: () => void
   leaveBattle: () => void
   recordEndingChoice: (choiceId: string, confirmed: boolean) => EndingRecordResult | null
   continuePostgame: () => void
+  setPostgameDifficulty: (difficulty: PostgameDifficulty) => void
+  generatePostgameCommission: () => void
+  completePostgameCommission: (instanceId: string) => void
+  claimPostgameCommission: (instanceId: string) => void
   recordNpcClick: (npcId: string) => void
   setPanel: (panel: PanelId) => void
   setSettings: (settings: Partial<GameSettings>) => void
@@ -136,6 +167,10 @@ export interface RootGameStore {
   equipInventoryEquipment: (equipmentId: string) => void
   unequipInventoryEquipment: (slot: EquipmentSlot) => void
   strengthenInventoryEquipment: (equipmentId: string) => void
+  upgradeSectFacility: (facilityId: SectFacilityId) => void
+  recruitSectDisciple: (discipleId: string) => void
+  startSectDispatch: (discipleIds: readonly string[]) => void
+  claimSectDispatch: (dispatchId: string) => void
   toggleBossKey: () => void
   setSaveStatus: (status: RootGameStore['saveStatus']) => void
   maybeNarrate: (id: string, text: string) => void
@@ -320,8 +355,8 @@ function makePlayer(name: string, talent: TalentId): PlayerState {
   }
 }
 
-const gameplayItems: readonly ItemDefinition[] = Array.from(new Map([...coreForgingItems, ...coreCookingItems].map((item) => [String(item.id), item])).values())
-const legacyStarterSkills: readonly ActiveSkillDefinition[] = Object.values(SKILLS).map((skill) => ({
+const gameplayItems: readonly ItemDefinition[] = Array.from(new Map([...coreForgingItems, ...coreCookingItems, ...CHAPTER_GATHERING_ITEMS].map((item) => [String(item.id), item])).values())
+const starterSkills: readonly ActiveSkillDefinition[] = Object.values(SKILLS).map((skill) => ({
   id: skill.id,
   name: skill.name,
   description: skill.description,
@@ -332,7 +367,7 @@ const legacyStarterSkills: readonly ActiveSkillDefinition[] = Object.values(SKIL
   effects: skill.power ? [{ type: 'damage', power: skill.power }] : [{ type: 'guard', ratio: 0.5, turns: 1 }],
   preview: { summary: skill.description, values: {} },
 }))
-const coreSkillRegistry = new SkillRegistry([...coreActiveSkills, ...legacyStarterSkills])
+const coreSkillRegistry = new SkillRegistry([...coreActiveSkills, ...starterSkills])
 const STARTER_SKILL_IDS = ['basicSlash', 'cleaverWhirl', 'mockery', 'playDead'] as const
 const STARTER_ITEM_COUNTS: Readonly<Record<string, number>> = {
   'item:iron-scrap': 8,
@@ -412,7 +447,7 @@ function baseDerivedCombatStats(player: PlayerState): DerivedCombatStats {
   }
 }
 
-function deriveEquipmentCombatStats(player: PlayerState, loadout: EquipmentLoadout, foodBuffSnapshot: FoodBuffSnapshot, equipmentStrengthening: Readonly<Record<string, StrengtheningState>>): DerivedCombatStats {
+function deriveEquipmentCombatStats(player: PlayerState, loadout: EquipmentLoadout, foodBuffSnapshot: FoodBuffSnapshot, equipmentStrengthening: Readonly<Record<string, StrengtheningState>>, sect: SectState): DerivedCombatStats {
   const equipped = applyStrengtheningBonuses(
     recalculateEquipmentStats(baseDerivedCombatStats(player), loadout, coreForgingEquipment),
     Object.values(loadout).flatMap((equipmentId) => equipmentId ? [equipmentStrengthening[equipmentId]?.bonus ?? {}] : []),
@@ -420,8 +455,8 @@ function deriveEquipmentCombatStats(player: PlayerState, loadout: EquipmentLoado
   const modifiers = createFoodBuffEngine({ foods: coreFoodBuffs, items: gameplayItems }, foodBuffSnapshot).getModifiers()
   return {
     ...equipped,
-    attack: Math.max(0, equipped.attack * modifiers.attackMultiplier),
-    defense: Math.max(0, equipped.defense + modifiers.defenseDelta),
+    attack: Math.max(0, (equipped.attack + sect.benefits.combatAttackBonus) * modifiers.attackMultiplier),
+    defense: Math.max(0, equipped.defense + sect.benefits.combatDefenseBonus + modifiers.defenseDelta),
     accuracy: Math.max(0, Math.min(1, equipped.accuracy + modifiers.accuracyDelta)),
     crit: Math.max(0, Math.min(1, equipped.crit + modifiers.critDelta)),
     qiRecovery: Math.max(0, equipped.qiRecovery + modifiers.qiRecoveryDelta),
@@ -429,8 +464,8 @@ function deriveEquipmentCombatStats(player: PlayerState, loadout: EquipmentLoado
   }
 }
 
-function combatStatsWithEquipment(player: PlayerState, loadout: EquipmentLoadout, foodBuffSnapshot: FoodBuffSnapshot, equipmentStrengthening: Readonly<Record<string, StrengtheningState>>): CombatStats {
-  const derived = deriveEquipmentCombatStats(player, loadout, foodBuffSnapshot, equipmentStrengthening)
+function combatStatsWithEquipment(player: PlayerState, loadout: EquipmentLoadout, foodBuffSnapshot: FoodBuffSnapshot, equipmentStrengthening: Readonly<Record<string, StrengtheningState>>, sect: SectState): CombatStats {
+  const derived = deriveEquipmentCombatStats(player, loadout, foodBuffSnapshot, equipmentStrengthening, sect)
   return {
     ...player.stats,
     attack: derived.attack,
@@ -443,7 +478,18 @@ function combatStatsWithEquipment(player: PlayerState, loadout: EquipmentLoadout
 
 function advanceFoodBuffSnapshot(snapshot: FoodBuffSnapshot, battleId: string, outcome: 'won' | 'lost'): FoodBuffSnapshot {
   const engine = createFoodBuffEngine({ foods: coreFoodBuffs, items: gameplayItems }, snapshot)
-  return engine.advanceBattle({ id: `battle:completed:${battleId}`, type: 'battle.completed', occurredAtTick: snapshot.battleTick, payload: { battleId, outcome } }).state
+  return engine.advanceBattle({ id: `battle:completed:${battleId}`, type: 'battle.completed', occurredAtTick: snapshot.battleTick, sourceActionId: `battle:completed:${battleId}`, payload: { battleId, outcome } }).state
+}
+
+function advanceSectDispatchSnapshot(snapshot: SectDispatchSnapshot, battleId: string): SectDispatchSnapshot {
+  const engine = createDispatchEngine(snapshot)
+  return advanceDispatch(engine, {
+    id: `battle:completed:${battleId}`,
+    type: 'battle.completed',
+    occurredAtTick: snapshot.battleTick,
+    sourceActionId: `battle:completed:${battleId}`,
+    payload: { battleId, outcome: 'won' },
+  }).state
 }
 
 function chapterNumber(chapterId: WorldState['currentChapter']): number {
@@ -459,7 +505,29 @@ function gameplayConditionContext(state: Pick<RootGameStore, 'inventoryState' | 
   }
 }
 
-function makeEndingContext(player: PlayerState, world: WorldState): ConditionContext {
+function sectConditionContext(state: Pick<RootGameStore, 'inventoryState' | 'player' | 'quests' | 'world' | 'sect'>): ConditionContext {
+  const base = gameplayConditionContext(state)
+  const chapterFiveComplete = state.world.ch05TwinBanditsDefeated
+  return {
+    ...base,
+    stats: {
+      moral: state.player?.moral ?? 0,
+      fame: state.sect.benefits.fameBonus,
+      wealth: state.player?.silver ?? 0,
+      sectProsperity: Object.values(state.sect.facilities).reduce((total, level) => total + level, 0),
+    },
+    flags: {
+      ...base.flags,
+      met_showoff_runner: chapterFiveComplete,
+      met_forge_keeper: chapterFiveComplete,
+      met_kitchen_helper: chapterFiveComplete,
+      heard_rumor_network: chapterFiveComplete,
+      settled_sect_ledger: chapterFiveComplete,
+    },
+  }
+}
+
+function makeEndingContext(player: PlayerState, world: WorldState, sect: SectState = createSectState()): ConditionContext {
   const defeatedBosses = [
     world.baiDefeated,
     world.ch02BangsiDefeated,
@@ -470,7 +538,7 @@ function makeEndingContext(player: PlayerState, world: WorldState): ConditionCon
     world.ch07RankingGovernorDefeated,
     world.ch08RankingMasterDefeated,
   ].filter(Boolean).length
-  const fame = defeatedBosses * 5 + player.titles.length * 2
+  const fame = defeatedBosses * 5 + player.titles.length * 2 + sect.benefits.fameBonus
   return {
     quests: {},
     inventory: player.inventory,
@@ -478,7 +546,7 @@ function makeEndingContext(player: PlayerState, world: WorldState): ConditionCon
       moral: player.moral,
       fame,
       wealth: player.silver,
-      sectProsperity: world.systemUnlocks.sectCreation ? 8 : 0,
+      sectProsperity: Object.values(sect.facilities).reduce((total, level) => total + level, 0),
     },
     flags: {
       ch08MainlineComplete: world.ch08MainlineComplete,
@@ -491,8 +559,90 @@ function makeEndingContext(player: PlayerState, world: WorldState): ConditionCon
 }
 
 type StoreChapterId = 'ch01' | 'ch02' | 'ch03' | 'ch04' | 'ch05' | 'ch06' | 'ch07' | 'ch08'
+type StoreNormalBattleId =
+  | 'ch01:river-thug' | 'ch01:pantry-pickpocket'
+  | 'ch02:ranking-scribe' | 'ch02:bridge-skulker'
+  | 'ch03:fortress-scout' | 'ch03:kitchen-raider'
+  | 'ch04:gate-disciple' | 'ch04:mist-sword-disciple'
+  | 'ch05:road-raider' | 'ch05:masked-raider'
+  | 'ch06:dock-smuggler' | 'ch06:hook-raider'
+  | 'ch07:archive-guard' | 'ch07:ranking-enforcer'
+  | 'ch08:rival-martialist' | 'ch08:convention-enforcer'
+type StoreBattleId = StoreChapterId | StoreNormalBattleId
 
-function makeEnemy(chapterId: StoreChapterId = 'ch01'): EnemyState {
+interface NormalEncounterProfile {
+  readonly battleId: StoreNormalBattleId
+  readonly runtimeId: EnemyState['id']
+  readonly chapterId: StoreChapterId
+  readonly contentEnemyId: string
+  readonly definitions: readonly ChapterEnemyDefinition[]
+}
+
+const NORMAL_ENCOUNTERS: readonly NormalEncounterProfile[] = [
+  { battleId: 'ch01:river-thug', runtimeId: 'riverThug', chapterId: 'ch01', contentEnemyId: 'enemy:ch01:river-thug', definitions: CH01_ENEMY_DEFINITIONS },
+  { battleId: 'ch01:pantry-pickpocket', runtimeId: 'pantryPickpocket', chapterId: 'ch01', contentEnemyId: 'enemy:ch01:pantry-pickpocket', definitions: CH01_ENEMY_DEFINITIONS },
+  { battleId: 'ch02:ranking-scribe', runtimeId: 'rankingScribe', chapterId: 'ch02', contentEnemyId: 'enemy:ch02:ranking-scribe', definitions: CH02_ENEMY_DEFINITIONS },
+  { battleId: 'ch02:bridge-skulker', runtimeId: 'bridgeSkulker', chapterId: 'ch02', contentEnemyId: 'enemy:ch02:bridge-skulker', definitions: CH02_ENEMY_DEFINITIONS },
+  { battleId: 'ch03:fortress-scout', runtimeId: 'fortressScout', chapterId: 'ch03', contentEnemyId: 'enemy:ch03:fortress-scout', definitions: CH03_ENEMY_DEFINITIONS },
+  { battleId: 'ch03:kitchen-raider', runtimeId: 'kitchenRaider', chapterId: 'ch03', contentEnemyId: 'enemy:ch03:kitchen-raider', definitions: CH03_ENEMY_DEFINITIONS },
+  { battleId: 'ch04:gate-disciple', runtimeId: 'gateDisciple', chapterId: 'ch04', contentEnemyId: 'enemy:ch04:gate-disciple', definitions: CH04_ENEMY_DEFINITIONS },
+  { battleId: 'ch04:mist-sword-disciple', runtimeId: 'mistSwordDisciple', chapterId: 'ch04', contentEnemyId: 'enemy:ch04:mist-sword-disciple', definitions: CH04_ENEMY_DEFINITIONS },
+  { battleId: 'ch05:road-raider', runtimeId: 'roadRaider', chapterId: 'ch05', contentEnemyId: 'enemy:ch05:road-raider', definitions: CH05_ENEMY_DEFINITIONS },
+  { battleId: 'ch05:masked-raider', runtimeId: 'maskedRaider', chapterId: 'ch05', contentEnemyId: 'enemy:ch05:masked-raider', definitions: CH05_ENEMY_DEFINITIONS },
+  { battleId: 'ch06:dock-smuggler', runtimeId: 'dockSmuggler', chapterId: 'ch06', contentEnemyId: 'enemy:ch06:dock-smuggler', definitions: CH06_ENEMY_DEFINITIONS },
+  { battleId: 'ch06:hook-raider', runtimeId: 'hookRaider', chapterId: 'ch06', contentEnemyId: 'enemy:ch06:hook-raider', definitions: CH06_ENEMY_DEFINITIONS },
+  { battleId: 'ch07:archive-guard', runtimeId: 'archiveGuard', chapterId: 'ch07', contentEnemyId: 'enemy:ch07:archive-guard', definitions: CH07_ENEMY_DEFINITIONS },
+  { battleId: 'ch07:ranking-enforcer', runtimeId: 'rankingEnforcer', chapterId: 'ch07', contentEnemyId: 'enemy:ch07:ranking-enforcer', definitions: CH07_ENEMY_DEFINITIONS },
+  { battleId: 'ch08:rival-martialist', runtimeId: 'rivalMartialist', chapterId: 'ch08', contentEnemyId: 'enemy:ch08:rival-martialist', definitions: CH08_ENEMY_DEFINITIONS },
+  { battleId: 'ch08:convention-enforcer', runtimeId: 'conventionEnforcer', chapterId: 'ch08', contentEnemyId: 'enemy:ch08:convention-enforcer', definitions: CH08_ENEMY_DEFINITIONS },
+]
+
+function normalEncounterForBattle(battleId: StoreBattleId): NormalEncounterProfile | undefined {
+  return NORMAL_ENCOUNTERS.find((encounter) => encounter.battleId === battleId)
+}
+
+function normalEncounterForEnemy(enemyId: EnemyState['id']): NormalEncounterProfile | undefined {
+  return NORMAL_ENCOUNTERS.find((encounter) => encounter.runtimeId === enemyId)
+}
+
+function normalOffensiveMove(profile: NormalEncounterProfile) {
+  const definition = profile.definitions.find((candidate) => String(candidate.id) === profile.contentEnemyId)
+  const move = definition?.moves.find((candidate) => typeof candidate.power === 'number' && candidate.power > 0)
+  if (!definition || !move) throw new Error(`缺少普通敌人「${profile.contentEnemyId}」的可执行招式。`)
+  return { definition, move }
+}
+
+function chapterForBattle(battleId: StoreBattleId): StoreChapterId {
+  return normalEncounterForBattle(battleId)?.chapterId ?? battleId as StoreChapterId
+}
+
+function isChapterBoss(enemyId: EnemyState['id']): boolean {
+  return ['baiDaxia', 'bangsi', 'blackwindLeader', 'qingyunMaster', 'twinBandits', 'tideMaster', 'rankingGovernor', 'rankingMaster'].includes(enemyId)
+}
+
+function makeNormalEnemy(profile: NormalEncounterProfile): EnemyState {
+  const { definition } = normalOffensiveMove(profile)
+  const curve = definition.curve
+  const maxHp = curve.maxHp.base
+  const maxQi = curve.maxQi.base
+  return {
+    id: profile.runtimeId,
+    normalChapter: profile.chapterId,
+    name: definition.name,
+    hp: maxHp,
+    maxHp,
+    qi: maxQi,
+    maxQi,
+    stats: { attack: curve.attack.base, defense: curve.defense.base, speed: 7, crit: curve.crit?.base ?? 0, dodge: curve.dodge?.base ?? 0, accuracy: curve.accuracy?.base ?? 0.85 },
+    phase: 1,
+    statuses: [],
+  }
+}
+
+function makeEnemy(battleId: StoreBattleId = 'ch01'): EnemyState {
+  const normalEncounter = normalEncounterForBattle(battleId)
+  if (normalEncounter) return makeNormalEnemy(normalEncounter)
+  const chapterId = battleId
   if (chapterId === 'ch02') {
     return {
       id: 'bangsi',
@@ -559,6 +709,21 @@ function makeEnemyIntent(enemy: EnemyState, player: PlayerState): BattleState['e
     expectedPostureDamage: 0,
     honest: true,
   }
+  const normalEncounter = normalEncounterForEnemy(enemy.id)
+  if (normalEncounter) {
+    const { move } = normalOffensiveMove(normalEncounter)
+    const power = move.power ?? 1
+    const posture = move.posturePower ?? 0
+    const expectedDamage = Math.max(1, Math.round((enemy.stats.attack * power * 100) / (player.stats.defense + 100)))
+    return {
+      id: `intent:${normalEncounter.battleId}:${move.id}`,
+      label: move.name,
+      summary: `预计造成约 ${expectedDamage} 点伤害，并削减 ${posture} 点架势。`,
+      expectedDamage,
+      expectedPostureDamage: posture,
+      honest: true,
+    }
+  }
   if (enemy.id === 'bangsi') {
     const power = enemy.phase === 2 ? 1.32 : 1.05
     const expectedDamage = Math.max(1, Math.round((enemy.stats.attack * power * 100) / (player.stats.defense + 100)))
@@ -613,12 +778,13 @@ function makeEnemyIntent(enemy: EnemyState, player: PlayerState): BattleState['e
   }
 }
 
-function makeBattle(chapterId: StoreChapterId = 'ch01'): BattleState {
-  const enemy = makeEnemy(chapterId)
+function makeBattle(battleId: StoreBattleId = 'ch01'): BattleState {
+  const enemy = makeEnemy(battleId)
   const isBangsi = enemy.id === 'bangsi'
   const isBlackwindLeader = enemy.id === 'blackwindLeader'
   const isQingyunMaster = enemy.id === 'qingyunMaster'
   const isLateBoss = ['twinBandits', 'tideMaster', 'rankingGovernor', 'rankingMaster'].includes(enemy.id)
+  const isNormalEncounter = !isChapterBoss(enemy.id)
   const lateBossName = enemy.id === 'twinBandits' ? '驿路双煞' : enemy.id === 'tideMaster' ? '海潮帮主' : enemy.id === 'rankingGovernor' ? '榜司督主' : '百晓榜主'
   return {
     enemy,
@@ -629,19 +795,19 @@ function makeBattle(chapterId: StoreChapterId = 'ch01'): BattleState {
     enemyIntent: {
       id: 'intent:opening',
       label: '蓄势待发',
-      summary: isBangsi ? '榜下捕快正在摊开卷宗，下一步大概率是红印落榜。空白卷宗也会提前明示。' : isBlackwindLeader ? '黑风寨主正在抖空旗，下一步大概率是旗影断粮。空旗反卷也会提前明示。' : isQingyunMaster ? '青云掌门正在展开剑谱，下一步大概率是门规点名。礼法反噬也会提前明示。' : isLateBoss ? `${lateBossName}正在准备第一份公开意图，特殊规则也会提前明示。` : '白大侠正在摆架势，下一步大概率是降龙十巴掌。',
-      expectedDamage: isBangsi ? 19 : isBlackwindLeader ? 22 : isQingyunMaster ? 23 : enemy.id === 'twinBandits' ? 25 : enemy.id === 'tideMaster' ? 26 : enemy.id === 'rankingGovernor' ? 28 : enemy.id === 'rankingMaster' ? 30 : 18,
-      expectedPostureDamage: isBlackwindLeader ? 11 : isQingyunMaster ? 11 : isLateBoss ? 12 : 10,
+      summary: isNormalEncounter ? `${enemy.name}的招式会提前明示，先看清再出刀。` : isBangsi ? '榜下捕快正在摊开卷宗，下一步大概率是红印落榜。空白卷宗也会提前明示。' : isBlackwindLeader ? '黑风寨主正在抖空旗，下一步大概率是旗影断粮。空旗反卷也会提前明示。' : isQingyunMaster ? '青云掌门正在展开剑谱，下一步大概率是门规点名。礼法反噬也会提前明示。' : isLateBoss ? `${lateBossName}正在准备第一份公开意图，特殊规则也会提前明示。` : '白大侠正在摆架势，下一步大概率是降龙十巴掌。',
+      expectedDamage: isNormalEncounter ? Math.max(1, Math.round((enemy.stats.attack * (enemy.id === 'riverThug' ? .9 : .82) * 100) / 115)) : isBangsi ? 19 : isBlackwindLeader ? 22 : isQingyunMaster ? 23 : enemy.id === 'twinBandits' ? 25 : enemy.id === 'tideMaster' ? 26 : enemy.id === 'rankingGovernor' ? 28 : enemy.id === 'rankingMaster' ? 30 : 18,
+      expectedPostureDamage: isNormalEncounter ? (enemy.id === 'riverThug' ? 6 : 4) : isBlackwindLeader ? 11 : isQingyunMaster ? 11 : isLateBoss ? 12 : 10,
       honest: true,
     },
     turn: 'player',
     round: 1,
-    logs: [{ id: 'opening', text: isBangsi ? '榜下捕快抖了抖卷宗：今天让你见识一下什么叫公文正派。' : isBlackwindLeader ? '黑风寨主抖了抖空旗：今天让你见识一下什么叫山寨冲榜。' : isQingyunMaster ? '青云掌门展开剑谱：今天让你见识一下什么叫门面工程。' : isLateBoss ? `${lateBossName}把证据摆上台面：今天让你见识一下什么叫公开验收。` : '白大侠掸了掸衣角：今天让你见识一下什么叫名门正派。', kind: 'system' }],
+    logs: [{ id: 'opening', text: isNormalEncounter ? `${enemy.name}摆开架势：招式写在脸上，别说我没提前通知。` : isBangsi ? '榜下捕快抖了抖卷宗：今天让你见识一下什么叫公文正派。' : isBlackwindLeader ? '黑风寨主抖了抖空旗：今天让你见识一下什么叫山寨冲榜。' : isQingyunMaster ? '青云掌门展开剑谱：今天让你见识一下什么叫门面工程。' : isLateBoss ? `${lateBossName}把证据摆上台面：今天让你见识一下什么叫公开验收。` : '白大侠掸了掸衣角：今天让你见识一下什么叫名门正派。', kind: 'system' }],
     rewardGranted: false,
   }
 }
 
-const legacyBattleSkillConfigs = {
+const starterBattleSkillConfigs = {
   basicSlash: { qi: 0, cooldown: 0, power: 1 },
   cleaverWhirl: { qi: 12, cooldown: 2, power: 1.55 },
   mockery: { qi: 10, cooldown: 3, power: 0.55 },
@@ -654,13 +820,13 @@ function battleSkillConfig(skillId: string): { qi: number; cooldown: number; pow
     const damageEffect = coreSkill.effects.find((effect) => effect.type === 'damage')
     return { qi: coreSkill.qiCost, cooldown: coreSkill.cooldown, power: damageEffect?.type === 'damage' ? damageEffect.power : 0 }
   }
-  return legacyBattleSkillConfigs[skillId as keyof typeof legacyBattleSkillConfigs] ?? null
+  return starterBattleSkillConfigs[skillId as keyof typeof starterBattleSkillConfigs] ?? null
 }
 
 let combatTurnEngine: CombatTurnEngine | null = null
 
-function createBattleTurnEngine(player: PlayerState, battle: BattleState, rngState: number, loadout: EquipmentLoadout, foodBuffSnapshot: FoodBuffSnapshot, equipmentStrengthening: Readonly<Record<string, StrengtheningState>>): CombatTurnEngine {
-  const stats = deriveEquipmentCombatStats(player, loadout, foodBuffSnapshot, equipmentStrengthening)
+function createBattleTurnEngine(player: PlayerState, battle: BattleState, rngState: number, loadout: EquipmentLoadout, foodBuffSnapshot: FoodBuffSnapshot, equipmentStrengthening: Readonly<Record<string, StrengtheningState>>, sect: SectState): CombatTurnEngine {
+  const stats = deriveEquipmentCombatStats(player, loadout, foodBuffSnapshot, equipmentStrengthening, sect)
   const engine = new CombatTurnEngine({
     player: {
       id: 'player', name: player.name, hp: player.hp, maxHp: player.maxHp, qi: player.qi, maxQi: player.maxQi,
@@ -714,6 +880,51 @@ function worldConditionContext(state: Pick<RootGameStore, 'player' | 'quests' | 
   }
 }
 
+function chapterRuntimeContext(state: Pick<RootGameStore, 'inventoryState' | 'world'>) {
+  return {
+    inventory: state.inventoryState,
+    flags: {
+      ch01_mainline_complete: state.world.baiDefeated,
+      ch02_mainline_complete: state.world.ch02MainlineComplete,
+      ch03_mainline_complete: state.world.ch03MainlineComplete,
+      ch04_mainline_complete: state.world.ch04MainlineComplete,
+      ch05_mainline_complete: state.world.ch05MainlineComplete,
+      ch06_mainline_complete: state.world.ch06MainlineComplete,
+      ch07_mainline_complete: state.world.ch07MainlineComplete,
+    },
+  }
+}
+
+function postgameProsperity(state: Pick<RootGameStore, 'sect'>): number {
+  return Object.values(state.sect.facilities).reduce((total, level) => total + level, 0)
+}
+
+function postgameContext(state: Pick<RootGameStore, 'worldNavigation' | 'postgame' | 'rngState' | 'endingRecordState' | 'sect'>) {
+  return {
+    chapter: 8,
+    unlockedRegionIds: state.worldNavigation.unlockedRegionIds,
+    progress: state.postgame.commission.progress + 1,
+    rng: { seed: 987654321, state: state.rngState },
+    completedEndingIds: state.endingRecordState.seenIds,
+    prosperity: postgameProsperity(state),
+  }
+}
+
+function worldFromChapterRuntime(world: WorldState, runtime: ChapterRuntimeSnapshot): WorldState {
+  const flags = runtime.effects.flags
+  const updates: Partial<WorldState> = {}
+  for (const chapter of ['ch02', 'ch03', 'ch04', 'ch05', 'ch06', 'ch07', 'ch08'] as const) {
+    const chapterNumber = chapter.slice(2)
+    const mainlineKey = `ch${chapterNumber}MainlineComplete` as keyof WorldState
+    const readyKey = `ch${chapterNumber}BossReady` as keyof WorldState
+    const autosaveKey = `ch${chapterNumber}AutosaveCheckpoint` as keyof WorldState
+    if (flags[`${chapter}_mainline_complete`] === true) (updates as Record<string, boolean>)[mainlineKey] = true
+    if (flags[`${chapter}_boss_ready`] === true) (updates as Record<string, boolean>)[readyKey] = true
+    if (flags[`${chapter}_autosave_checkpoint`] === true) (updates as Record<string, boolean>)[autosaveKey] = true
+  }
+  return { ...world, ...updates }
+}
+
 function navigationForChapter(state: RootGameStore, chapterId: WorldState['currentChapter']): WorldNavigationState {
   const region = contentManifest.regions.find((candidate) => candidate.chapterId === chapterId)
   if (!region) return state.worldNavigation
@@ -746,7 +957,7 @@ function createBattleSliceState(): Pick<RootGameStore, 'battle'> {
   }
 }
 
-function createGameplaySliceState(): Pick<RootGameStore, 'skillProgress' | 'inventoryState' | 'equipmentLoadout' | 'equipmentIds' | 'equipmentStrengthening' | 'forgingSnapshot' | 'cookingSnapshot' | 'foodBuffSnapshot' | 'workshopMessage'> {
+function createGameplaySliceState(): Pick<RootGameStore, 'skillProgress' | 'inventoryState' | 'equipmentLoadout' | 'equipmentIds' | 'equipmentStrengthening' | 'forgingSnapshot' | 'cookingSnapshot' | 'foodBuffSnapshot' | 'workshopMessage' | 'sect' | 'dispatch' | 'postgame' | 'sectMessage'> {
   return {
     skillProgress: createInitialSkillProgress(),
     inventoryState: createPlayerInventory(),
@@ -757,17 +968,23 @@ function createGameplaySliceState(): Pick<RootGameStore, 'skillProgress' | 'inve
     cookingSnapshot: { version: 1, cookedCounts: {}, processedActionIds: [] },
     foodBuffSnapshot: { version: 1, active: [], battleTick: 0, processedBattleEventIds: [], processedActionIds: [] },
     workshopMessage: '',
+    sect: createSectState(),
+    dispatch: { battleTick: 0, tasks: [], processedBattleEventIds: [] },
+    postgame: createPostgameLoopEngine(POSTGAME_COMMISSION_PACK).snapshot(),
+    sectMessage: '',
   }
 }
 
-function createWorldSliceState(): Pick<RootGameStore, 'world' | 'worldNavigation' | 'worldLocation' | 'worldLocationLoadState' | 'worldLocationError' | 'activeDialogue' | 'narrator' | 'unlockables' | 'endingSelection' | 'endingRecordState'> {
+function createWorldSliceState(): Pick<RootGameStore, 'world' | 'worldNavigation' | 'worldLocation' | 'worldLocationLoadState' | 'worldLocationError' | 'chapterRuntime' | 'activeDialogue' | 'activeChapterDialogue' | 'narrator' | 'unlockables' | 'endingSelection' | 'endingRecordState'> {
   return {
     world: { ...EMPTY_WORLD },
     worldNavigation: restoreWorldNavigationState(contentManifest, null),
     worldLocation: null,
     worldLocationLoadState: 'idle',
     worldLocationError: null,
+    chapterRuntime: createChapterRuntimeSnapshot(),
     activeDialogue: null,
+    activeChapterDialogue: null,
     narrator: null,
     unlockables: { ...EMPTY_UNLOCKABLE_SNAPSHOT },
     endingSelection: null,
@@ -790,7 +1007,7 @@ function createShellSliceState(): Pick<RootGameStore, 'screen' | 'activePanel' |
   }
 }
 
-function initialStoreState(): Pick<RootGameStore, 'screen' | 'player' | 'quests' | 'world' | 'worldNavigation' | 'worldLocation' | 'worldLocationLoadState' | 'worldLocationLoadState' | 'worldLocationError' | 'settings' | 'rngState' | 'battle' | 'skillProgress' | 'inventoryState' | 'equipmentLoadout' | 'equipmentIds' | 'equipmentStrengthening' | 'forgingSnapshot' | 'cookingSnapshot' | 'foodBuffSnapshot' | 'workshopMessage' | 'activePanel' | 'activeDialogue' | 'narrator' | 'temporaryMode' | 'unlockables' | 'saveStatus' | 'endingSelection' | 'endingRecordState'> {
+function initialStoreState(): Pick<RootGameStore, 'screen' | 'player' | 'quests' | 'world' | 'worldNavigation' | 'worldLocation' | 'worldLocationLoadState' | 'worldLocationError' | 'chapterRuntime' | 'settings' | 'rngState' | 'battle' | 'skillProgress' | 'inventoryState' | 'equipmentLoadout' | 'equipmentIds' | 'equipmentStrengthening' | 'forgingSnapshot' | 'cookingSnapshot' | 'foodBuffSnapshot' | 'workshopMessage' | 'sect' | 'dispatch' | 'postgame' | 'sectMessage' | 'activePanel' | 'activeDialogue' | 'activeChapterDialogue' | 'narrator' | 'temporaryMode' | 'unlockables' | 'saveStatus' | 'endingSelection' | 'endingRecordState'> {
   return {
     ...createPlayerSliceState(),
     ...createQuestSliceState(),
@@ -802,50 +1019,10 @@ function initialStoreState(): Pick<RootGameStore, 'screen' | 'player' | 'quests'
   }
 }
 
-function makeM1RuntimeSave(state: RootGameStore): GameSaveV1 | null {
-  if (!state.player) return null
-  return {
-    version: 1,
-    savedAt: new Date().toISOString(),
-    screen: state.screen === 'battle' || state.screen === 'crafting' || state.screen === 'cooking' || state.screen === 'worldMap' || state.screen === 'location' ? 'jianghu' : state.screen,
-    player: state.player,
-    quests: state.quests,
-    world: state.world,
-    settings: state.settings,
-    rngState: state.rngState,
-    unlockables: state.unlockables,
-    ending: state.endingRecordState,
-  }
-}
-
-function hydrateM1RuntimeSave(save: GameSaveV1, previous: RootGameStore, worldNavigation = previous.worldNavigation): Partial<RootGameStore> {
-  return {
-    screen: save.screen,
-    player: save.player,
-    quests: save.quests,
-    world: save.world,
-    worldNavigation,
-    worldLocation: null,
-    worldLocationLoadState: 'idle',
-    worldLocationError: null,
-    settings: save.settings,
-    rngState: save.rngState,
-    unlockables: save.unlockables,
-    battle: null,
-    activeDialogue: null,
-    activePanel: null,
-    saveStatus: 'saved',
-    endingRecordState: createEndingState(save.ending ?? previous.endingRecordState),
-    endingSelection: save.screen === 'ending' && save.world.ch08RankingMasterDefeated
-      ? selectEnding(CORE_ENDINGS, makeEndingContext(save.player, save.world))
-      : null,
-  }
-}
-
 /** 运行时唯一的 Zustand 实例。 */
 export const useRootGameStore = create<RootGameStore>((set, get) => ({
   ...initialStoreState(),
-  setScreen: (screen) => set({ screen, activePanel: null, activeDialogue: null }),
+  setScreen: (screen) => set({ screen, activePanel: null, activeDialogue: null, activeChapterDialogue: null }),
   startNewGame: (name, talent) => {
     const initial = initialStoreState()
     const skillProgress = createInitialSkillProgress()
@@ -862,9 +1039,35 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
     const unlockables = npcId
       ? applyUnlockableEvents(state.unlockables, [unlockableEvent(`npc:first-seen:${npcId}`, 'npc.first_seen', { npcId })])
       : state.unlockables
-    set({ activeDialogue, unlockables })
+    set({ activeDialogue, activeChapterDialogue: null, activePanel: null, unlockables })
   },
   closeDialogue: () => set({ activeDialogue: null }),
+  openChapterDialogue: () => {
+    const state = get()
+    if (!isRuntimeChapterId(state.world.currentChapter)) return
+    set({ activeChapterDialogue: state.world.currentChapter, activeDialogue: null, activePanel: null })
+  },
+  closeChapterDialogue: () => set({ activeChapterDialogue: null }),
+  getActiveChapterDialogueView: () => {
+    const state = get()
+    return state.activeChapterDialogue
+      ? getChapterDialogueView(state.activeChapterDialogue, state.chapterRuntime, chapterRuntimeContext(state))
+      : null
+  },
+  chooseChapterDialogue: (choiceId, confirmed = false) => {
+    const state = get()
+    const chapterId = state.activeChapterDialogue
+    if (!chapterId || !state.player) return
+    const result = chooseChapterDialogue(chapterId, state.chapterRuntime, chapterRuntimeContext(state), choiceId, confirmed)
+    const world = worldFromChapterRuntime(state.world, result.runtime)
+    set({
+      chapterRuntime: result.runtime,
+      world,
+      player: result.gainedExperience > 0 ? { ...state.player, experience: state.player.experience + result.gainedExperience } : state.player,
+      activeChapterDialogue: result.status === 'completed' ? null : chapterId,
+      narrator: result.message,
+    })
+  },
   meetOldMan: () => {
     const state = get()
     if (state.world.oldManMet) return set({ activeDialogue: null })
@@ -915,93 +1118,99 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
     if (!state.player || !state.world.baiDefeated || state.world.currentChapter !== 'ch01') return
     set({ screen: 'jianghu', world: { ...state.world, currentChapter: 'ch02', ch02MainlineComplete: false, ch02BossReady: false, ch02BangsiDefeated: false, ch02AutosaveCheckpoint: false }, worldNavigation: navigationForChapter(state, 'ch02'), battle: null, activeDialogue: null, activePanel: null, narrator: '说书人：清河县的榜单缺了一页，刚好够你把下一章写上去。' })
   },
-  completeChapterTwoInvestigation: () => {
-    const state = get()
-    if (!state.player || state.world.currentChapter !== 'ch02' || state.world.ch02MainlineComplete) return
-    set({ world: { ...state.world, ch02MainlineComplete: true, ch02BossReady: true, ch02AutosaveCheckpoint: true }, narrator: '说书人：榜单、药篮和茶摊账本终于对上了，榜下捕快决定亲自来核验。' })
-  },
   startChapterThree: () => {
     const state = get()
     if (!state.player || state.world.currentChapter !== 'ch02' || !state.world.ch02BangsiDefeated) return
     set({ screen: 'jianghu', world: { ...state.world, currentChapter: 'ch03', ch03MainlineComplete: false, ch03BossReady: false, ch03BlackwindLeaderDefeated: false, ch03AutosaveCheckpoint: false }, worldNavigation: navigationForChapter(state, 'ch03'), battle: null, activeDialogue: null, activePanel: null, narrator: '说书人：黑风寨的空旗正在冲榜，先去门口登记你的刀谱名号。' })
-  },
-  completeChapterThreeInvestigation: () => {
-    const state = get()
-    if (!state.player || state.world.currentChapter !== 'ch03' || state.world.ch03MainlineComplete) return
-    set({ world: { ...state.world, ch03MainlineComplete: true, ch03BossReady: true, ch03AutosaveCheckpoint: true }, narrator: '说书人：账榜、百味刀谱和瞭望鼓都对上了，黑风寨主决定亲自验收。' })
   },
   startChapterFour: () => {
     const state = get()
     if (!state.player || state.world.currentChapter !== 'ch03' || !state.world.ch03BlackwindLeaderDefeated) return
     set({ screen: 'jianghu', world: { ...state.world, currentChapter: 'ch04', ch04MainlineComplete: false, ch04BossReady: false, ch04QingyunMasterDefeated: false, ch04AutosaveCheckpoint: false }, worldNavigation: navigationForChapter(state, 'ch04'), battle: null, activeDialogue: null, activePanel: null, narrator: '说书人：青云山的门规写得比山路还长，先去山门登记你的菜刀来历。' })
   },
-  completeChapterFourInvestigation: () => {
-    const state = get()
-    if (!state.player || state.world.currentChapter !== 'ch04' || state.world.ch04MainlineComplete) return
-    set({ world: { ...state.world, ch04MainlineComplete: true, ch04BossReady: true, ch04AutosaveCheckpoint: true }, narrator: '说书人：山门名册、云台药圃和听云钟都对上了，青云掌门决定亲自来讲最后一条门规。' })
-  },
   startChapterFive: () => {
     const state = get()
     if (!state.player || state.world.currentChapter !== 'ch04' || !state.world.ch04QingyunMasterDefeated) return
     set({ screen: 'jianghu', world: { ...state.world, currentChapter: 'ch05', ch05MainlineComplete: false, ch05BossReady: false, ch05TwinBanditsDefeated: false, ch05AutosaveCheckpoint: false }, worldNavigation: navigationForChapter(state, 'ch05'), battle: null, activeDialogue: null, activePanel: null, narrator: '说书人：西域驿路的货单被风吹成了谜语，先去驿站把刀谱签收回来。' })
-  },
-  completeChapterFiveInvestigation: () => {
-    const state = get()
-    if (!state.player || state.world.currentChapter !== 'ch05' || state.world.ch05MainlineComplete) return
-    set({ world: { ...state.world, ch05MainlineComplete: true, ch05BossReady: true, ch05AutosaveCheckpoint: true }, narrator: '说书人：货单、路线和封条终于对上了，驿路双煞决定亲自办理最后一次交付。' })
   },
   startChapterSix: () => {
     const state = get()
     if (!state.player || state.world.currentChapter !== 'ch05' || !state.world.ch05TwinBanditsDefeated) return
     set({ screen: 'jianghu', world: { ...state.world, currentChapter: 'ch06', ch06MainlineComplete: false, ch06BossReady: false, ch06TideMasterDefeated: false, ch06AutosaveCheckpoint: false }, worldNavigation: navigationForChapter(state, 'ch06'), battle: null, activeDialogue: null, activePanel: null, narrator: '说书人：东海镇的留影石只拍得到浪花，先去码头找一份有重量的船单。' })
   },
-  completeChapterSixInvestigation: () => {
-    const state = get()
-    if (!state.player || state.world.currentChapter !== 'ch06' || state.world.ch06MainlineComplete) return
-    set({ world: { ...state.world, ch06MainlineComplete: true, ch06BossReady: true, ch06AutosaveCheckpoint: true }, narrator: '说书人：船单、贝壳和潮汐记录终于一致，海潮帮主决定亲自解释潮水。' })
-  },
   startChapterSeven: () => {
     const state = get()
     if (!state.player || state.world.currentChapter !== 'ch06' || !state.world.ch06TideMasterDefeated) return
     set({ screen: 'jianghu', world: { ...state.world, currentChapter: 'ch07', ch07MainlineComplete: false, ch07BossReady: false, ch07RankingGovernorDefeated: false, ch07AutosaveCheckpoint: false }, worldNavigation: navigationForChapter(state, 'ch07'), battle: null, activeDialogue: null, activePanel: null, narrator: '说书人：京城榜单把价格写得比正文清楚，先去城门拿一块合法入场牌。' })
-  },
-  completeChapterSevenInvestigation: () => {
-    const state = get()
-    if (!state.player || state.world.currentChapter !== 'ch07' || state.world.ch07MainlineComplete) return
-    set({ world: { ...state.world, ch07MainlineComplete: true, ch07BossReady: true, ch07AutosaveCheckpoint: true }, narrator: '说书人：入场牌、交易账和原始墨迹都可复核了，榜司督主决定亲自发布最后一条榜文。' })
   },
   startChapterEight: () => {
     const state = get()
     if (!state.player || state.world.currentChapter !== 'ch07' || !state.world.ch07RankingGovernorDefeated) return
     set({ screen: 'jianghu', world: { ...state.world, currentChapter: 'ch08', ch08MainlineComplete: false, ch08BossReady: false, ch08RankingMasterDefeated: false, ch08AutosaveCheckpoint: false }, worldNavigation: navigationForChapter(state, 'ch08'), battle: null, activeDialogue: null, activePanel: null, narrator: '说书人：武林大会给每个人一张定义表，先去入口登记谁有资格落款。' })
   },
-  completeChapterEightInvestigation: () => {
+  interactWithChapterNpc: (npcId) => {
     const state = get()
-    if (!state.player || state.world.currentChapter !== 'ch08' || state.world.ch08MainlineComplete) return
-    set({ world: { ...state.world, ch08MainlineComplete: true, ch08BossReady: true, ch08AutosaveCheckpoint: true }, narrator: '说书人：登记、对照和最后一页都准备好了，百晓榜主决定亲自称量江湖定义权。' })
+    if (!state.player || !isRuntimeChapterId(state.world.currentChapter)) return
+    const result = interactWithChapterNpc(state.world.currentChapter, state.chapterRuntime, chapterRuntimeContext(state), npcId as NpcId)
+    set({
+      chapterRuntime: result.runtime,
+      inventoryState: result.inventory,
+      player: { ...state.player, experience: state.player.experience + result.gainedExperience },
+      world: worldFromChapterRuntime(state.world, result.runtime),
+      narrator: `说书人：${result.message}`,
+    })
   },
-  startBattle: (chapterId = get().world.currentChapter) => {
+  activateChapterHotspot: (hotspotId) => {
+    const state = get()
+    if (!state.player || !isRuntimeChapterId(state.world.currentChapter)) return
+    const result = activateChapterHotspot(state.world.currentChapter, state.chapterRuntime, chapterRuntimeContext(state), hotspotId as HotspotId)
+    set({
+      chapterRuntime: result.runtime,
+      inventoryState: result.inventory,
+      player: { ...state.player, experience: state.player.experience + result.gainedExperience },
+      world: worldFromChapterRuntime(state.world, result.runtime),
+      narrator: `说书人：${result.message}`,
+    })
+  },
+  collectChapterNode: (nodeId) => {
+    const state = get()
+    if (!state.player || !isRuntimeChapterId(state.world.currentChapter)) return
+    const result = collectChapterNode(state.world.currentChapter, state.chapterRuntime, chapterRuntimeContext(state), nodeId as GatheringNodeId)
+    set({
+      chapterRuntime: result.runtime,
+      inventoryState: result.inventory,
+      player: { ...state.player, experience: state.player.experience + result.gainedExperience },
+      world: worldFromChapterRuntime(state.world, result.runtime),
+      narrator: `说书人：${result.message}`,
+    })
+  },
+  startBattle: (battleId = get().world.currentChapter) => {
     const state = get()
     if (!state.player) return
-    if (chapterId === 'ch01' && (!state.world.oldManMet || state.world.baiDefeated)) return
-    if (chapterId === 'ch02' && (state.world.currentChapter !== 'ch02' || !state.world.ch02BossReady || state.world.ch02BangsiDefeated)) return
-    if (chapterId === 'ch03' && (state.world.currentChapter !== 'ch03' || !state.world.ch03BossReady || state.world.ch03BlackwindLeaderDefeated)) return
-    if (chapterId === 'ch04' && (state.world.currentChapter !== 'ch04' || !state.world.ch04BossReady || state.world.ch04QingyunMasterDefeated)) return
-    if (chapterId === 'ch05' && (state.world.currentChapter !== 'ch05' || !state.world.ch05BossReady || state.world.ch05TwinBanditsDefeated)) return
-    if (chapterId === 'ch06' && (state.world.currentChapter !== 'ch06' || !state.world.ch06BossReady || state.world.ch06TideMasterDefeated)) return
-    if (chapterId === 'ch07' && (state.world.currentChapter !== 'ch07' || !state.world.ch07BossReady || state.world.ch07RankingGovernorDefeated)) return
-    if (chapterId === 'ch08' && (state.world.currentChapter !== 'ch08' || !state.world.ch08BossReady || state.world.ch08RankingMasterDefeated)) return
-    const battle = makeBattle(chapterId)
+    const chapterId = chapterForBattle(battleId)
+    const normalEncounter = normalEncounterForBattle(battleId)
+    if (normalEncounter && state.world.currentChapter !== normalEncounter.chapterId) return
+    if (normalEncounter?.chapterId === 'ch01' && !state.world.oldManMet) return
+    if (!normalEncounter && chapterId === 'ch01' && (!state.world.oldManMet || state.world.baiDefeated)) return
+    if (!normalEncounter && chapterId === 'ch02' && (state.world.currentChapter !== 'ch02' || !state.world.ch02BossReady || state.world.ch02BangsiDefeated)) return
+    if (!normalEncounter && chapterId === 'ch03' && (state.world.currentChapter !== 'ch03' || !state.world.ch03BossReady || state.world.ch03BlackwindLeaderDefeated)) return
+    if (!normalEncounter && chapterId === 'ch04' && (state.world.currentChapter !== 'ch04' || !state.world.ch04BossReady || state.world.ch04QingyunMasterDefeated)) return
+    if (!normalEncounter && chapterId === 'ch05' && (state.world.currentChapter !== 'ch05' || !state.world.ch05BossReady || state.world.ch05TwinBanditsDefeated)) return
+    if (!normalEncounter && chapterId === 'ch06' && (state.world.currentChapter !== 'ch06' || !state.world.ch06BossReady || state.world.ch06TideMasterDefeated)) return
+    if (!normalEncounter && chapterId === 'ch07' && (state.world.currentChapter !== 'ch07' || !state.world.ch07BossReady || state.world.ch07RankingGovernorDefeated)) return
+    if (!normalEncounter && chapterId === 'ch08' && (state.world.currentChapter !== 'ch08' || !state.world.ch08BossReady || state.world.ch08RankingMasterDefeated)) return
+    const battle = makeBattle(battleId)
+    battle.enemyIntent = makeEnemyIntent(battle.enemy, state.player)
     if (state.world.tipsyNextBattle) {
       battle.playerStatuses = [{ id: 'tipsy', turns: 99 }]
       battle.logs = appendLog(battle.logs, '二锅头的勇气上头了：攻击更猛，准头随缘。', 'status')
     }
-    combatTurnEngine = createBattleTurnEngine(state.player, battle, state.rngState, state.equipmentLoadout, state.foodBuffSnapshot, state.equipmentStrengthening)
+    combatTurnEngine = createBattleTurnEngine(state.player, battle, state.rngState, state.equipmentLoadout, state.foodBuffSnapshot, state.equipmentStrengthening, state.sect)
     set({
       screen: 'battle',
       battle,
       world: { ...state.world, currentChapter: chapterId, tipsyNextBattle: false },
-      unlockables: applyUnlockableEvents(state.unlockables, [unlockableEvent(`npc:first-seen:${chapterId}`, 'npc.first_seen', { npcId: chapterId === 'ch02' ? 'bangsi' : chapterId === 'ch03' ? 'blackwind-leader' : chapterId === 'ch04' ? 'qingyun-master' : chapterId === 'ch05' ? 'twin-bandits' : chapterId === 'ch06' ? 'tide-master' : chapterId === 'ch07' ? 'ranking-governor' : chapterId === 'ch08' ? 'ranking-master' : 'bai' })]),
+      unlockables: applyUnlockableEvents(state.unlockables, [unlockableEvent(`npc:first-seen:${battle.enemy.id}`, 'npc.first_seen', { npcId: normalEncounter ? normalEncounter.runtimeId : chapterId === 'ch02' ? 'bangsi' : chapterId === 'ch03' ? 'blackwind-leader' : chapterId === 'ch04' ? 'qingyun-master' : chapterId === 'ch05' ? 'twin-bandits' : chapterId === 'ch06' ? 'tide-master' : chapterId === 'ch07' ? 'ranking-governor' : chapterId === 'ch08' ? 'ranking-master' : 'bai' })]),
       activeDialogue: null,
       activePanel: null,
     })
@@ -1019,12 +1228,13 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
     const isRankingGovernor = battle.enemy.id === 'rankingGovernor'
     const isRankingMaster = battle.enemy.id === 'rankingMaster'
     const isLateBoss = isTwinBandits || isTideMaster || isRankingGovernor || isRankingMaster
-    const enemyName = isBangsi ? '榜下捕快' : isBlackwindLeader ? '黑风寨主' : isQingyunMaster ? '青云掌门' : isTwinBandits ? '驿路双煞' : isTideMaster ? '海潮帮主' : isRankingGovernor ? '榜司督主' : isRankingMaster ? '百晓榜主' : '白大侠'
+    const isNormalEncounter = !isChapterBoss(battle.enemy.id)
+    const enemyName = isBangsi ? '榜下捕快' : isBlackwindLeader ? '黑风寨主' : isQingyunMaster ? '青云掌门' : isTwinBandits ? '驿路双煞' : isTideMaster ? '海潮帮主' : isRankingGovernor ? '榜司督主' : isRankingMaster ? '百晓榜主' : isNormalEncounter ? battle.enemy.name : '白大侠'
     const coreSkill = coreActiveSkills.find((candidate) => String(candidate.id) === skillId)
     const definition = battleSkillConfig(skillId)
     if (!definition) return
-    const equippedStats = combatStatsWithEquipment(player, state.equipmentLoadout, state.foodBuffSnapshot, state.equipmentStrengthening)
-    const engine = combatTurnEngine ?? createBattleTurnEngine(player, battle, state.rngState, state.equipmentLoadout, state.foodBuffSnapshot, state.equipmentStrengthening)
+    const equippedStats = combatStatsWithEquipment(player, state.equipmentLoadout, state.foodBuffSnapshot, state.equipmentStrengthening, state.sect)
+    const engine = combatTurnEngine ?? createBattleTurnEngine(player, battle, state.rngState, state.equipmentLoadout, state.foodBuffSnapshot, state.equipmentStrengthening, state.sect)
     combatTurnEngine = engine
     const actionId = `battle:${battle.round}:${skillId}:${state.rngState}`
     try {
@@ -1083,7 +1293,9 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
         enemy: { hp: nextEnemy.hp, statuses: nextEnemy.statuses },
         rng: { seed: 987654321, state: seed },
       })
-      const settlement = isBangsi
+      const settlement = isNormalEncounter
+        ? { status: 'settled' as const, player: { ...nextPlayer, experience: nextPlayer.experience + 6, silver: nextPlayer.silver + 6 }, quests: state.quests, world: state.world, events: [] as DomainEvent[], autoSaveTrigger: null }
+        : isBangsi
         ? settleCh02BossVictory({ player: nextPlayer, quests: state.quests, world: state.world })
         : isBlackwindLeader
         ? settleCh03BossVictory({ player: nextPlayer, quests: state.quests, world: state.world })
@@ -1102,16 +1314,28 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
         unlockableEvent(`battle:skill:${state.rngState}:${battle.round}`, 'skill.used', { skillId }),
         ...settlement.events,
       ])
-      const foodBuffSnapshot = advanceFoodBuffSnapshot(state.foodBuffSnapshot, `${battle.enemy.id}:${battle.round}:${state.rngState}`, 'won')
+      const battleId = `${battle.enemy.id}:${battle.round}:${state.rngState}`
+      const foodBuffSnapshot = advanceFoodBuffSnapshot(state.foodBuffSnapshot, battleId, 'won')
+      const sect = settlement.world.systemUnlocks.sectCreation && !state.sect.unlocked
+        ? { ...state.sect, unlocked: true }
+        : state.sect
+      const dispatch = state.sect.unlocked && state.world.systemUnlocks.tickDispatch
+        ? advanceSectDispatchSnapshot(state.dispatch, battleId)
+        : state.dispatch
       set({
         player: settlement.player,
         world: settlement.world,
         quests: settlement.quests as QuestState[],
         unlockables,
         foodBuffSnapshot,
+        sect,
+        dispatch,
+        sectMessage: dispatch !== state.dispatch && dispatch.tasks.some((task) => task.status === 'ready')
+          ? '有效战斗已计入派遣；有队伍可以领取经营收益。'
+          : state.sectMessage,
         rngState: seed,
-        battle: { ...battle, enemy: nextEnemy, playerCooldowns: engineState.cooldowns, playerStatuses, playerPosture, enemyPosture, enemyIntent: makeEnemyIntent(nextEnemy, settlement.player), turn: 'victory', logs: appendLog(logs, isBangsi ? '榜下捕快盖章认输：这份结果，暂时可以上榜。' : isBlackwindLeader ? '黑风寨主收起空旗：这次败北，算山风的。' : isQingyunMaster ? '青云掌门收起折扇：门面验收通过，规则终于写短了。' : isLateBoss ? `${enemyName}收起证据：这次败北，终于可以公开复核。` : '白大侠抱拳认输：这把菜刀，讲道理。', 'system'), rewardGranted: true },
-        narrator: isBangsi ? '说书人：清河县核验完毕，你的菜刀终于拿到了一块不太空白的榜牌。' : isBlackwindLeader ? '说书人：黑风寨验收完毕，技能树和烹饪终于不再只是菜单上的远景。' : isQingyunMaster ? '说书人：青云山验收完毕，意图进阶和装备强化已从门面工程里落地。' : isTwinBandits ? '说书人：西域驿路签收完毕，门派创建与 Tick 派遣终于不再只是远景。' : isTideMaster ? '说书人：东海镇核验完毕，进阶委托与门人事件开始按潮汐运行。' : isRankingGovernor ? '说书人：京城账本核验完毕，结局路线锁定已写进可复核规则。' : isRankingMaster ? '说书人：武林大会落幕，四种结局与通关后继续都已打开。' : '说书人：恭喜，你终于从“会挥刀”升级成“差点会挥刀”。',
+        battle: { ...battle, enemy: nextEnemy, playerCooldowns: engineState.cooldowns, playerStatuses, playerPosture, enemyPosture, enemyIntent: makeEnemyIntent(nextEnemy, settlement.player), turn: 'victory', logs: appendLog(logs, isNormalEncounter ? `${enemyName}认了输：招式虽然明示，菜刀还是比锅铲快。` : isBangsi ? '榜下捕快盖章认输：这份结果，暂时可以上榜。' : isBlackwindLeader ? '黑风寨主收起空旗：这次败北，算山风的。' : isQingyunMaster ? '青云掌门收起折扇：门面验收通过，规则终于写短了。' : isLateBoss ? `${enemyName}收起证据：这次败北，终于可以公开复核。` : '白大侠抱拳认输：这把菜刀，讲道理。', 'system'), rewardGranted: true },
+        narrator: isNormalEncounter ? `说书人：${enemyName}留下了 6 两银子，至少没留下锅铲。` : isBangsi ? '说书人：清河县核验完毕，你的菜刀终于拿到了一块不太空白的榜牌。' : isBlackwindLeader ? '说书人：黑风寨验收完毕，技能树和烹饪终于不再只是菜单上的远景。' : isQingyunMaster ? '说书人：青云山验收完毕，意图进阶和装备强化已从门面工程里落地。' : isTwinBandits ? '说书人：西域驿路签收完毕，门派创建与 Tick 派遣终于不再只是远景。' : isTideMaster ? '说书人：东海镇核验完毕，进阶委托与门人事件开始按潮汐运行。' : isRankingGovernor ? '说书人：京城账本核验完毕，结局路线锁定已写进可复核规则。' : isRankingMaster ? '说书人：武林大会落幕，四种结局与通关后继续都已打开。' : '说书人：恭喜，你终于从“会挥刀”升级成“差点会挥刀”。',
       })
       return
     }
@@ -1143,16 +1367,19 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
         nextEnemy = { ...nextEnemy, statuses: [{ id: 'dazed', turns: 1 }] }
         logs = appendLog(logs, isBangsi ? '榜下捕快翻开「空白卷宗」，先把自己卡在公文里了。' : isBlackwindLeader ? '黑风寨主挂反「空旗」，先把自己绊在山风里了。' : isQingyunMaster ? '青云掌门念完「礼法反噬」，先把自己念进沉思里了。' : isLateBoss ? `${enemyName}触发特殊规则，先停下来重新解释自己的证据。` : '白大侠使出「无敌风火轮」，先把自己转晕了。', 'enemy')
       } else {
-        const power = isBangsi ? (nextEnemy.phase === 2 ? 1.32 : 1.05) : isBlackwindLeader ? (nextEnemy.phase === 2 ? 1.34 : 1.08) : isQingyunMaster ? (nextEnemy.phase === 2 ? 1.34 : 1.08) : isTwinBandits ? (nextEnemy.phase === 2 ? 1.38 : 1.12) : isTideMaster ? (nextEnemy.phase === 2 ? 1.4 : 1.14) : isRankingGovernor ? (nextEnemy.phase === 2 ? 1.42 : 1.16) : isRankingMaster ? (nextEnemy.phase === 2 ? 1.45 : 1.18) : (nextEnemy.phase === 2 ? 1.32 : 1.05)
+        const normalMove = normalEncounterForEnemy(nextEnemy.id)
+          ? normalOffensiveMove(normalEncounterForEnemy(nextEnemy.id)!).move
+          : null
+        const power = normalMove?.power ?? (isBangsi ? (nextEnemy.phase === 2 ? 1.32 : 1.05) : isBlackwindLeader ? (nextEnemy.phase === 2 ? 1.34 : 1.08) : isQingyunMaster ? (nextEnemy.phase === 2 ? 1.34 : 1.08) : isTwinBandits ? (nextEnemy.phase === 2 ? 1.38 : 1.12) : isTideMaster ? (nextEnemy.phase === 2 ? 1.4 : 1.14) : isRankingGovernor ? (nextEnemy.phase === 2 ? 1.42 : 1.16) : isRankingMaster ? (nextEnemy.phase === 2 ? 1.45 : 1.18) : (nextEnemy.phase === 2 ? 1.32 : 1.05))
         const hit = calculateDamage(nextEnemy.stats, equippedStats, power, seed)
         seed = hit.seed
         if (hit.dodged) {
           logs = appendLog(logs, `${enemyName}一招拍空，你靠本能躲开了。`, 'status')
         } else {
           nextPlayer = { ...nextPlayer, hp: Math.max(0, nextPlayer.hp - hit.damage) }
-          const moveLabel = isBangsi ? (nextEnemy.phase === 2 ? '反盖一印' : '红印落榜') : isBlackwindLeader ? (nextEnemy.phase === 2 ? '反卷山河' : '旗影断粮') : isQingyunMaster ? (nextEnemy.phase === 2 ? '剑谱纠错' : '门规点名') : isTwinBandits ? (nextEnemy.phase === 2 ? '一明一暗' : '双线封条') : isTideMaster ? (nextEnemy.phase === 2 ? '回流压岸' : '潮钟点名') : isRankingGovernor ? (nextEnemy.phase === 2 ? '热榜发布' : '印章定价') : isRankingMaster ? (nextEnemy.phase === 2 ? '终局判词' : '评审落笔') : '降龙十巴掌'
+          const moveLabel = normalMove?.name ?? (isBangsi ? (nextEnemy.phase === 2 ? '反盖一印' : '红印落榜') : isBlackwindLeader ? (nextEnemy.phase === 2 ? '反卷山河' : '旗影断粮') : isQingyunMaster ? (nextEnemy.phase === 2 ? '剑谱纠错' : '门规点名') : isTwinBandits ? (nextEnemy.phase === 2 ? '一明一暗' : '双线封条') : isTideMaster ? (nextEnemy.phase === 2 ? '回流压岸' : '潮钟点名') : isRankingGovernor ? (nextEnemy.phase === 2 ? '热榜发布' : '印章定价') : isRankingMaster ? (nextEnemy.phase === 2 ? '终局判词' : '评审落笔') : '降龙十巴掌')
           logs = appendLog(logs, `${enemyName}使出「${moveLabel}」，你受到 ${hit.damage} 点伤害。${hit.crit ? ' 这一下挺有排面。' : ''}`, hit.crit ? 'critical' : 'enemy')
-          const postureHit = applyBattlePosture(playerPosture, isBlackwindLeader || isQingyunMaster ? (nextEnemy.phase === 2 ? 13 : 11) : isTwinBandits ? (nextEnemy.phase === 2 ? 13 : 11) : isTideMaster ? (nextEnemy.phase === 2 ? 14 : 11) : isRankingGovernor ? (nextEnemy.phase === 2 ? 15 : 12) : isRankingMaster ? (nextEnemy.phase === 2 ? 16 : 12) : 10)
+          const postureHit = applyBattlePosture(playerPosture, normalMove?.posturePower ?? (isBlackwindLeader || isQingyunMaster ? (nextEnemy.phase === 2 ? 13 : 11) : isTwinBandits ? (nextEnemy.phase === 2 ? 13 : 11) : isTideMaster ? (nextEnemy.phase === 2 ? 14 : 11) : isRankingGovernor ? (nextEnemy.phase === 2 ? 15 : 12) : isRankingMaster ? (nextEnemy.phase === 2 ? 16 : 12) : 10))
           playerPosture = postureHit.posture
           if (postureHit.brokeNow) logs = appendLog(logs, '你的架势被拍散了，下一回合要小心易伤。', 'status')
         }
@@ -1200,14 +1427,16 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
   retryBattle: () => {
     const state = get()
     if (!state.player) return
-    const engineState = combatTurnEngine?.retry()
     const player = {
       ...state.player,
-      hp: engineState?.player.hp ?? state.player.maxHp,
-      qi: engineState?.player.qi ?? state.player.maxQi,
+      hp: state.player.maxHp,
+      qi: state.player.maxQi,
     }
-    const battle = makeBattle(state.world.currentChapter)
-    combatTurnEngine = createBattleTurnEngine(player, battle, state.rngState, state.equipmentLoadout, state.foodBuffSnapshot, state.equipmentStrengthening)
+    const battleId: StoreBattleId = state.battle
+      ? normalEncounterForEnemy(state.battle.enemy.id)?.battleId ?? state.world.currentChapter
+      : state.world.currentChapter
+    const battle = makeBattle(battleId)
+    combatTurnEngine = createBattleTurnEngine(player, battle, state.rngState, state.equipmentLoadout, state.foodBuffSnapshot, state.equipmentStrengthening, state.sect)
     set({
       player,
       battle,
@@ -1217,7 +1446,7 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
   leaveBattle: () => {
     const state = get()
     if (state.battle?.turn === 'victory' && state.world.ch08RankingMasterDefeated && state.player) {
-      const endingSelection = selectEnding(CORE_ENDINGS, makeEndingContext(state.player, state.world))
+      const endingSelection = selectEnding(CORE_ENDINGS, makeEndingContext(state.player, state.world, state.sect))
       combatTurnEngine = null
       set({ screen: 'ending', battle: null, endingSelection, activePanel: null, activeDialogue: null, narrator: endingSelection.reason })
       return
@@ -1239,7 +1468,42 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
   },
   continuePostgame: () => {
     const state = get()
-    set({ screen: 'jianghu', battle: null, activePanel: null, activeDialogue: null, narrator: state.endingSelection?.ending?.postgameLabel ?? '原档已保留，继续经营你的江湖。' })
+    const postgame = createPostgameLoopEngine(POSTGAME_COMMISSION_PACK, state.postgame).unlock(state.endingRecordState.seenIds, postgameProsperity(state))
+    set({ screen: 'jianghu', battle: null, activePanel: null, activeDialogue: null, activeChapterDialogue: null, postgame, narrator: state.endingSelection?.ending?.postgameLabel ?? '原档已保留，继续经营你的江湖。' })
+  },
+  setPostgameDifficulty: (difficulty) => {
+    const state = get()
+    try {
+      const engine = createPostgameLoopEngine(POSTGAME_COMMISSION_PACK, state.postgame)
+      set({ postgame: engine.setDifficulty(difficulty), sectMessage: `通关后委托已切换为${difficulty === 'ordinary' ? '普通' : difficulty === 'elite' ? '精英' : '传说'}难度。` })
+    } catch (error) {
+      set({ sectMessage: error instanceof Error ? error.message : '暂时无法切换委托难度。' })
+    }
+  },
+  generatePostgameCommission: () => {
+    const state = get()
+    const engine = createPostgameLoopEngine(POSTGAME_COMMISSION_PACK, state.postgame)
+    const result = engine.generate(postgameContext(state))
+    set({ postgame: result.state, sectMessage: result.message })
+  },
+  completePostgameCommission: (instanceId) => {
+    const state = get()
+    try {
+      const engine = createPostgameLoopEngine(POSTGAME_COMMISSION_PACK, state.postgame)
+      set({ postgame: engine.markReady(instanceId), sectMessage: '委托已完成，可领取经营收益。' })
+    } catch (error) {
+      set({ sectMessage: error instanceof Error ? error.message : '无法完成这项委托。' })
+    }
+  },
+  claimPostgameCommission: (instanceId) => {
+    const state = get()
+    const engine = createPostgameLoopEngine(POSTGAME_COMMISSION_PACK, state.postgame)
+    const result = engine.claim(instanceId)
+    set({
+      postgame: result.state,
+      player: state.player ? { ...state.player, silver: state.player.silver + result.wealthDelta } : state.player,
+      sectMessage: result.message,
+    })
   },
   recordNpcClick: (npcId) => {
     const state = get()
@@ -1257,7 +1521,7 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
     ]
     set({ player, world: { ...state.world, npcClickCounts: counts }, unlockables: applyUnlockableEvents(state.unlockables, unlockEvents), narrator })
   },
-  setPanel: (activePanel) => set({ activePanel }),
+  setPanel: (activePanel) => set({ activePanel, activeDialogue: null, activeChapterDialogue: null }),
   setSettings: (settings) => set((state) => {
     const result = updateGameSettings(state.settings, settings, state.screen === 'battle')
     return result.difficultyBlocked
@@ -1455,6 +1719,90 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
       set({ workshopMessage: error instanceof Error ? error.message : '强化提交失败，材料未扣除。' })
     }
   },
+  upgradeSectFacility: (facilityId) => {
+    const state = get()
+    if (!state.player) return
+    const prosperity = Object.values(state.sect.facilities).reduce((total, level) => total + level, 0)
+    const result = upgradeFacility({
+      sect: state.sect,
+      wealth: state.player.silver,
+      inventory: state.inventoryState,
+      effectState: {
+        inventory: Object.fromEntries(state.inventoryState.stacks.map((stack) => [stack.itemId, stack.count])),
+        experience: state.player.experience,
+        stats: { moral: state.player.moral, fame: state.sect.benefits.fameBonus, wealth: state.player.silver, sectProsperity: prosperity },
+        flags: {},
+        quests: {},
+        claimedGrantKeys: state.sect.claimedUpgradeGrantKeys,
+      },
+    }, facilityId, sectFacilityDefinitions, chapterNumber(state.world.currentChapter))
+    const effectState = result.state.effectState
+    set({
+      sect: result.state.sect,
+      inventoryState: result.state.inventory,
+      player: {
+        ...state.player,
+        silver: result.state.wealth,
+        experience: effectState.experience,
+        moral: effectState.stats.moral,
+      },
+      worldNavigation: {
+        ...state.worldNavigation,
+        unlockedRegionIds: [...new Set([...state.worldNavigation.unlockedRegionIds, ...result.state.sect.benefits.revealedRegionIds])],
+      },
+      sectMessage: result.message,
+    })
+  },
+  recruitSectDisciple: (discipleId) => {
+    const state = get()
+    const definition = discipleDefinitions.find((candidate) => String(candidate.id) === discipleId)
+    if (!definition) return set({ sectMessage: '找不到要招募的门人。' })
+    const result = recruitDisciple(
+      state.sect,
+      definition.id,
+      discipleDefinitions,
+      chapterNumber(state.world.currentChapter),
+      sectConditionContext(state),
+    )
+    set({ sect: result.state, sectMessage: result.message })
+  },
+  startSectDispatch: (discipleIds) => {
+    const state = get()
+    const uniqueIds = [...new Set(discipleIds)]
+    const selectedIds = uniqueIds.flatMap((discipleId) => {
+      const definition = discipleDefinitions.find((candidate) => String(candidate.id) === discipleId)
+      return definition ? [definition.id] : []
+    })
+    if (!state.sect.unlocked) return set({ sectMessage: '完成第五章主线后才能派遣门人。' })
+    if (selectedIds.length !== uniqueIds.length || selectedIds.some((discipleId) => !state.sect.discipleIds.includes(discipleId))) return set({ sectMessage: '只能派遣已经招募的门人。' })
+    if (selectedIds.length === 0) return set({ sectMessage: '请先选择至少一名门人。' })
+    try {
+      const preview = previewDiscipleDispatch(selectedIds, discipleDefinitions, discipleTraitDefinitions)
+      const engine = createDispatchEngine(state.dispatch)
+      const dispatchId = `dispatch:${state.dispatch.battleTick}:${state.rngState}:${selectedIds.join('+')}`
+      const result = engine.start({
+        dispatchId,
+        discipleIds: selectedIds,
+        baseDurationTicks: 3,
+        modifiers: preview,
+        rng: { seed: 987654321, state: state.rngState },
+      })
+      set({ dispatch: result.state, sectMessage: result.message })
+    } catch (error) {
+      set({ sectMessage: error instanceof Error ? error.message : '派遣创建失败。' })
+    }
+  },
+  claimSectDispatch: (dispatchId) => {
+    const state = get()
+    const result = claimDispatch(createDispatchEngine(state.dispatch), dispatchId)
+    if (result.status !== 'claimed' || !result.claim || !state.player) return set({ dispatch: result.state, sectMessage: result.message })
+    const silver = 8 + Math.ceil(result.claim.qualityScore / 10) + state.sect.benefits.commissionQualityBonus
+    set({
+      dispatch: result.state,
+      player: { ...state.player, silver: state.player.silver + silver },
+      sectMessage: `${result.message} 经营收益：${silver} 两（质量 ${result.claim.qualityScore}）。`,
+    })
+  },
   toggleBossKey: () => set((state) => ({ temporaryMode: !state.temporaryMode })),
   setSaveStatus: (saveStatus) => set({ saveStatus }),
   maybeNarrate: (id, text) => {
@@ -1514,34 +1862,61 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
   },
   makeSaveV2: () => {
     const state = get()
-    return makeGameSaveV2(state, makeM1RuntimeSave(state))
+    return makeGameSaveV2(state)
   },
   hydrateSaveV2: (save) => {
-    const m1 = toM1RuntimeSave(save)
+    const runtime = save.runtime
     const resumeRegionId = save.flags['ui:location_open'] ? save.world.currentRegionId : null
     set((state) => {
       const worldNavigation = restoreWorldNavigationState(contentManifest, save.world, worldConditionContext({
         ...state,
-        player: m1.player,
-        quests: m1.quests,
-        world: m1.world,
+        player: runtime.player,
+        quests: [...runtime.quests],
+        world: runtime.world,
         worldNavigation: state.worldNavigation,
       }))
       const inventoryState = restorePlayerInventory(save.items)
-      const skillProgress = restoreSkillProgress(m1.player.level, save.skills)
+      const skillProgress = restoreSkillProgress(runtime.player.level, save.skills)
       const equipmentLoadout = save.equipmentLoadout
       const equipmentStrengthening = Object.fromEntries(save.equipmentStrengthening.map((entry) => [
         entry.equipmentId,
-        restoreStrengtheningState(entry.equipmentId, entry, m1.player, inventoryState),
+        restoreStrengtheningState(entry.equipmentId, entry, runtime.player, inventoryState),
       ]))
       const equipmentIds = coreForgingEquipment
         .filter((definition) => inventoryState.stacks.some((stack) => stack.itemId === definition.itemId && stack.count > 0) || Object.values(equipmentLoadout).includes(String(definition.id)))
         .map((definition) => String(definition.id))
       const forgedRecipeIds = new Set(coreForgingRecipes.map((recipe) => String(recipe.id)))
       const cookedRecipeIds = new Set(coreCookingRecipes.map((recipe) => String(recipe.id)))
+      const sect: SectState = {
+        unlocked: save.sect.unlocked,
+        facilities: save.sect.facilities as SectState['facilities'],
+        discipleIds: save.sect.discipleIds as SectState['discipleIds'],
+        seenDiscipleDialogueIds: save.sect.seenDiscipleDialogueIds as SectState['seenDiscipleDialogueIds'],
+        benefits: save.sect.benefits as SectState['benefits'],
+        claimedUpgradeGrantKeys: save.sect.claimedUpgradeGrantKeys,
+      }
       return {
-        ...hydrateM1RuntimeSave(m1, state, worldNavigation),
-        player: { ...m1.player, activeSkills: toPlayerActiveSkills(skillProgress) },
+        screen: runtime.screen,
+        quests: [...runtime.quests],
+        world: runtime.world,
+        worldNavigation,
+        worldLocation: null,
+        worldLocationLoadState: 'idle',
+        worldLocationError: null,
+        settings: save.settings,
+        rngState: save.rng.state,
+        unlockables: save.unlockables,
+        battle: null,
+        activeDialogue: null,
+        activeChapterDialogue: null,
+        activePanel: null,
+        saveStatus: 'saved',
+        endingRecordState: createEndingState(runtime.ending),
+        endingSelection: runtime.screen === 'ending' && runtime.world.ch08RankingMasterDefeated
+          ? selectEnding(CORE_ENDINGS, makeEndingContext(runtime.player, runtime.world))
+          : null,
+        chapterRuntime: save.chapterRuntime,
+        player: { ...runtime.player, activeSkills: toPlayerActiveSkills(skillProgress) },
         inventoryState,
         skillProgress,
         equipmentLoadout,
@@ -1550,6 +1925,10 @@ export const useRootGameStore = create<RootGameStore>((set, get) => ({
         forgingSnapshot: { version: 1, craftedCounts: Object.fromEntries(save.recipeIds.filter((recipeId) => forgedRecipeIds.has(recipeId)).map((recipeId) => [recipeId, 1])), processedActionIds: [] },
         cookingSnapshot: { version: 1, cookedCounts: Object.fromEntries(save.recipeIds.filter((recipeId) => cookedRecipeIds.has(recipeId)).map((recipeId) => [recipeId, 1])), processedActionIds: [] },
         foodBuffSnapshot: save.foodBuffs,
+        sect,
+        dispatch: save.sect.dispatch,
+        postgame: save.postgame,
+        sectMessage: '',
         workshopMessage: '',
         ...(resumeRegionId ? { screen: 'location' as const, worldLocationLoadState: 'loading' as const } : {}),
       }

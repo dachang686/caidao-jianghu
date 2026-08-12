@@ -3,7 +3,7 @@ id: Q408
 title: 完成包体、加载与内存验收
 phase: qa
 depends_on: [Q404, W209]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -48,8 +48,8 @@ pnpm assets:audit
 
 ## 执行记录
 
-- 增加首屏资源、重复面板打开、减少动态效果和包体预算审计；发布包预算为首屏 5 MiB、总包 40 MiB，并检查重复资源与内存泄漏迹象。
+- 增加首屏资源、未解锁章节大图、重复面板打开、减少动态效果和包体预算审计；区域生命周期单测覆盖反复进入/离开和区域切换释放。
 
 ## 验证记录
 
-- 性能 E2E 桌面端与移动端通过；`pnpm assets:audit` 通过：总包 4.75 MiB、最大 JS 0.68 MiB、最大区域资源 0.30 MiB、58 文件。
+- 2026-08-12：性能 E2E 桌面端与移动端通过，断言首屏不请求未解锁章节大图；`pnpm assets:audit` 通过：总包 4.87 MiB、最大 JS 0.78 MiB、最大区域资源 0.30 MiB、65 文件。

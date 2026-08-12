@@ -43,12 +43,34 @@ export function OverlayPanel() {
     await saveRepository?.delete('auto')
     window.location.reload()
   }
+  const saveManualSlot = async (slotId: 'manual-1' | 'manual-2' | 'manual-3') => {
+    if (!save || !saveRepository) return
+    try {
+      await saveRepository.save(slotId, save)
+      setSaveStatus('saved')
+    } catch (error) {
+      setSaveStatus('temporary')
+      window.alert(error instanceof Error ? error.message : '手动存档失败')
+    }
+  }
+  const loadManualSlot = async (slotId: 'manual-1' | 'manual-2' | 'manual-3') => {
+    if (!saveRepository) return
+    try {
+      const slot = await saveRepository.load(slotId)
+      if (!slot) { window.alert('这个手动档还没有记录。'); return }
+      importSaveV2(slot)
+      setSaveStatus('saved')
+    } catch (error) {
+      setSaveStatus('error')
+      window.alert(error instanceof Error ? error.message : '读取手动档失败')
+    }
+  }
   return <div className="panel-layer" role="dialog" aria-modal="true"><section className="overlay-panel"><button className="dialogue-close" type="button" onClick={() => setPanel(null)} aria-label="关闭面板">×</button>
     {activePanel === 'inventory' && player && <InventoryPanel />}
     {activePanel === 'skills' && player && <SkillTreePanel optionalEnabled={optionalEnabled} onClose={() => setPanel(null)} />}
     {activePanel === 'equipment' && player && <EquipmentPanel />}
     {activePanel === 'codex' && <CodexScreen />}
     {activePanel === 'guide' && <><h2>新手教程</h2><div className="detail-list"><div><b>先点人</b><span>客栈前的老头、白大侠和大黄猫都能互动。</span></div><div><b>再看任务</b><span>完成老头教学后，可挑战白大侠或帮王大娘找猫。</span></div><div><b>最后记账</b><span>关键进度会自动写入浏览器的江湖账本。</span></div></div></>}
-    {activePanel === 'settings' && <SettingsScreen footer={<><Button onClick={downloadSave}>导出存档</Button><label className="ink-button">导入存档<input type="file" accept="application/json" onChange={uploadSave} /></label><Button onClick={() => { void retireSave() }}>告老还乡</Button></>} />}
+    {activePanel === 'settings' && <SettingsScreen footer={<><div className="save-slot-actions" aria-label="手动存档"><b>手动档</b>{(['manual-1', 'manual-2', 'manual-3'] as const).map((slotId, index) => <span key={slotId}><Button onClick={() => { void saveManualSlot(slotId) }}>保存档 {index + 1}</Button><Button onClick={() => { void loadManualSlot(slotId) }}>读取档 {index + 1}</Button></span>)}</div><Button onClick={downloadSave}>导出存档</Button><label className="ink-button">导入存档<input type="file" accept="application/json" onChange={uploadSave} /></label><Button onClick={() => { void retireSave() }}>告老还乡</Button></>} />}
   </section></div>
 }

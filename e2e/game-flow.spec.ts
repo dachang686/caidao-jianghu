@@ -50,6 +50,19 @@ test('创角后可以完成老头教学、找猫并进入白大侠战斗', async
   await expect(page.getByText(/白大侠.*嘴遁|白大侠还在琢磨/)).toBeVisible()
 })
 
+test('小愚村的两类普通敌人可通过场景入口进入诚实意图战斗', async ({ page }) => {
+  await startJourney(page)
+  await page.locator('[data-hotspot="old-man"]').click()
+  await page.getByRole('button', { name: /弟子愿闻其详/ }).click()
+  await page.getByTestId('ch01-river-thug').click()
+  await expect(page.getByText('河边醉汉', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('横着拍', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: '暂离擂台' }).click()
+  await page.getByTestId('ch01-pantry-pickpocket').click()
+  await expect(page.getByText('后厨扒手', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('抄锅铲', { exact: true })).toBeVisible()
+})
+
 test('Esc 老板键能切换并恢复游戏页面', async ({ page }) => {
   await page.getByRole('button', { name: /开始游戏/ }).click()
   await page.getByRole('button', { name: '提刀入江湖' }).click()

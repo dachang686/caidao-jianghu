@@ -12,3 +12,61 @@
 [0812/171852.666:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
 [0812/171852.976:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
 [0812/180228.865:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/190346.083:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/190353.673:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/190355.563:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/190649.839:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/190651.900:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/190703.750:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/192438.464:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/192440.574:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/192441.234:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/192444.544:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/193445.998:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/193651.535:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/193701.284:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/195537.342:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/200032.898:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/200034.278:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/200039.438:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/200048.308:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/201830.857:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/203408.685:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/204913.147:ERROR:media\audio\win\audio_low_latency_output_win.cc:682] WAOS::RenderAudioFromSource => (ERROR: IAudioClient::GetCurrentPadding=[HRESULT: 0x88890004, WCode: 0, message: "Unknown error 0x88890004"])
+[0812/204913.148:ERROR:media\audio\win\audio_low_latency_output_win.cc:634] WAOS::Run => (ERROR: WASAPI rendering failed=[HRESULT: 0x88890004, WCode: 0, message: "Unknown error 0x88890004"])
+[0812/204918.171:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/205437.344:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/210018.567:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/210023.487:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/210433.212:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/210433.672:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/210433.702:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/210433.772:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=10
+[0812/210433.802:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=10
+[0812/210433.872:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=20
+[0812/210433.902:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=20
+[0812/210433.972:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=30
+[0812/210434.002:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=30
+[0812/210434.072:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=40
+[0812/210434.102:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=40
+[0812/210434.172:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=50
+[0812/210434.202:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=50
+[0812/210434.272:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=60
+[0812/210434.302:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=60
+[0812/210434.372:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=70
+[0812/210434.401:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=70
+[0812/210434.473:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=80
+[0812/210434.502:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=80
+[0812/210434.572:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=90
+[0812/210434.603:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=90
+[0812/210434.672:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=100
+[0812/210434.672:WARNING:services\audio\sync_reader.cc:178] (log cap reached, suppressing further logs)
+[0812/210434.703:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=100
+[0812/210434.703:WARNING:services\audio\sync_reader.cc:178] (log cap reached, suppressing further logs)
+[0812/210435.212:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/210435.311:WARNING:services\audio\sync_reader.cc:175] SyncReader::Read timed out, audio glitch count=10
+[0812/210439.502:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/211607.300:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/211611.800:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/214154.109:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/214159.029:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)

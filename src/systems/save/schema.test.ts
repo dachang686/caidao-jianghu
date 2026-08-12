@@ -12,7 +12,17 @@ describe('GameSaveV2 schema', () => {
       items: [{ itemId: 'item:cleaver', count: 1 }],
       skills: { unlockedSkillIds: ['skill:slash'], activeSkillIds: ['skill:slash'], skillPoints: 2 },
       recipeIds: ['recipe:soup'],
-      sect: { unlocked: true, facilities: { training: 1, kitchen: 2, forge: 0, intel: 1 }, discipleIds: ['disciple:a'], dispatches: [{ dispatchId: 'dispatch:a', progressTicks: 3 }] },
+      sect: {
+        ...minimal.sect,
+        unlocked: true,
+        facilities: { training: 1, kitchen: 2, forge: 0, intel: 1 },
+        discipleIds: ['disciple:a'],
+        dispatch: {
+          battleTick: 3,
+          tasks: [{ dispatchId: 'dispatch:a', discipleIds: ['disciple:a'], expectedTicks: 3, remainingTicks: 1, createdAtBattleTick: 0, rng: { seed: 1, state: 1 }, modifiers: { durationTicksDelta: 0, successChanceDelta: 0, qualityDelta: 0 }, status: 'active' }],
+          processedBattleEventIds: ['battle:1'],
+        },
+      },
       commissions: { activeIds: ['commission:a'], completedIds: [] },
       endings: { seenIds: ['ending:chef'], chosenId: 'ending:chef' },
       contentKeys: ['line:intro'],
@@ -31,9 +41,9 @@ describe('GameSaveV2 schema', () => {
       },
     }
     expect(parseGameSaveV2(save).npcs).toEqual(save.npcs)
-    const legacy = { ...save }
-    delete (legacy as { npcs?: unknown }).npcs
-    expect(parseGameSaveV2(legacy).npcs).toEqual({ states: [], processedEventIds: [] })
+    const saveWithoutNpcState = { ...save }
+    delete (saveWithoutNpcState as { npcs?: unknown }).npcs
+    expect(parseGameSaveV2(saveWithoutNpcState).npcs).toEqual({ states: [], processedEventIds: [] })
   })
 
   it('缺字段和非法值返回包含字段路径的错误', () => {

@@ -17,6 +17,20 @@ async function corruptV2AutomaticSave(page: import('@playwright/test').Page): Pr
   }))
 }
 
+async function savedAtInSlot(page: import('@playwright/test').Page, slotId: string): Promise<string | null> {
+  return page.evaluate(async (key) => await new Promise<string | null>((resolve, reject) => {
+    const request = indexedDB.open('caidao-jianghu-v2', 1)
+    request.onerror = () => reject(request.error)
+    request.onsuccess = () => {
+      const database = request.result
+      const transaction = database.transaction('save-records', 'readonly')
+      const read = transaction.objectStore('save-records').get(key)
+      read.onsuccess = () => { database.close(); resolve((read.result as { save?: { savedAt?: string } } | undefined)?.save?.savedAt ?? null) }
+      read.onerror = () => reject(read.error)
+    }
+  }), slotId)
+}
+
 test.describe('存档恢复与失败边界', () => {
   test('损坏自动档显示恢复面板，临时档恢复后不覆盖原损坏记录', async ({ page }) => {
     await clearV2Save(page)
@@ -52,7 +66,7 @@ test.describe('存档恢复与失败边界', () => {
     const exported = parseGameSaveExport(readFileSync(downloadPath!, 'utf8'))
     const imported = {
       ...exported,
-      m1: exported.m1 ? { ...exported.m1, player: { ...exported.m1.player, name: '导入客' } } : undefined,
+      runtime: { ...exported.runtime, player: { ...exported.runtime.player, name: '导入客' } },
     }
 
     await page.locator('input[type="file"]').setInputFiles({
@@ -69,5 +83,29 @@ test.describe('存档恢复与失败边界', () => {
     expect(dialog.message()).toMatch(/JSON|导入|账本/)
     await dialog.dismiss()
     await expect(page.getByText('导入客', { exact: true }).first()).toBeVisible()
+  })
+
+  test('设置页提供三手动档，且对白与战斗中途不覆盖权威自动档', async ({ page }) => {
+    await clearV2Save(page)
+    await startNewGame(page, '多档客')
+    await page.waitForTimeout(450)
+    await page.locator('.header-tools button').nth(2).click()
+    for (const label of ['保存档 1', '保存档 2', '保存档 3']) await page.getByRole('button', { name: label }).click()
+    for (const slot of ['manual-1', 'manual-2', 'manual-3']) expect(await savedAtInSlot(page, slot)).not.toBeNull()
+    await page.getByRole('button', { name: '关闭面板' }).click()
+
+    const beforeDialogue = await savedAtInSlot(page, 'auto')
+    await page.locator('[data-hotspot="old-man"]').click()
+    await page.waitForTimeout(450)
+    expect(await savedAtInSlot(page, 'auto')).toBe(beforeDialogue)
+    await page.getByRole('button', { name: /弟子愿闻其详/ }).click()
+    await page.waitForTimeout(450)
+    const beforeBattle = await savedAtInSlot(page, 'auto')
+
+    await page.locator('[data-hotspot="bai-daxia"]').click()
+    await page.getByRole('button', { name: '菜刀已饥渴难耐' }).click()
+    await expect(page.locator('.battle-screen')).toBeVisible()
+    await page.waitForTimeout(450)
+    expect(await savedAtInSlot(page, 'auto')).toBe(beforeBattle)
   })
 })

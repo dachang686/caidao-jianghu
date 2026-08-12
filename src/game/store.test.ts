@@ -62,6 +62,54 @@ describe('江湖状态机', () => {
     expect(battle?.round).toBeGreaterThanOrEqual(1)
   })
 
+  it('小愚村两类普通敌人使用同一战斗引擎，胜利不提前结算 Boss', () => {
+    const store = useRootGameStore.getState()
+    store.meetOldMan()
+    const silverBefore = useRootGameStore.getState().player!.silver
+    store.startBattle('ch01:river-thug')
+    expect(useRootGameStore.getState().battle?.enemy).toMatchObject({ id: 'riverThug', name: '河边醉汉' })
+    useRootGameStore.setState((state) => ({ battle: state.battle ? { ...state.battle, enemy: { ...state.battle.enemy, hp: 1 } } : null }))
+    useRootGameStore.getState().useSkill('basicSlash')
+    expect(useRootGameStore.getState().battle?.turn).toBe('victory')
+    expect(useRootGameStore.getState().world.baiDefeated).toBe(false)
+    expect(useRootGameStore.getState().player?.silver).toBe(silverBefore + 6)
+  })
+
+  it('清河县两类普通敌人读取章节配置，胜利不提前结算榜下捕快', () => {
+    useRootGameStore.setState((state) => ({
+      ...state,
+      player: state.player ? { ...state.player, experience: 42, silver: 70 } : null,
+      world: { ...state.world, currentChapter: 'ch02', baiDefeated: true, oldManMet: true },
+    }))
+    const store = useRootGameStore.getState()
+    store.startBattle('ch02:ranking-scribe')
+    expect(useRootGameStore.getState().battle?.enemy).toMatchObject({ id: 'rankingScribe', name: '榜纸抄手' })
+    expect(useRootGameStore.getState().battle?.enemyIntent.label).toBe('朱笔横批')
+    useRootGameStore.setState((state) => ({ battle: state.battle ? { ...state.battle, enemy: { ...state.battle.enemy, hp: 1 } } : null }))
+    useRootGameStore.getState().useSkill('basicSlash')
+    expect(useRootGameStore.getState().battle?.turn).toBe('victory')
+    expect(useRootGameStore.getState().world.ch02BangsiDefeated).toBe(false)
+
+    useRootGameStore.getState().leaveBattle()
+    useRootGameStore.getState().startBattle('ch02:bridge-skulker')
+    expect(useRootGameStore.getState().battle?.enemy).toMatchObject({ id: 'bridgeSkulker', name: '桥边扒手' })
+    expect(useRootGameStore.getState().battle?.enemyIntent.label).toBe('油纸伞戳')
+  })
+
+  it('黑风寨两类普通敌人由同一内容驱动路径创建', () => {
+    useRootGameStore.setState((state) => ({
+      ...state,
+      world: { ...state.world, currentChapter: 'ch03', ch02BangsiDefeated: true },
+    }))
+    useRootGameStore.getState().startBattle('ch03:fortress-scout')
+    expect(useRootGameStore.getState().battle?.enemy).toMatchObject({ id: 'fortressScout', name: '山寨巡哨', normalChapter: 'ch03' })
+    expect(useRootGameStore.getState().battle?.enemyIntent.label).toBe('木棍点名')
+    useRootGameStore.getState().leaveBattle()
+    useRootGameStore.getState().startBattle('ch03:kitchen-raider')
+    expect(useRootGameStore.getState().battle?.enemy).toMatchObject({ id: 'kitchenRaider', name: '抢锅客', normalChapter: 'ch03' })
+    expect(useRootGameStore.getState().battle?.enemyIntent.label).toBe('长勺横扫')
+  })
+
   it('战败后可以恢复资源并原地重试', () => {
     let store = useRootGameStore.getState()
     store.meetOldMan()
@@ -134,7 +182,7 @@ describe('江湖状态机', () => {
     expect(store.battle?.turn).toBe('victory')
     expect(store.player).toMatchObject({ experience: 42, silver: 70, equippedWeapon: 'rustyCleaver' })
     expect(store.world).toMatchObject({ baiDefeated: true, ch01AutosaveCheckpoint: true, nextChapterUnlocked: true, endingEligible: true, systemUnlocks: { dialogue: true, basicCombat: true, inventory: true } })
-    expect(store.makeSaveV2()?.m1?.world.ch01AutosaveCheckpoint).toBe(true)
+    expect(store.makeSaveV2()?.runtime.world.ch01AutosaveCheckpoint).toBe(true)
   })
 
   it('梗密度只更新体验设置，战斗中难度保持锁定', () => {

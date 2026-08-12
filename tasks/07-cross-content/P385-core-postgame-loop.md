@@ -3,7 +3,7 @@ id: P385
 title: 实现 Core 通关后继续与委托循环
 phase: postgame
 depends_on: [P384, S244, S245, S246]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -49,8 +49,10 @@ pnpm build
 
 ## 执行记录
 
+- 2026-08-12：通关后状态已接入 RootGameStore、V2 存档和门派页。玩家可选普通/精英/传说难度，生成、完成并领取委托；收益进入同一玩家与门派状态。
 - 新增通关后委托包、三类秘境循环和安全退出/重复收益规则；通过结局页继续原档进入，不重置 Core 进度或装备。
 
 ## 验证记录
 
+- 2026-08-12：`src/stores/root-store.test.ts`、`src/systems/postgame`、`src/systems/commissions` 共 21 项通过；`e2e/ch05-08-flow.spec.ts` 桌面/手机覆盖通关后委托生成、完成与领取。
 - 通关后引擎单测、存档恢复 E2E、黄金路径结局后继续和全量 E2E 均通过。

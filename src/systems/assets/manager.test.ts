@@ -81,7 +81,7 @@ describe('区域资源生命周期', () => {
     const afterSwitch = manager.snapshot()
     expect(afterSwitch.currentRegionId).toBe(qinghe!.regionId)
     expect(afterSwitch.cache.some((entry) => entry.id === asAssetId('asset:image:xiaoyu-village'))).toBe(false)
-    expect(afterSwitch.cache.map((entry) => entry.id)).toEqual(expect.arrayContaining(qinghe!.assetIds))
+    expect(afterSwitch.cache.map((entry) => entry.id)).toEqual(expect.arrayContaining([...qinghe!.assetIds]))
 
     await manager.enterRegion(village!.regionId)
     await manager.enterRegion(qinghe!.regionId)

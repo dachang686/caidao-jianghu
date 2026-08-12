@@ -314,7 +314,7 @@
       "id": "G116",
       "title": "实现武学树与六槽配置页面",
       "phase": "gameplay-ui",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G108",
         "F012"
@@ -326,7 +326,7 @@
       "id": "G117",
       "title": "实现背包与装备页面",
       "phase": "gameplay-ui",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G109",
         "G111",
@@ -456,7 +456,7 @@
       "id": "S245",
       "title": "实现门派经营与派遣页面",
       "phase": "sect-ui",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "S241",
         "S243",
@@ -521,7 +521,7 @@
       "id": "G115",
       "title": "实现完整 Battle Screen",
       "phase": "gameplay-ui",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G105",
         "G107",
@@ -535,7 +535,7 @@
       "id": "G118",
       "title": "实现锻造与烹饪页面",
       "phase": "gameplay-ui",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G113",
         "G114",
@@ -713,7 +713,7 @@
       "id": "C303",
       "title": "第1章 小愚村：敌人、白大侠 与章节集成",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C302",
         "G105",
@@ -763,7 +763,7 @@
       "id": "C313",
       "title": "第2章 清河县：敌人、榜下捕快 与章节集成",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C312",
         "G105",
@@ -816,7 +816,7 @@
       "id": "C323",
       "title": "第3章 黑风寨：敌人、黑风寨主 与章节集成",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C322",
         "G105",
@@ -868,7 +868,7 @@
       "id": "C333",
       "title": "第4章 青云山：敌人、青云掌门 与章节集成",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C332",
         "G105",
@@ -918,7 +918,7 @@
       "id": "C343",
       "title": "第5章 西域驿路：敌人、驿路双煞 与章节集成",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C342",
         "G105",
@@ -970,7 +970,7 @@
       "id": "C353",
       "title": "第6章 东海镇：敌人、海潮帮主 与章节集成",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C352",
         "G105",
@@ -1073,7 +1073,7 @@
       "id": "C363",
       "title": "第7章 京城：敌人、榜司督主 与章节集成",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C362",
         "G105",
@@ -1122,7 +1122,7 @@
       "id": "C373",
       "title": "第8章 武林大会：敌人、百晓榜主 与章节集成",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C372",
         "G105",
@@ -1178,7 +1178,7 @@
       "id": "P385",
       "title": "实现 Core 通关后继续与委托循环",
       "phase": "postgame",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "P384",
         "S244",
@@ -1192,7 +1192,7 @@
       "id": "P386",
       "title": "校准主线成长、经济与时长采样",
       "phase": "cross-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "P382",
         "P383",
@@ -1264,9 +1264,9 @@
     },
     {
       "id": "Q406",
-      "title": "完成多档、迁移与异常恢复 E2E",
+      "title": "完成多档、异常恢复与直连 V2 E2E",
       "phase": "qa",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "Q404",
         "F010",
@@ -1292,7 +1292,7 @@
       "id": "Q408",
       "title": "完成包体、加载与内存验收",
       "phase": "qa",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "Q404",
         "W209"

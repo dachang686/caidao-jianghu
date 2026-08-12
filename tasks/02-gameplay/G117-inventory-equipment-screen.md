@@ -3,7 +3,7 @@ id: G117
 title: 实现背包与装备页面
 phase: gameplay-ui
 depends_on: [G109, G111, F012]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -51,3 +51,9 @@ pnpm build
 - 实现：新增背包/装备面板，支持分类筛选、数量、消费品使用、武器装备、六槽概览、实际属性差和种子化强化说明；装备动作连接真实 Demo store，关键物品明确禁用。
 - 验证：`pnpm lint`、`pnpm test`（25 files / 72 tests）、`pnpm test:e2e`（8 passed，桌面/移动）、`pnpm build` 均通过。
 - 备注：构建仍提示 `ch01.ts` 同时被静态和动态导入的既有 Vite 分包警告，不影响构建结果。
+
+## 本次接线与复验
+
+- 背包、六槽装备、食物使用和确定性强化均读写 `RootGameStore` 的 canonical InventoryState；装备/强化数值会进入战斗，关键物品继续明确禁用。
+- 强化确认展示固定种子规则与成本，强化记录、装备栏和背包会随 V2 存档恢复，避免复制物品。
+- 验证：`pnpm lint`、`pnpm test`（80 files / 245 tests）、`pnpm test:e2e`（65 passed / 1 skipped）和 `pnpm build` 均通过。

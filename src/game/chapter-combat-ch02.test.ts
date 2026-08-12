@@ -49,9 +49,19 @@ describe('第 2 章榜下捕快胜利事务', () => {
     const state = useRootGameStore.getState()
     useRootGameStore.setState({
       ...state,
-      world: { ...state.world, currentChapter: 'ch02', ch02MainlineComplete: false, ch02BossReady: false },
+      world: { ...state.world, currentChapter: 'ch02', baiDefeated: true, ch02MainlineComplete: false, ch02BossReady: false },
     })
-    useRootGameStore.getState().completeChapterTwoInvestigation()
+    useRootGameStore.getState().interactWithChapterNpc('qinghe-registrar')
+    expect(useRootGameStore.getState().chapterRuntime.quests.ch02?.tasks.find((task) => task.questId === 'ch02:mainline:board-ledger-gap')?.status).toBe('active')
+    useRootGameStore.getState().activateChapterHotspot('ch02:ranking-board')
+    useRootGameStore.getState().interactWithChapterNpc('qinghe-boatwoman')
+    useRootGameStore.getState().interactWithChapterNpc('qinghe-tea-keeper')
+    expect(useRootGameStore.getState().chapterRuntime.quests.ch02?.tasks.filter((task) => String(task.questId).includes(':mainline:')).map((task) => [task.questId, task.status])).toEqual([
+      ['ch02:mainline:board-first-look', 'completed'],
+      ['ch02:mainline:board-ledger-gap', 'completed'],
+      ['ch02:mainline:river-route', 'completed'],
+      ['ch02:mainline:evidence-ready', 'completed'],
+    ])
     useRootGameStore.getState().startBattle('ch02')
     expect(useRootGameStore.getState().battle?.enemy.id).toBe('bangsi')
     expect(useRootGameStore.getState().battle?.enemyIntent.summary).toContain('空白卷宗')

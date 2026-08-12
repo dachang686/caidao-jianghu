@@ -19,6 +19,7 @@ function App() {
   const forgingSnapshot = useRootGameStore((state) => state.forgingSnapshot)
   const cookingSnapshot = useRootGameStore((state) => state.cookingSnapshot)
   const foodBuffSnapshot = useRootGameStore((state) => state.foodBuffSnapshot)
+  const postgame = useRootGameStore((state) => state.postgame)
   const settings = useRootGameStore((state) => state.settings)
   const screen = useRootGameStore((state) => state.screen)
   const currentRegionId = useRootGameStore((state) => state.worldNavigation.currentRegionId)
@@ -30,6 +31,7 @@ function App() {
   const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
   const activePanel = useRootGameStore((state) => state.activePanel)
   const activeDialogue = useRootGameStore((state) => state.activeDialogue)
+  const activeChapterDialogue = useRootGameStore((state) => state.activeChapterDialogue)
   const setPanel = useRootGameStore((state) => state.setPanel)
   const closeDialogue = useRootGameStore((state) => state.closeDialogue)
   const ready = useRef(false)
@@ -53,7 +55,7 @@ function App() {
   }, [hydrateSaveV2, saveRepository, setSaveStatus])
 
   useEffect(() => {
-    if (!ready.current || !player || temporaryMode) return
+    if (!ready.current || !player || temporaryMode || screen === 'battle' || activeDialogue || activeChapterDialogue) return
     const snapshot = makeSaveV2()
     if (!snapshot) return
     rememberUiRecoverySave(snapshot)
@@ -62,7 +64,7 @@ function App() {
       saveRepository?.save('auto', snapshot).then(() => setSaveStatus('saved')).catch(() => setSaveStatus('temporary'))
     }, 250)
     return () => window.clearTimeout(timer)
-  }, [makeSaveV2, player, quests, world, skillProgress, inventoryState, equipmentLoadout, equipmentStrengthening, forgingSnapshot, cookingSnapshot, foodBuffSnapshot, settings, screen, temporaryMode, saveRepository, setSaveStatus])
+  }, [activeChapterDialogue, activeDialogue, makeSaveV2, player, quests, world, skillProgress, inventoryState, equipmentLoadout, equipmentStrengthening, forgingSnapshot, cookingSnapshot, foodBuffSnapshot, postgame, settings, screen, temporaryMode, saveRepository, setSaveStatus])
 
   useEffect(() => {
     document.documentElement.dataset.reducedMotion = String(settings.reducedMotion)
@@ -103,12 +105,13 @@ function App() {
       if (resolveInputAction(event, settings.keyBindings) !== 'cancel') return
       event.preventDefault()
       if (activeDialogue) closeDialogue()
+      else if (activeChapterDialogue) useRootGameStore.getState().closeChapterDialogue()
       else if (activePanel) setPanel(null)
       else toggleBossKey()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [activeDialogue, activePanel, closeDialogue, setPanel, settings.keyBindings, toggleBossKey])
+  }, [activeChapterDialogue, activeDialogue, activePanel, closeDialogue, setPanel, settings.keyBindings, toggleBossKey])
 
   const recoverTemporarySave = () => {
     try {

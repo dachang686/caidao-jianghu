@@ -3,14 +3,40 @@ import type { NpcSnapshot } from './npc'
 import type { KeyBindingMap } from './settings'
 import type { UnlockableSnapshot } from './unlockable'
 import type { WorldNavigationSnapshot } from './world'
-import type { GameSaveV1 } from '../game/types'
+import type { PlayerState, QuestState, ScreenId, WorldState } from '../game/types'
 import type { FoodBuffSnapshot } from './food'
 import type { StrengtheningAttempt, StrengtheningStatDelta } from './strengthening'
+import type { SectDispatchSnapshot } from './dispatch'
+import type { EffectState } from './effects'
+import type { GatheringSnapshot } from './gathering'
+import type { ExplorationSnapshot } from './hotspot'
+import type { QuestSnapshot } from './quest'
+import type { DialogueSnapshot } from './dialogue'
+import type { EndingRecordState } from './ending'
+import type { PostgameState } from './postgame'
 
 export interface SaveTaskState {
   readonly questId: QuestId
   readonly status: 'locked' | 'available' | 'active' | 'ready' | 'completed'
   readonly progress: number
+}
+
+/** 章节任务、探索与采集的权威运行态；不再由页面临时状态推断。 */
+export interface SaveChapterRuntime {
+  readonly quests: Readonly<Record<string, QuestSnapshot>>
+  readonly explorations: Readonly<Record<string, ExplorationSnapshot>>
+  readonly gatherings: Readonly<Record<string, GatheringSnapshot>>
+  readonly dialogues: Readonly<Record<string, DialogueSnapshot>>
+  readonly effects: EffectState
+}
+
+/** 直接随 V2 保存的游戏运行态；不经过旧存档适配。 */
+export interface SaveGameplayRuntime {
+  readonly screen: Extract<ScreenId, 'menu' | 'creation' | 'jianghu' | 'ending'>
+  readonly player: PlayerState
+  readonly quests: readonly QuestState[]
+  readonly world: WorldState
+  readonly ending: EndingRecordState
 }
 
 export interface SaveItemStack {
@@ -51,10 +77,17 @@ export interface SaveSectState {
   }
   readonly discipleIds: readonly string[]
   readonly seenDiscipleDialogueIds: readonly string[]
-  readonly dispatches: readonly {
-    readonly dispatchId: string
-    readonly progressTicks: number
-  }[]
+  readonly benefits: {
+    readonly combatAttackBonus: number
+    readonly combatDefenseBonus: number
+    readonly unlockedRecipeIds: readonly string[]
+    readonly strengtheningChanceBonus: number
+    readonly revealedRegionIds: readonly string[]
+    readonly commissionQualityBonus: number
+    readonly fameBonus: number
+  }
+  readonly claimedUpgradeGrantKeys: readonly string[]
+  readonly dispatch: SectDispatchSnapshot
 }
 
 export interface SaveCommissionState {
@@ -110,6 +143,7 @@ export interface GameSaveV2 {
     readonly sectProsperity: number
   }
   readonly tasks: readonly SaveTaskState[]
+  readonly chapterRuntime: SaveChapterRuntime
   readonly items: readonly SaveItemStack[]
   readonly skills: SaveSkillState
   readonly equipmentLoadout: SaveEquipmentLoadout
@@ -118,17 +152,14 @@ export interface GameSaveV2 {
   readonly recipeIds: readonly RecipeId[]
   readonly sect: SaveSectState
   readonly commissions: SaveCommissionState
+  readonly postgame: PostgameState
   readonly endings: SaveEndingState
   readonly flags: Readonly<Record<string, boolean>>
   readonly rng: SaveRngState
   readonly settings: SaveSettings
   readonly contentKeys: readonly ContentKey[]
   readonly defeatedEnemyIds: readonly EnemyId[]
-  /**
-   * M1 仍由旧屏幕渲染完整角色战斗态。该快照是 V2 存档的一部分，
-   * 用于无损恢复；后续章节完成领域迁移后再逐段收缩，不能由 UI 临时态替代。
-   */
-  readonly m1?: GameSaveV1
+  readonly runtime: SaveGameplayRuntime
 }
 
 export type SaveSlotId = 'manual-1' | 'manual-2' | 'manual-3' | 'auto' | 'backup'
