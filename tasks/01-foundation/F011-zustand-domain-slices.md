@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增 `RootGameStore` 兼容根入口及 player/quest/battle/world/settings/shell slice 类型边界，App 已切换到 `src/stores` 公开入口。
+- EventBus、SaveRepository、TextProvider 通过独立服务注入容器管理，不写入 Zustand 状态；旧 `src/game/store` 保留为现有 Demo 的兼容实现。
+- 验证结果：`pnpm lint`、`pnpm test`、`pnpm build` 均通过。

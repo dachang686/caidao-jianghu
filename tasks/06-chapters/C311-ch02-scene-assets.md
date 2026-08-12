@@ -3,7 +3,7 @@ id: C311
 title: 第2章 清河县：场景、NPC 与素材
 phase: chapter-content
 depends_on: [C303, W201, W204, W205, W209]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,20 @@ pnpm build
 - 不在图片中烘焙中文文字。
 - 不提前实现本章任务、Boss 或下一章内容。
 - 不用外链素材或“稍后补图”占位。
+
+## 执行记录
+
+- 使用内置 `imagegen` 生成清河县街市背景与沈青禾、柳婶、陆掌柜、榜下捕快四张角色图；角色图经本地 chroma-key 后处理为带 alpha 的 WebP，最终资源均保存于 `src/assets/backgrounds/` 与 `src/assets/characters/`，图片不含中文文字、UI 或水印。
+- 新增清河县区域 manifest、两处地点、四名有关系上下限和互动效果的 NPC、四个可访问热点与河岸重复采集点；街市到码头使用 `returnToLocationId` 保持安全返回，任务和 Boss 数组保持为空，未提前生成半成品入口。
+- 接入 `ch02` 动态/同步章节加载、章节/区域资源入口和静态 `new URL` 资源引用，确保 Vite 离线产物实际包含新 WebP；清河县资源估算总量 701158 bytes，低于 5MB 上限和 1000000 bytes 区域预算。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（2 个章节；Node loader 仅输出实验性 warning）。
+- `pnpm test -- src/systems/world src/systems/exploration`：通过，5 个文件、15 个测试。
+- `pnpm build`：通过，Vite 转换 173 个模块，产物包含清河背景及 4 张角色 WebP。
+
+## 边界与风险
+
+- C311 只负责清河县场景、NPC、热点、采集点和素材；本章 4 个主线、2 个支线、对白、普通敌人战斗与榜下捕快 Boss 由 C312/C313 接续，当前不会出现任务或 Boss 占位入口。

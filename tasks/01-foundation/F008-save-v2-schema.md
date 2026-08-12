@@ -3,7 +3,7 @@ id: F008
 title: 定义 GameSaveV2 与运行状态边界
 phase: foundation
 depends_on: [F003]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增严格 `GameSaveV2` 类型与 Zod schema，覆盖章节、任务、物品、武学、配方、门派、委托、结局、RNG、schema/content 版本和设置。
+- Save schema 明确排除 Battle/Dialogue 中间态、Provider/事件订阅；AI 只允许 `enabled:false/provider:none`，凭据字段无法通过校验。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/save/schema.test.ts`、`pnpm build` 均通过。

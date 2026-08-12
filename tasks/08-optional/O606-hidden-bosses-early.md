@@ -43,3 +43,11 @@ pnpm assets:audit
 - 不破坏已验收 Core 路径或提高 Core 通关门槛。
 - 不留下关闭 Optional 后仍可见的悬空入口。
 - 不用重复刷取、现实时间或占位素材凑时长。
+
+## 执行记录
+
+- 配置第 1–4 章各 1 个 Optional 隐藏 Boss，共 4 个；每个包含 discovery clue、可读意图、至少 3 招、两阶段、首胜奖励和复用本地资源。
+
+## 验证记录
+
+- Optional 内容校验、隐藏 Boss/战斗单测、混沌路径 E2E 和 `pnpm build` 均通过。

@@ -3,7 +3,7 @@ id: F007
 title: 建立内容加载器与基础校验 CLI
 phase: foundation
 depends_on: [F003, F004]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增小愚村章节内容夹具、同步加载与动态 import 注册契约，以及重复 ID/缺失引用/非法值/Manifest 版本校验器。
+- 新增 `pnpm content:validate` 无交互 CLI；`--fixture=duplicate` 会输出结构化错误并返回非零退出码。
+- 验证结果：`pnpm lint`、`pnpm content:validate`、`pnpm test`、`pnpm build` 均通过。

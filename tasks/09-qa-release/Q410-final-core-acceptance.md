@@ -3,7 +3,7 @@ id: Q410
 title: 执行 1.0 Core 最终验收
 phase: release
 depends_on: [Q405, Q409]
-status: pending
+status: blocked
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -47,3 +47,12 @@ pnpm assets:audit
 - 不通过降低断言、跳过浏览器项目或放宽预算通过验收。
 - 不在没有复现证据时做范围外重构。
 - 不宣称未实际执行的命令或人工时长已验证。
+
+## 执行记录
+
+- 已完成 Core 数量/占位审计、全量测试、八章快照/黄金/混沌路径、响应式与性能、构建、资源审计和离线发布包复核；新增 `pnpm playtest:timer` 真人墙钟记录工具、章节计时模板与发布清单。
+
+## 验证记录
+
+- 自动化发布门禁全部通过：`pnpm lint`、`pnpm content:validate`、全量单测连续 3 次、全量 E2E（63 passed / 1 个既有移动矩阵 skip）、`pnpm build`、`pnpm assets:audit`、`pnpm release:package`。
+- 阻塞：验收明确要求至少 3 轮独立真人黄金路径的章节耗时和总时长；当前只有自动化估算，不能替代真人记录。实测入口见 `docs/PLAYTEST_REPORT.md` 与 `docs/CHAPTER_TIMING_TEMPLATE.md`。

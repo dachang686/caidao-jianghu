@@ -3,7 +3,7 @@ id: C342
 title: 第5章 西域驿路：任务、对白与情境幽默
 phase: chapter-content
 depends_on: [C341, W202, W203, H221, H222, H224]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,15 @@ pnpm build
 - 不用刷怪、等待或材料墙填充主线时长。
 - 不让 AI/LocalTextProvider 生成任务逻辑或 Effect。
 - 不写下一章对白或 Boss 结算。
+
+## 执行记录
+
+- 已完成第5章4个主线任务、2个支线任务、3名 NPC 状态化对白、迷惑分支确认、情境组合和4级互动链。
+- 已加入幂等奖励、Boss 前置状态、自动存档点及清淡/标准/加辣文案覆盖。
+
+## 验证记录
+
+- `pnpm lint` 通过。
+- `pnpm content:validate` 通过（对白图、任务可达性、幽默四层覆盖）。
+- 第5章任务数量与 grantKey 唯一性通过内容校验。
+- `pnpm build` 通过（282 modules transformed）。

@@ -3,7 +3,7 @@ id: F003
 title: 定义领域 ID、核心类型与 ContentManifest
 phase: foundation
 depends_on: [F002]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增品牌化内容 ID、章节/地点/NPC/任务/对白/敌人/物品/技能等最小定义，以及 `ContentManifest` 的章节索引和资源入口。
+- Manifest 当前只注册小愚村入口，不依赖后续章节文件；运行状态仍由 `src/game/types.ts` 负责，未复制为第二套存档状态。
+- 验证结果：`pnpm lint`、`pnpm test`、`pnpm build` 均通过。

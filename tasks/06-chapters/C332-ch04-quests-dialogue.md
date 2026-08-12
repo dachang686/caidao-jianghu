@@ -3,7 +3,7 @@ id: C332
 title: 第4章 青云山：任务、对白与情境幽默
 phase: chapter-content
 depends_on: [C331, W202, W203, H221, H222, H224]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,16 @@ pnpm build
 - 不用刷怪、等待或材料墙填充主线时长。
 - 不让 AI/LocalTextProvider 生成任务逻辑或 Effect。
 - 不写下一章对白或 Boss 结算。
+
+## 执行记录
+
+- 新增青云山严格 4 条主线与 2 条手工支线；主线依次登记山门、检查规训、确认药圃路线和核对听云台，末条设置 `ch04_boss_ready`、`ch04_autosave_checkpoint`、`ch04_mainline_complete`。
+- 为林小门、苏青禾、钟小响接入状态化静态对白；每个 NPC 含迷惑分支及返回路径，章节总计 6 个迷惑分支，掌门核验选项使用严肃二次确认。
+- 新增青云山情境组合与四级铜钟互动链，首次奖励使用唯一 grantKey 且重复事件幂等；主线不依赖采集材料墙。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（4 chapters；仅 Node experimental loader warning）。
+- `pnpm test -- src/systems/quests/ch04-content.test.ts src/systems/dialogue/ch04-content.test.ts src/systems/comedy/ch04-content.test.ts --reporter=dot`：3 个文件、7 个测试通过。
+- `pnpm build`：通过，207 modules transformed。

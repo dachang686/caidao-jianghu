@@ -3,7 +3,7 @@ id: G108
 title: 实现 8 个 Core 被动节点
 phase: gameplay
 depends_on: [G106, G107]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,10 @@ pnpm build
 - 不提前实现后续任务或 Optional 内容。
 - 不在 React 组件中复制领域公式。
 - 不用占位数据、远程资源或跳过测试伪装完成。
+
+## 执行记录
+
+- 基线：G106/G107 已有主动技能注册与结算，但没有被动节点、派生属性重算或互斥校验。
+- 实现：新增四系 8 个 Core 被动、被动树前置/互斥操作、从基础属性重算的条件派生效果，并把被动循环诊断接入内容校验器。
+- 验证：`pnpm lint`、`pnpm content:validate`、`pnpm test -- src/systems/skills`（3 files / 9 tests；另含内容校验 4 tests）、`pnpm build` 均通过。
+- 备注：构建仍提示 `ch01.ts` 同时被静态和动态导入的既有 Vite 分包警告，不影响构建结果。

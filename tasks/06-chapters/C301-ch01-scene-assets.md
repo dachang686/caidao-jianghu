@@ -3,7 +3,7 @@ id: C301
 title: 第1章 小愚村：场景、NPC 与素材
 phase: chapter-content
 depends_on: [F015, W201, W204, W205, W209]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,23 @@ pnpm build
 - 不在图片中烘焙中文文字。
 - 不提前实现本章任务、Boss 或下一章内容。
 - 不用外链素材或“稍后补图”占位。
+
+## 执行记录
+
+- 复用现有小愚村 WebP 背景、主角、老头、猫和白大侠，扩展 `src/content/assets/core.ts` 的区域资源清单与地点引用；区域 7 张 WebP 总估算 846610 bytes，低于 900000 bytes 区域预算和 5MB 任务上限。
+- 使用内置 `image_gen` 生成王大娘单角色立绘，采用纯色抠像后处理为 RGBA WebP：`src/assets/characters/aunt.webp`，1024×1536、105412 bytes，四角 alpha 为 0；素材无文字、UI、水印、阴影和其他 NPC。
+- 将王大娘注册到小愚村区域资产、场景按钮和热点，状态气泡随找猫进度变化；保留现有 4 名 NPC、2 个采集节点、4 个热点和单地点安全返回结构，不提前加入任务线或 Boss 内容。
+- 内容校验新增未使用资源与地点/区域资源引用检查，所有场景文字继续由 DOM 渲染。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（Node `--experimental-loader` 仅输出实验性警告）。
+- `pnpm test -- src/systems/world src/systems/exploration`：通过，3 个文件、10 个测试。
+- `pnpm test -- src/systems/assets`：通过，1 个文件、3 个测试。
+- `pnpm build`：通过，Vite 产出 152 个模块并包含 aunt WebP。
+- `pnpm test:e2e`：通过，21 个通过、1 个按项目配置跳过（移动端不重复执行五档矩阵）。
+
+## 风险与边界
+
+- C301 只负责场景、NPC、热点和素材；本章完整任务对白、战斗集成与 Boss 逻辑仍由后续 C302/C303 处理，当前没有新增未完成入口。

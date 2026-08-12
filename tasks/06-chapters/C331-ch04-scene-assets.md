@@ -3,7 +3,7 @@ id: C331
 title: 第4章 青云山：场景、NPC 与素材
 phase: chapter-content
 depends_on: [C323, W201, W204, W205, W209]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,17 @@ pnpm build
 - 不在图片中烘焙中文文字。
 - 不提前实现本章任务、Boss 或下一章内容。
 - 不用外链素材或“稍后补图”占位。
+
+## 执行记录
+
+- 新增青云山区域与 `qingyun-gate`、`qingyun-herb-garden`、`qingyun-bell-terrace` 三个地点；入口受 `ch03_mainline_complete` 约束，两个支地点均配置回到山门的安全路径。
+- 新增林小门、苏青禾、钟小响 3 名状态化 NPC，5 个桌面/移动端归一化热点和 1 个可重复采集点「云台青蘅草」；本任务保持任务列表为空，不提前放置任务或 Boss 入口。
+- 使用 imagegen skill 生成并本地化青云山门背景、3 名 NPC、普通敌人与青云掌门 WebP 素材；所有文字继续由 DOM 内容渲染。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（4 chapters；仅 Node experimental loader warning）。
+- `pnpm test -- src/systems/world/ch04-content.test.ts src/systems/exploration/ch04-hotspots.test.ts src/types/content.test.ts --reporter=dot`：3 个文件、7 个测试通过。
+- `pnpm build`：通过，204 modules transformed。
+- 青云山区域 6 件 WebP 素材合计约 462KB，资产 manifest 与缺失引用校验通过。

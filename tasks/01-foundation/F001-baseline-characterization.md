@@ -3,7 +3,7 @@ id: F001
 title: 锁定 Demo 行为基线
 phase: foundation
 depends_on: []
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -43,3 +43,9 @@ pnpm test:e2e
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 基线测试：`pnpm lint` 通过；`pnpm test` 基线为 2 个测试文件、6 个断言；`pnpm test:e2e` 基线为 8 个场景（桌面/移动双项目）。
+- 补充回归：战败后资源恢复与原地重试、移动端无横向溢出；为战败结果和重试按钮补充 `data-testid`。
+- 验证结果：F001 修改后 `pnpm lint`、`pnpm test`（7 个断言）、`pnpm test:e2e`（8 个场景）均通过。

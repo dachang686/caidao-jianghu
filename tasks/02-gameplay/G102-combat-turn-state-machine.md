@@ -3,7 +3,7 @@ id: G102
 title: 实现战斗回合状态机
 phase: gameplay
 depends_on: [G101, F005, F006]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现后续任务或 Optional 内容。
 - 不在 React 组件中复制领域公式。
 - 不用占位数据、远程资源或跳过测试伪装完成。
+
+## 执行记录
+
+- 新增独立 `CombatTurnEngine` 与 combat 类型，覆盖 setup/player_turn/resolving/enemy_turn/victory/defeat、合法动作、动作幂等和战前快照重试。
+- HP/内力/状态变化只能通过引擎结算结果进入状态，非法阶段/技能/动作返回结构化错误；未在本任务提前实现伤害公式。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/combat`、`pnpm build` 均通过。

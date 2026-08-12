@@ -3,7 +3,7 @@ id: C341
 title: 第5章 西域驿路：场景、NPC 与素材
 phase: chapter-content
 depends_on: [C333, W201, W204, W205, W209]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,15 @@ pnpm build
 - 不在图片中烘焙中文文字。
 - 不提前实现本章任务、Boss 或下一章内容。
 - 不用外链素材或“稍后补图”占位。
+
+## 执行记录
+
+- 已完成第5章西域驿路区域、3个地点、3名状态化 NPC、3个探索热点、2个返回热点、采集点与章节入口条件。
+- 已生成并接入本地 WebP 背景与角色素材，资产 manifest、区域预算和同步/异步加载均已更新。
+
+## 验证记录
+
+- `pnpm lint` 通过。
+- `pnpm content:validate` 通过（8章全量内容加载）。
+- `pnpm build` 通过（282 modules transformed）。
+- C05 区域新增素材总量低于 5MB；无远程素材引用。

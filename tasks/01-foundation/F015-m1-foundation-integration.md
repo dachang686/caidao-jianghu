@@ -48,3 +48,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增启动时 foundation runtime：校验并加载小愚村 Manifest，注入 EventBus、SaveRepository、LocalTextProvider；不把服务实例写入 Zustand。
+- 保留旧 V1 存档适配和 Demo 数值以保证刷新兼容，同时补充创角→教学→白大侠胜利集成断言。
+- 验证结果：`pnpm lint`、`pnpm content:validate`、`pnpm test`、`pnpm test:e2e`、`pnpm build` 均通过。

@@ -3,7 +3,7 @@ id: G107
 title: 配置 16 个 Core 主动技能
 phase: gameplay
 depends_on: [G106, G104]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,10 @@ pnpm build
 - 不提前实现后续任务或 Optional 内容。
 - 不在 React 组件中复制领域公式。
 - 不用占位数据、远程资源或跳过测试伪装完成。
+
+## 执行记录
+
+- 基线：G106 已提供技能注册表和六槽领域，但没有 Core 主动技能内容或统一技能结算器。
+- 实现：新增四系 16 个数据驱动主动技能、固定 RNG 结算/预览函数及安全阀字段；覆盖菜刀乱舞、嘴遁、装死、铁头功、二锅头、过期大还丹、先叠甲、借坡下驴等规则模块。
+- 验证：`pnpm lint`、`pnpm content:validate`、`pnpm test -- src/systems/skills src/systems/combat`（6 files / 17 tests）、`pnpm build` 均通过。
+- 备注：构建仍提示 `ch01.ts` 同时被静态和动态导入的既有 Vite 分包警告，不影响构建结果。

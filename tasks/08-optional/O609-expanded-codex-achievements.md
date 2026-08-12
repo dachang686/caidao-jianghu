@@ -43,3 +43,11 @@ pnpm assets:audit
 - 不破坏已验收 Core 路径或提高 Core 通关门槛。
 - 不留下关闭 Optional 后仍可见的悬空入口。
 - 不用重复刷取、现实时间或占位素材凑时长。
+
+## 执行记录
+
+- 新增 12 条 Optional 图鉴/成就/稀有称号条目，声明线索、描述、事件规则和独立命名空间，并合并到 `ALL_UNLOCKABLES`、商店/图鉴注册与内容校验。
+
+## 验证记录
+
+- Optional 校验、14 项定向 Optional/存档测试、全量单测连续 3 次和 `pnpm build` 均通过。

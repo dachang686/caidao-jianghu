@@ -3,7 +3,7 @@ id: W210
 title: 实现全局错误恢复面板
 phase: ux
 depends_on: [F010, F012]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -45,3 +45,11 @@ pnpm build
 - 不提前实现后续章节或 Optional 内容。
 - 不把领域状态判断复制进 Screen。
 - 不用远程资源、占位入口或弱化断言伪装完成。
+
+## 执行记录
+
+- 新增全局 `AppErrorBoundary` 与可见存档恢复层，覆盖临时档恢复、自动档重验、导出、损坏自动档清除和配额异常提示；恢复动作复用既有 save repository。
+
+## 验证记录
+
+- 全量单测连续 3 次通过（80 files / 240 tests）；存档恢复 E2E 桌面端与移动端均通过。

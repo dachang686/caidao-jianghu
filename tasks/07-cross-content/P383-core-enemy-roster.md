@@ -3,7 +3,7 @@ id: P383
 title: 补齐 12 模板与 24 个 Core 敌人变体
 phase: cross-content
 depends_on: [C373, G105]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,11 @@ pnpm build
 - 不补 Optional 数量来掩盖 Core 缺口。
 - 不通过刷怪、等待或经济墙延长时长。
 - 不改变已确认的纯离线和单主角边界。
+
+## 执行记录
+
+- 新增 12 个行为模板、24 个 Core 敌人变体和 8 章区域遭遇表；每个变体保留可读意图、招式组、难度参数和 Boss 阶段引用。
+
+## 验证记录
+
+- 内容校验、敌人/战斗相关单测、黄金/混沌路径 E2E 和构建均通过。

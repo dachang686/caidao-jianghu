@@ -3,7 +3,7 @@ id: F004
 title: 实现 Condition 纯函数求值器
 phase: foundation
 depends_on: [F003]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增不可变 `Condition` 联合和纯函数求值器，覆盖七种条件、嵌套递归、空组合与数量边界。
+- 缺失任务/物品/属性/旗标引用通过 `ConditionEvaluationError` 返回带路径错误；实现不依赖 React/Zustand。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/conditions`、`pnpm build` 均通过。

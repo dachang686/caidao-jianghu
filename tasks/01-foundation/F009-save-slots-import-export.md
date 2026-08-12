@@ -3,7 +3,7 @@ id: F009
 title: 实现多档位存储与安全导入导出
 phase: foundation
 depends_on: [F008]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增 IndexedDB 存储适配器、内存测试适配器和 `SaveRepository`，支持手动 1–3、自动、覆盖备份五个槽位；摘要单独存储。
+- 新增带 schema/contentVersion/checksum 的安全导入导出；导入失败不写目标档，覆盖前先保留旧档，存储空间异常转换为可展示错误。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/save`、`pnpm build` 均通过。

@@ -47,3 +47,25 @@ pnpm build
 - 不为 Boss 创建独立平行战斗引擎。
 - 不用隐藏随机即死、关键物品损失或永久减益制造笑点。
 - 不提前实现下一章或 Optional 隐藏 Boss。
+
+## 执行记录
+
+- 新增 `src/content/enemies/ch02.ts`，配置榜纸抄手、桥边扒手两类普通敌人和榜下捕快；三者均复用统一敌人行为模板、招式引用和诚实意图字段，Boss 仅配置一个「空白卷宗」反套路规则与双阶段。
+- 新增 `CH02_BOSS_REWARD` 与 `settleCh02BossVictory`，把清河榜牌、经验、银两、装备/采集/锻造解锁、下一章/结局门槛和自动档检查点放进同一幂等结算事务；失败重试只恢复本局资源，不丢线索或关键物品。
+- 扩展 Demo 状态机支持第 2 章快照入口、调查、榜下捕快战斗、二阶段、规则反馈、Boss 专属败北演出和返回清河县；旧第 1 章入口与存档字段保留默认兼容值。
+- 新增 `e2e/ch02-flow.spec.ts`，直接写入章首 IndexedDB 快照，覆盖桌面/手机调查、战斗、自动档刷新和返回场景，不重跑第 1 章剧情；同时更新历史 C311/Manifest 测试中已过期的“仅场景、无任务/敌人”断言。
+- 新增 `pnpm simulate:battles -- --ch02-bangsi` 内置标准构筑，作为本章 Boss 的固定种子批量平衡入口。
+
+## 验证结果
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（2 chapters）；Node loader 仅输出 ExperimentalWarning。
+- `pnpm test`：通过，60 个文件、193 个测试。
+- `pnpm test:e2e -- --workers=1 --retries=0 --reporter=list`：通过，23 passed、1 skipped（既有移动端五档矩阵按项目配置跳过）。其中新增清河县快照流桌面/手机均通过。
+- `pnpm simulate:battles -- --ch02-bangsi --start=1 --end=100`：标准难度 100 场胜率 95%，最长 12 回合，平均 8.79 回合，存在破防窗口，无超时、固定必败或 never-break 检查异常。
+- `pnpm build`：通过，Vite 转换 182 个模块，并包含清河县背景、NPC/Boss WebP 素材。
+
+## 边界与风险
+
+- 本任务没有提前制作第 3 章内容或 Optional 隐藏 Boss；胜利只写入下一章/结局可达门槛，后续章节任务负责消费该门槛。
+- 两类普通敌人已进入第 2 章内容目录、内容校验和模拟器；Demo 可视化入口聚焦清河县主线 Boss，普通敌人暂未另做独立场景入口。

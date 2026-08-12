@@ -3,7 +3,7 @@ id: C321
 title: 第3章 黑风寨：场景、NPC 与素材
 phase: chapter-content
 depends_on: [C313, W201, W204, W205, W209]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,21 @@ pnpm build
 - 不在图片中烘焙中文文字。
 - 不提前实现本章任务、Boss 或下一章内容。
 - 不用外链素材或“稍后补图”占位。
+
+## 执行记录
+
+- 已用 ImageGen 生成黑风寨场景背景、曹掌柜/小顺/胡大勺三个 NPC、山寨巡哨普通敌人和黑风寨主本地素材，并转为 `src/assets/**/*.webp`；素材不含文字、UI 或水印，黑风寨区域资源合计约 359KB。
+- 已新增 `blackwind-fortress` 区域及山寨门、灶房、瞭望台三个地点；入口由 `ch02_mainline_complete` 条件锁定，灶房和瞭望台均有返回山寨门的安全路径。
+- 已接入 3 个带关系边界/互动效果的状态化 NPC、5 个桌面/移动热点和 1 个可刷新采集点；任务与敌人字段保持为空/未声明，未提前生成 Boss 入口。
+- 已更新动态/同步章节加载器、内容 manifest、区域资源预算和采集物目录，并补充 C321 世界导航与热点测试。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过，3 个章节；Node loader 输出 ExperimentalWarning，不影响退出码。
+- `pnpm test -- src/systems/world src/systems/exploration --reporter=dot`：通过，7 个测试文件、20/20 测试通过。
+- `pnpm build`：通过，Vite 转换 187 个模块，黑风寨章节 chunk 与全部新增 WebP 均进入构建产物。
+
+## 边界
+
+- C321 只完成场景、NPC、热点、采集和本地素材；第 3 章任务/对白/情境幽默与普通敌人、Boss 行为留给 C322/C323，当前没有未完成入口。

@@ -3,7 +3,7 @@ id: Q409
 title: 完成离线包与 GitHub Pages 发布流水线
 phase: release
 depends_on: [Q406, Q407, Q408]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -48,3 +48,11 @@ pnpm assets:audit
 - 不通过降低断言、跳过浏览器项目或放宽预算通过验收。
 - 不在没有复现证据时做范围外重构。
 - 不宣称未实际执行的命令或人工时长已验证。
+
+## 执行记录
+
+- 接入内容校验、TypeScript/Vite 构建、静态资源审计、GitHub Pages base path、离线包复制与 CI workflow；补齐 README、发布清单和离线产物说明。
+
+## 验证记录
+
+- `pnpm build`、`pnpm assets:audit`、`pnpm release:package` 均通过；产物位于 `output/offline-package`。Vite 仅输出非阻断分包大小/动态导入提示。

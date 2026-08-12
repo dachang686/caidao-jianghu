@@ -3,7 +3,7 @@ id: P384
 title: 完成四结局文本、演出与可达路径
 phase: cross-content
 depends_on: [C373, W212, H223, H224]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,11 @@ pnpm build
 - 不补 Optional 数量来掩盖 Core 缺口。
 - 不通过刷怪、等待或经济墙延长时长。
 - 不改变已确认的纯离线和单主角边界。
+
+## 执行记录
+
+- 完成「菜刀宗师」「热榜盟主」「自建门派」「退休掌柜」四套文本、演出 cue、判定条件和可达路径，并接入结局屏与通关后继续。
+
+## 验证记录
+
+- 结局引擎单测、八章黄金路径和 ch08 结局快照/继续原档 E2E 均通过。

@@ -1,0 +1,12 @@
+// Save schema 只描述可序列化权威状态，不包含 UI 临时态或运行时服务实例。
+export { createMinimalGameSaveV2, gameSaveSchema, gameSaveV2Schema, GameSaveValidationError, makeMinimalGameSaveV2, parseGameSaveV2 } from './schema'
+export type { ParsedGameSaveV2 } from './schema'
+export { calculateSaveChecksum, exportGameSave, exportSaveV2, importSaveV2, parseGameSaveExport, SaveImportError } from './import-export'
+export { createIndexedDbSaveRepository, createMemorySaveStorage, IndexedDbSaveStorage, SaveRepository, SaveRepositoryError, SAVE_SLOT_ORDER } from './repository'
+export type { SaveStorage, SaveSummary, StoredSaveRecord } from './repository'
+export { createSaveMigrationRegistry, SaveMigrationRegistry, SaveMigrationError } from './migrations'
+export type { SaveMigration } from './migrations'
+export { AUTO_SAVE_TRIGGERS, AutoSaveController, isAutoSaveTrigger } from './autosave'
+export type { AutoSaveResult, AutoSaveTrigger } from './autosave'
+export { RecoveryError, SessionRecoveryStore, SESSION_RECOVERY_KEY, SESSION_RECOVERY_TTL_MS } from './recovery'
+export type { RecoveryResult, RecoveryStatus, RecoveryStorage } from './recovery'

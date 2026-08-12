@@ -47,3 +47,18 @@ pnpm build
 - 不为 Boss 创建独立平行战斗引擎。
 - 不用隐藏随机即死、关键物品损失或永久减益制造笑点。
 - 不提前实现下一章或 Optional 隐藏 Boss。
+
+## 执行记录
+
+- 新增青云山两类普通敌人「山门执事」「雾阶剑童」与两阶段 Boss「青云掌门」，统一复用现有敌人 AI/回合引擎；Boss 配置诚实意图、一次「礼法反噬」规则和败北 PresentationCue。
+- 新增青云掌门胜利原子结算：奖励青云名帖、经验与银两，幂等写入自动档，解锁意图进阶与装备强化并开放下一章/结局资格；接入青云山场景、战斗 UI、失败重试和刷新恢复。
+- 新增青云山章节快照 E2E，覆盖桌面与手机视口；补齐 rule/situation/interaction/presentation 四层幽默覆盖、敌人内容、结算与存档兼容单测；新增青云山本地 WebP 背景与掌门素材。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（4 chapters；仅 Node experimental loader warning）。
+- `pnpm test -- --reporter=dot`：74 个测试文件、227 个测试通过。
+- `pnpm test:e2e -- --workers=1 --retries=0 --reporter=list`：27 通过、1 个既有移动端视口用例跳过；C333 桌面/手机快照均通过。
+- `pnpm build`：通过，216 modules transformed。
+- `pnpm simulate:battles -- --ch04-qingyun-master --start=1 --end=100`：100 局，67 胜、33 负、0 超时、最大 15 回合、无检查问题；每局 Boss 阶段最多转换一次。

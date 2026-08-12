@@ -43,3 +43,11 @@ pnpm assets:audit
 - 不破坏已验收 Core 路径或提高 Core 通关门槛。
 - 不留下关闭 Optional 后仍可见的悬空入口。
 - 不用重复刷取、现实时间或占位素材凑时长。
+
+## 执行记录
+
+- 新增 10 条跨第 5–8 章的 Optional 委托，并修正 `ALL_COMMISSION_TEMPLATES` 合并 Core 12 条委托；连同 16 条章节支线形成 38 条可审计支线/委托内容。
+
+## 验证记录
+
+- 委托内容校验、Optional 校验、全量单测连续 3 次和 `pnpm build` 均通过。

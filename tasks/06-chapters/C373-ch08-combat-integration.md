@@ -47,3 +47,17 @@ pnpm build
 - 不为 Boss 创建独立平行战斗引擎。
 - 不用隐藏随机即死、关键物品损失或永久减益制造笑点。
 - 不提前实现下一章或 Optional 隐藏 Boss。
+
+## 执行记录
+
+- 已完成第8章2类普通敌人、百晓榜主双阶段 Boss、规则/情境/互动/演出四层覆盖、奖励结算、系统解锁和章节 E2E。
+- 已接入存档、下一章解锁、Boss 重试、战斗 UI 与章节模拟器。
+
+## 验证记录
+
+- `pnpm lint` 通过。
+- `pnpm content:validate` 通过。
+- `pnpm test -- --reporter=dot` 通过（74 files / 227 tests）。
+- `pnpm test:e2e -- e2e/ch05-08-flow.spec.ts --workers=1 --retries=0 --reporter=list` 通过（8 tests）。
+- `pnpm simulate:battles -- --ch08-ranking-master --start=1 --end=100` 通过：93胜、7负、0超时、最大13回合、issues为空、阶段最多转换1次。
+- `pnpm build` 通过（282 modules transformed）。

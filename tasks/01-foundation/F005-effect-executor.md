@@ -3,7 +3,7 @@ id: F005
 title: 实现 Effect 执行器与奖励幂等
 phase: foundation
 depends_on: [F003, F004]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增 Effect 联合、纯执行器和可序列化执行状态，支持物品、经验、旗标、任务、属性、战斗导航和旁白事件。
+- `grantKey` 对物品/经验奖励幂等；执行过程按声明顺序生成新状态、事件和导航意图，并对未知引用与非法数值返回路径错误。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/effects`、`pnpm build` 均通过。

@@ -1,0 +1,16 @@
+export {
+  EMPTY_UNLOCKABLE_SNAPSHOT,
+  UnlockableEngine,
+  UnlockableEngineError,
+  UnlockableSnapshotError,
+  applyUnlockableEvent,
+  assertValidUnlockableDefinitions,
+  calculateTitleBonuses,
+  createUnlockableEngine,
+  deriveTitleCombatStats,
+  deriveTitleStats,
+  parseUnlockableSnapshot,
+  restoreUnlockableSnapshot,
+  serializeUnlockableSnapshot,
+  validateUnlockableDefinitions,
+} from './engine'

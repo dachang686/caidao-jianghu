@@ -1,0 +1,8 @@
+export { CH01_ENEMY_DEFINITIONS, ch01EnemyDefinitions } from './ch01'
+export { CH02_ENEMY_DEFINITIONS, ch02EnemyDefinitions } from './ch02'
+export { CH03_ENEMY_DEFINITIONS, ch03EnemyDefinitions } from './ch03'
+export { CH04_ENEMY_DEFINITIONS, ch04EnemyDefinitions } from './ch04'
+export { CH05_ENEMY_DEFINITIONS, ch05EnemyDefinitions } from './ch05'
+export { CH06_ENEMY_DEFINITIONS, ch06EnemyDefinitions } from './ch06'
+export { CH07_ENEMY_DEFINITIONS, ch07EnemyDefinitions } from './ch07'
+export { CH08_ENEMY_DEFINITIONS, ch08EnemyDefinitions } from './ch08'

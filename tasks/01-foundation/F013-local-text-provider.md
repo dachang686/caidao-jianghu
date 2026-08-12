@@ -3,7 +3,7 @@ id: F013
 title: 实现 LocalTextProvider 统一文本出口
 phase: foundation
 depends_on: [F003, F006]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增白名单 `TextProvider` 契约和 `LocalTextProvider`，覆盖旁白、对白补丁、战报、委托、门人汇报、闲想与物品风味模板。
+- 本地 Provider 同步返回非空纯文本，带 `requestId/source`，执行密度、去重、长度和标记清洗；未知类型也有确定回退，无网络调用。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/providers`、`pnpm build` 均通过。

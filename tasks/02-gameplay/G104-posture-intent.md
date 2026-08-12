@@ -3,7 +3,7 @@ id: G104
 title: 实现架势破防与意图模型
 phase: gameplay
 depends_on: [G103]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现后续任务或 Optional 内容。
 - 不在 React 组件中复制领域公式。
 - 不用占位数据、远程资源或跳过测试伪装完成。
+
+## 执行记录
+
+- 新增架势状态、破防窗口、1.5 倍易伤和明确重置时点；多段攻击在同一窗口内不会重复触发破防。
+- 新增猛攻/蓄力/防御/特殊意图契约与安全摘要转换，普通敌人可标记为 honest，UI 无需反推 AI 内部状态。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/combat`、`pnpm build` 均通过。

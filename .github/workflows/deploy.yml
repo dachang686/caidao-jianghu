@@ -34,8 +34,22 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Lint
+        run: pnpm lint
+      - name: Validate content
+        run: pnpm content:validate
+      - name: Unit tests
+        run: pnpm test
+      - name: Browser tests
+        run: pnpm test:e2e
       - name: Build game
         run: pnpm build
+      - name: Audit assets and offline package
+        run: pnpm assets:audit
+      - name: Package offline build
+        run: pnpm release:package
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:

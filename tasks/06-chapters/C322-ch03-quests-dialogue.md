@@ -3,7 +3,7 @@ id: C322
 title: 第3章 黑风寨：任务、对白与情境幽默
 phase: chapter-content
 depends_on: [C321, W202, W203, H221, H222, H224]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,22 @@ pnpm build
 - 不用刷怪、等待或材料墙填充主线时长。
 - 不让 AI/LocalTextProvider 生成任务逻辑或 Effect。
 - 不写下一章对白或 Boss 结算。
+
+## 执行记录
+
+- 已新增第 3 章严格 4 条主线与 2 条手工支线，主线依次通过 NPC 互动、账榜热点、灶房路线和瞭望台传令推进；最后一条只写入 `ch03_boss_ready`、`ch03_autosave_checkpoint` 与 `ch03_mainline_complete` 前置状态。
+- 已为曹掌柜、胡大勺、小顺接入本地静态对白、任务引用和状态化互动；对白图的迷惑分支均在两步内回到主线，空白账页递交配置了严肃二次确认。
+- 已新增山椒采集情境组合与四级灶房互动链；任务、首次情境奖励和互动阶段奖励均使用唯一 `grantKey`，重复交付/事件由领域引擎幂等处理。
+- 已加入清淡/标准/加辣三档补充文案，现代映射为 1/7，低于 40%；本章幽默不改变任务效果，也不伪造系统故障或结算。
+- 第 3 章的局部 situation/interaction coverage 已建立；rule 与 Boss presentation coverage 留给 C323 的战斗集成，当前未用占位 cue 注册到全章四层门禁。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过，3 个章节；Node loader 输出 ExperimentalWarning，不影响退出码。
+- `pnpm test -- src/systems/quests src/systems/dialogue src/systems/comedy --reporter=dot`：通过，16 个测试文件、50/50 测试通过。
+- `pnpm build`：通过，Vite 转换 191 个模块，第 3 章动态 chunk 成功生成。
+
+## 边界
+
+- C322 不实现下一章对白或黑风寨主结算；C323 负责普通敌人/Boss、rule/presentation coverage、战斗奖励和章节 E2E。

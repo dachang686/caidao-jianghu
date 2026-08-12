@@ -3,7 +3,7 @@ id: F010
 title: 实现增量迁移与崩溃恢复
 phase: foundation
 depends_on: [F009]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增连续 `SaveMigrationRegistry`，缺失版本拒绝猜测补全；新增自动档控制器，仅允许区域进入、战斗胜利、任务交付触发。
+- 新增 30 秒 sessionStorage 临时恢复 API，临时档同样经过 V2 schema/checksum 校验，损坏或过期不会触碰有效自动档。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/save`、`pnpm build` 均通过。

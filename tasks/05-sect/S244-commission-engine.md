@@ -3,7 +3,7 @@ id: S244
 title: 实现种子化江湖委托引擎
 phase: sect
 depends_on: [G101, W202, S243]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -45,3 +45,22 @@ pnpm build
 - 不提前制作后续章节或 Optional 数量扩展。
 - 不让幽默/经营表现绕过领域系统直接改状态。
 - 不使用现实时间、远程请求或不可恢复惩罚。
+
+## 实现记录
+
+- 新增 `src/types/commission.ts`、`src/systems/commissions/engine.ts` 和 `src/content/commissions/templates.ts`，提供 12 个带区域、目标、敌人/上下文标签和奖励的 Core 模板。
+- 生成按章节、已解锁区域和进度筛选，并使用独立 `DeterministicRng.fork` 固定实例；没有现实日期或系统时间依赖。
+- 程序委托同时最多 3 个；重复模板的财富/名望奖励按使用次数回落；高价值一次性模板通过模板完成集和 grantKey 幂等关闭。
+- 新增模板校验，拒绝缺区域、缺上下文目标的纯数字跑腿、无效奖励与重复 grantKey；内容校验脚本已接入。
+- 新增 `src/systems/commissions/engine.test.ts`，覆盖同 seed 复现、关闭区域、上限、收益回落、一次性模板和领取幂等。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm test -- src/systems/commissions`：通过（1 个文件，3 个测试）。
+- `pnpm content:validate`：通过（1 个章节；Node 仅输出实验性 loader warning）。
+- `pnpm build`：通过。
+
+## 风险
+
+- 委托目标完成事件与门派页面由后续任务接入；本任务已提供生成、状态、领取和校验领域接口。

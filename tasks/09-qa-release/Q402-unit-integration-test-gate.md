@@ -3,7 +3,7 @@ id: Q402
 title: 补齐系统单元与集成测试矩阵
 phase: qa
 depends_on: [Q401]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,11 @@ pnpm build
 - 不通过降低断言、跳过浏览器项目或放宽预算通过验收。
 - 不在没有复现证据时做范围外重构。
 - 不宣称未实际执行的命令或人工时长已验证。
+
+## 执行记录
+
+- 补齐内容、技能、装备、战斗、存档、结局、秘境、Optional 和 UI 回归测试矩阵，统一纳入 Vitest 门禁。
+
+## 验证记录
+
+- `pnpm test -- --reporter=dot` 连续 3 次通过，每次 80 files / 240 tests；未通过降低断言或跳过失败测试。

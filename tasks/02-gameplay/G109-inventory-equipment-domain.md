@@ -3,7 +3,7 @@ id: G109
 title: 实现背包与六槽装备领域
 phase: gameplay
 depends_on: [F015]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -45,3 +45,10 @@ pnpm build
 - 不提前实现后续任务或 Optional 内容。
 - 不在 React 组件中复制领域公式。
 - 不用占位数据、远程资源或跳过测试伪装完成。
+
+## 执行记录
+
+- 基线：已有旧 Demo 的数组物品状态，但没有堆叠/容量、关键物品保护、六槽装备或领域属性重算。
+- 实现：新增物品/装备公共类型、不可变背包操作、六槽装备替换/卸下与从基础值重算的装备修正；未生产正式 48 件内容，仅使用测试夹具。
+- 验证：`pnpm lint`、`pnpm test -- src/systems/inventory`（1 file / 3 tests）、`pnpm build` 均通过。
+- 备注：构建仍提示 `ch01.ts` 同时被静态和动态导入的既有 Vite 分包警告，不影响构建结果。

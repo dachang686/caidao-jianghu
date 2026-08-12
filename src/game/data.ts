@@ -85,6 +85,13 @@ export const ITEMS: Record<ItemId, ItemDefinition> = {
   stalePill: { id: 'stalePill', name: '过期大还丹', description: '药效很猛，保质期也很有个性。', category: 'consumable' },
   erguotou: { id: 'erguotou', name: '二锅头', description: '喝完很勇，命中全靠缘分。', category: 'consumable' },
   saltedFish: { id: 'saltedFish', name: '咸鱼干', description: '大黄猫愿意为它考虑一下人生。', category: 'quest' },
+  qingheBadge: { id: 'qingheBadge', name: '清河榜牌', description: '榜下捕快留下的木牌，正面写着“已核验”，背面还在等人补字。', category: 'quest' },
+  blackwindSeal: { id: 'blackwindSeal', name: '黑风寨令', description: '黑风寨主留下的令牌，背面刻着“空旗反卷，败北有效”。', category: 'quest' },
+  qingyunMark: { id: 'qingyunMark', name: '青云名帖', description: '青云掌门留下的名帖，墨迹端正得像一条刚被训过的鱼。', category: 'quest' },
+  westernSeal: { id: 'westernSeal', name: '西域封条', description: '驿路双煞留下的封条，证明这次物流终于有了完整签收。', category: 'quest' },
+  tidePearl: { id: 'tidePearl', name: '潮声珠', description: '海潮帮主留下的潮声珠，里面只记录事实，不记录热度。', category: 'quest' },
+  capitalWrit: { id: 'capitalWrit', name: '京城公牍', description: '榜司督主留下的公牍，所有墨迹都同意接受复核。', category: 'quest' },
+  conventionCrest: { id: 'conventionCrest', name: '大会印记', description: '百晓榜主留下的大会印记，允许刀谱继续写下一页。', category: 'quest' },
 }
 
 export const TITLES: Record<TitleId, TitleDefinition> = {

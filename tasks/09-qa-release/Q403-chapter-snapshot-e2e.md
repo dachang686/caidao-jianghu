@@ -3,7 +3,7 @@ id: Q403
 title: 建立八章快照 E2E 套件
 phase: qa
 depends_on: [P386, Q401]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,11 @@ pnpm build
 - 不通过降低断言、跳过浏览器项目或放宽预算通过验收。
 - 不在没有复现证据时做范围外重构。
 - 不宣称未实际执行的命令或人工时长已验证。
+
+## 执行记录
+
+- 新增 V2 存档夹具映射、八章快照 E2E 和章节清理/存档辅助；夹具明确记录当前可视壳仍经 legacy adapter 读取，避免把夹具映射误称为运行时 V2 迁移。
+
+## 验证记录
+
+- `e2e/chapter-snapshot.spec.ts` 8 项通过，ch05–ch08 流程 8 项通过；全量 E2E 也通过。

@@ -3,7 +3,7 @@ id: G103
 title: 实现伤害、状态与冷却结算
 phase: gameplay
 depends_on: [G102]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现后续任务或 Optional 内容。
 - 不在 React 组件中复制领域公式。
 - 不用占位数据、远程资源或跳过测试伪装完成。
+
+## 执行记录
+
+- 新增集中伤害、状态和冷却模块：边界 clamp、命中/暴击/方差、状态 start/end tick、replace/extend/stack 与 UI 不可用原因。
+- 冷却不依赖刷新或重试隐式递减；极端属性、命中边界、状态到期和资源安全阀均有测试。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/combat`、`pnpm build` 均通过。

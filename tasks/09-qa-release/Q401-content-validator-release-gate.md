@@ -3,7 +3,7 @@ id: Q401
 title: 完成发布级内容校验器
 phase: qa
 depends_on: [P386, H225]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -45,3 +45,11 @@ pnpm build
 - 不通过降低断言、跳过浏览器项目或放宽预算通过验收。
 - 不在没有复现证据时做范围外重构。
 - 不宣称未实际执行的命令或人工时长已验证。
+
+## 执行记录
+
+- 发布校验器统一检查 Core/Optional 数量、ID 命名空间、来源、前置、Boss 阶段、配方引用、图鉴规则和资源入口；`pnpm build` 前置执行内容校验。
+
+## 验证记录
+
+- `pnpm content:validate` 通过：8 章内容、Core 与 Optional 门禁均无错误；`pnpm lint`、全量单测和构建均通过。

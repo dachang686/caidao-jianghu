@@ -47,3 +47,24 @@ pnpm build
 - 不为 Boss 创建独立平行战斗引擎。
 - 不用隐藏随机即死、关键物品损失或永久减益制造笑点。
 - 不提前实现下一章或 Optional 隐藏 Boss。
+
+## 执行记录
+
+- 新增 `src/content/enemies/ch01.ts`，配置河边醉汉、后厨扒手两类普通敌人和白大侠；普通敌人复用模板化 AI，招式组与诚实意图均有明确说明。
+- 白大侠配置双阶段、单次阶段转换、二阶段最高 20% 虚实欺骗和一个可读的「无敌风火轮」专属规则；专属败北节拍控制在 980ms，并接入 Battle Screen，跳过/静态演出不改变结算。
+- 新增章节敌人内容校验与失败夹具，检查普通敌人数量、招式引用、Boss 阶段、20% 欺骗上限、专属规则数量和演出 cue 引用字段。
+- 新增 `settleCh01BossVictory` 原子胜利事务：幂等发放经验、银两、生锈菜刀和称号，完成任务，设置对话/基础战斗/背包解锁、下一章/结局门槛和自动档检查点；现有 App 存档副作用在状态变更后写入账本。
+- 新增第 1 章标准构筑固定 RNG 批量模拟入口 `pnpm simulate:battles -- --ch01-bai`，并补充桌面/手机章节战斗返回场景 E2E。
+
+## 验证结果
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（1 chapter）；Node loader 仅输出 ExperimentalWarning。
+- `pnpm test`：通过，54 个文件、178 个测试。
+- `pnpm test:e2e -- e2e/game-flow.spec.ts --workers=1 --retries=0 --reporter=list`：通过，21 passed、1 skipped（项目配置跳过移动端五档矩阵重复执行）。
+- `pnpm simulate:battles -- --ch01-bai --start=1 --end=100`：标准难度 100 场胜率 89%，最长 13 回合，破防窗口存在，Boss 阶段转换均不超过 1 次，无超时。
+- `pnpm build`：通过，Vite 转换 168 个模块。
+
+## 边界与风险
+
+- 下一章内容与 Optional 隐藏 Boss 未提前制作；本任务只写入下一章/结局可达门槛，后续章节任务负责消费该门槛。普通敌人已进入第 1 章内容目录、校验和模拟器，当前 Demo 场景仍以白大侠主线擂台作为可视化入口。

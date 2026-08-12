@@ -3,7 +3,7 @@ id: W212
 title: 实现四结局判定引擎与 Ending Screen
 phase: world
 depends_on: [F004, F005, W202, F012]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -45,3 +45,11 @@ pnpm build
 - 不提前实现后续章节或 Optional 内容。
 - 不把领域状态判断复制进 Screen。
 - 不用远程资源、占位入口或弱化断言伪装完成。
+
+## 执行记录
+
+- 新增四结局定义、条件判定、演出 cue、Ending Screen 与结局后继续原档入口；运行时按玩家选择和成长状态计算路线，并保持结算幂等。
+
+## 验证记录
+
+- 四结局引擎单测、八章黄金路径和 ch08 结局页/继续原档 E2E 均通过。

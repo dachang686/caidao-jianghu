@@ -3,7 +3,7 @@ id: C312
 title: 第2章 清河县：任务、对白与情境幽默
 phase: chapter-content
 depends_on: [C311, W202, W203, H221, H222, H224]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,21 @@ pnpm build
 - 不用刷怪、等待或材料墙填充主线时长。
 - 不让 AI/LocalTextProvider 生成任务逻辑或 Effect。
 - 不写下一章对白或 Boss 结算。
+
+## 执行记录
+
+- 新增清河县 `4` 条主线与 `2` 条手工支线，主线依次覆盖榜单初见、账上缺口、河岸路线和证据整理；最后一条只设置 `ch02_boss_ready`、`ch02_autosave_checkpoint`、`ch02_mainline_complete`，不提前写 Boss 结算。
+- 新增清河县静态对白图：沈青禾、柳婶、陆掌柜和榜下捕快均有状态化短对白；迷惑分支声明回归节点，最多两步，唯一不可逆交证选项启用二次确认。
+- 新增 1 组 SituationCombo 与 1 条四级 InteractionChain；首次发现经验和阶段奖励均使用唯一 grantKey，重复事件/快速重复输入由现有引擎幂等处理。
+- 增加清淡/标准/加辣补充文案，现代映射仅 1/7 条，未改变任务条件或奖励逻辑；内容校验脚本开始同时校验 ch01/ch02 的对白、情境、互动和密度数据。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（2 个章节；Node loader 仅输出实验性 warning）。
+- `pnpm test -- src/systems/quests src/systems/dialogue src/systems/comedy`：通过，13 个文件、43 个测试。
+- `pnpm build`：通过，Vite 转换 176 个模块。
+
+## 边界与风险
+
+- C312 不实现榜下捕快普通敌人、Boss 阶段、装备/采集/锻造系统解锁或下一章；C313 负责消费本章 Boss 前置与自动存档标记。

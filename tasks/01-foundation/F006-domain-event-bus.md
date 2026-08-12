@@ -3,7 +3,7 @@ id: F006
 title: 实现同步 Domain EventBus
 phase: foundation
 depends_on: [F003]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -44,3 +44,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增同步 FIFO EventBus、事件结构校验、注册顺序、派生深度上限、循环链路诊断、注销与 reset。
+- 处理器返回的派生事件和处理器内部 `dispatch` 均在当前事件结束后处理；EventBus 不依赖 React/Zustand。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/events`、`pnpm build` 均通过。

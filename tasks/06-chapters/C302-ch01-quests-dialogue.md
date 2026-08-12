@@ -3,7 +3,7 @@ id: C302
 title: 第1章 小愚村：任务、对白与情境幽默
 phase: chapter-content
 depends_on: [C301, W202, W203, H221, H222, H224]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -46,3 +46,22 @@ pnpm build
 - 不用刷怪、等待或材料墙填充主线时长。
 - 不让 AI/LocalTextProvider 生成任务逻辑或 Effect。
 - 不写下一章对白或 Boss 结算。
+
+## 执行记录
+
+- 将第 1 章内容固定为 3 条主线（`first-steps`、`manual-clue`、`challenge-bai`）和 2 条支线（`find-cat`、`kitchen-supply`）；主线依次消费 NPC 互动、刀谱线索确认和 `battle.won` 事件，支线消费找猫互动与止血草采集，不把支线条件放进主线链。
+- 新增小愚村对白图，覆盖老头、王大娘、大黄的猫和白大侠四个稳定 NPC ID；迷惑分支均声明返回节点且不超过两跳，白大侠挑战为严肃二次确认并只写入确认标记，不由对白直接结算战斗。
+- 新增 1 组猫与采集点的自然 `SituationCombo`、2 条 3–4 级 `InteractionChain`，首次发现/阶段奖励分别使用 grantKey；新增清淡、标准、加辣本地补充文案，任务逻辑不读取文案或 LocalTextProvider。
+- 最后一条主线交付时写入 `ch01_boss_ready`、`ch01_autosave_checkpoint` 和 `ch01_mainline_complete`，为 C303 的 Boss 与章节存档集成提供明确前置状态。
+- `content:validate` 额外校验本章对白图、情境组合、互动链和三档补充文案，避免只校验通用章节壳。
+
+## 验证记录
+
+- `pnpm lint`：通过。
+- `pnpm content:validate`：通过（Node `--experimental-loader` 仅输出实验性警告）。
+- `pnpm test -- src/systems/quests src/systems/dialogue src/systems/comedy`：通过，9 个文件、33 个测试。
+- `pnpm build`：通过，Vite 产出 153 个模块。
+
+## 风险与边界
+
+- C302 只声明第 1 章任务、对白和幽默内容，并通过领域事件/Effect 契约提供白大侠前置；白大侠敌人、实际战斗胜负、奖励原子交付、下一章解锁和章节级 E2E 由 C303 完成。

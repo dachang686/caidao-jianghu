@@ -10,7 +10,7 @@
       "id": "F001",
       "title": "锁定 Demo 行为基线",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [],
       "releaseBlocking": true,
       "path": "tasks/01-foundation/F001-baseline-characterization.md"
@@ -19,7 +19,7 @@
       "id": "F002",
       "title": "建立模块目录骨架与导入边界",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F001"
       ],
@@ -30,7 +30,7 @@
       "id": "F003",
       "title": "定义领域 ID、核心类型与 ContentManifest",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F002"
       ],
@@ -41,7 +41,7 @@
       "id": "F004",
       "title": "实现 Condition 纯函数求值器",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F003"
       ],
@@ -52,7 +52,7 @@
       "id": "F005",
       "title": "实现 Effect 执行器与奖励幂等",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F003",
         "F004"
@@ -64,7 +64,7 @@
       "id": "F006",
       "title": "实现同步 Domain EventBus",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F003"
       ],
@@ -75,7 +75,7 @@
       "id": "F007",
       "title": "建立内容加载器与基础校验 CLI",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F003",
         "F004"
@@ -87,7 +87,7 @@
       "id": "F008",
       "title": "定义 GameSaveV2 与运行状态边界",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F003"
       ],
@@ -98,7 +98,7 @@
       "id": "F009",
       "title": "实现多档位存储与安全导入导出",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F008"
       ],
@@ -109,7 +109,7 @@
       "id": "F010",
       "title": "实现增量迁移与崩溃恢复",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F009"
       ],
@@ -133,7 +133,7 @@
       "id": "F012",
       "title": "拆分 Screen 壳与 App 调度",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F011"
       ],
@@ -144,7 +144,7 @@
       "id": "F013",
       "title": "实现 LocalTextProvider 统一文本出口",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F003",
         "F006"
@@ -156,7 +156,7 @@
       "id": "F014",
       "title": "实现 ComedyDirector 调度内核",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F004",
         "F005",
@@ -184,7 +184,7 @@
       "id": "G101",
       "title": "实现可保存的确定性 RNG",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F015"
       ],
@@ -195,7 +195,7 @@
       "id": "G102",
       "title": "实现战斗回合状态机",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G101",
         "F005",
@@ -208,7 +208,7 @@
       "id": "G103",
       "title": "实现伤害、状态与冷却结算",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G102"
       ],
@@ -219,7 +219,7 @@
       "id": "G104",
       "title": "实现架势破防与意图模型",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G103"
       ],
@@ -230,7 +230,7 @@
       "id": "G105",
       "title": "实现敌人 AI、Boss 阶段与三档难度",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G104"
       ],
@@ -241,7 +241,7 @@
       "id": "G106",
       "title": "实现武学注册表、技能点与六槽配置",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G103",
         "F007"
@@ -253,7 +253,7 @@
       "id": "G107",
       "title": "配置 16 个 Core 主动技能",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G106",
         "G104"
@@ -265,7 +265,7 @@
       "id": "G108",
       "title": "实现 8 个 Core 被动节点",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G106",
         "G107"
@@ -277,7 +277,7 @@
       "id": "G109",
       "title": "实现背包与六槽装备领域",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F015"
       ],
@@ -288,7 +288,7 @@
       "id": "G110",
       "title": "实现掉落、银两与阶段经济曲线",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G101",
         "G109",
@@ -301,7 +301,7 @@
       "id": "G111",
       "title": "实现确定性装备强化 +5",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G101",
         "G109",
@@ -350,7 +350,7 @@
       "id": "W202",
       "title": "实现任务状态机与幂等交付",
       "phase": "world",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F004",
         "F005",
@@ -364,7 +364,7 @@
       "id": "S241",
       "title": "实现门派状态与四设施升级",
       "phase": "sect",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G109",
         "G110",
@@ -377,7 +377,7 @@
       "id": "W203",
       "title": "实现声明式对话引擎",
       "phase": "world",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F004",
         "F005",
@@ -391,7 +391,7 @@
       "id": "W204",
       "title": "实现跨区域 NPC 状态与关系",
       "phase": "world",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F006",
         "W202",
@@ -404,7 +404,7 @@
       "id": "H221",
       "title": "实现跨系统情境组合引擎",
       "phase": "humor",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F014",
         "G103",
@@ -418,7 +418,7 @@
       "id": "S242",
       "title": "实现门人招募、性格与派遣能力",
       "phase": "sect",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "S241",
         "W204"
@@ -430,7 +430,7 @@
       "id": "S243",
       "title": "实现战斗场次 Tick 派遣",
       "phase": "sect",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "S242",
         "F006",
@@ -443,7 +443,7 @@
       "id": "S244",
       "title": "实现种子化江湖委托引擎",
       "phase": "sect",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G101",
         "W202",
@@ -470,7 +470,7 @@
       "id": "W205",
       "title": "实现场景热点与探索交互",
       "phase": "world",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "W201",
         "F005",
@@ -483,7 +483,7 @@
       "id": "G112",
       "title": "实现场景采集与节点刷新规则",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G101",
         "W205"
@@ -495,7 +495,7 @@
       "id": "G113",
       "title": "实现锻造配方与 12 个 Core 配方",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G109",
         "G110",
@@ -508,7 +508,7 @@
       "id": "G114",
       "title": "实现烹饪、食物持续场次与 8 个 Core 菜谱",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G103",
         "G112",
@@ -548,7 +548,7 @@
       "id": "G119",
       "title": "建立固定 RNG 战斗批量模拟器",
       "phase": "gameplay",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "G105",
         "G108",
@@ -562,7 +562,7 @@
       "id": "H222",
       "title": "实现递进互动反应链",
       "phase": "humor",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F014",
         "W204",
@@ -575,7 +575,7 @@
       "id": "W206",
       "title": "实现图鉴、称号与基础成就框架",
       "phase": "world",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F004",
         "F006",
@@ -590,7 +590,7 @@
       "id": "W207",
       "title": "实现设置、输入映射与无障碍基础",
       "phase": "ux",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F012",
         "F013"
@@ -602,7 +602,7 @@
       "id": "H224",
       "title": "实现 memePack、三档密度与本地文案调度",
       "phase": "humor",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F013",
         "F014",
@@ -615,7 +615,7 @@
       "id": "S246",
       "title": "制作 6 名 Core 门人与经营反馈内容",
       "phase": "sect-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "S242",
         "S244",
@@ -629,7 +629,7 @@
       "id": "W208",
       "title": "完成五档视口响应式应用壳",
       "phase": "ux",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F012",
         "W201",
@@ -654,7 +654,7 @@
       "id": "C301",
       "title": "第1章 小愚村：场景、NPC 与素材",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F015",
         "W201",
@@ -665,11 +665,11 @@
       "releaseBlocking": true,
       "path": "tasks/06-chapters/C301-ch01-scene-assets.md"
     },
-    {
-      "id": "C302",
-      "title": "第1章 小愚村：任务、对白与情境幽默",
-      "phase": "chapter-content",
-      "status": "pending",
+      {
+        "id": "C302",
+        "title": "第1章 小愚村：任务、对白与情境幽默",
+        "phase": "chapter-content",
+        "status": "done",
       "dependsOn": [
         "C301",
         "W202",
@@ -681,11 +681,11 @@
       "releaseBlocking": true,
       "path": "tasks/06-chapters/C302-ch01-quests-dialogue.md"
     },
-    {
-      "id": "H223",
-      "title": "实现喜剧演出节拍运行时",
-      "phase": "humor",
-      "status": "pending",
+      {
+        "id": "H223",
+        "title": "实现喜剧演出节拍运行时",
+        "phase": "humor",
+        "status": "done",
       "dependsOn": [
         "F014",
         "G115",
@@ -699,7 +699,7 @@
       "id": "H225",
       "title": "实现四层幽默覆盖与安全校验",
       "phase": "humor",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "H221",
         "H222",
@@ -732,7 +732,7 @@
       "id": "C311",
       "title": "第2章 清河县：场景、NPC 与素材",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C303",
         "W201",
@@ -747,7 +747,7 @@
       "id": "C312",
       "title": "第2章 清河县：任务、对白与情境幽默",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C311",
         "W202",
@@ -785,7 +785,7 @@
       "id": "C321",
       "title": "第3章 黑风寨：场景、NPC 与素材",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C313",
         "W201",
@@ -800,7 +800,7 @@
       "id": "C322",
       "title": "第3章 黑风寨：任务、对白与情境幽默",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C321",
         "W202",
@@ -837,7 +837,7 @@
       "id": "C331",
       "title": "第4章 青云山：场景、NPC 与素材",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C323",
         "W201",
@@ -852,7 +852,7 @@
       "id": "C332",
       "title": "第4章 青云山：任务、对白与情境幽默",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C331",
         "W202",
@@ -887,7 +887,7 @@
       "id": "C341",
       "title": "第5章 西域驿路：场景、NPC 与素材",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C333",
         "W201",
@@ -902,7 +902,7 @@
       "id": "C342",
       "title": "第5章 西域驿路：任务、对白与情境幽默",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C341",
         "W202",
@@ -939,7 +939,7 @@
       "id": "C351",
       "title": "第6章 东海镇：场景、NPC 与素材",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C343",
         "W201",
@@ -954,7 +954,7 @@
       "id": "C352",
       "title": "第6章 东海镇：任务、对白与情境幽默",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C351",
         "W202",
@@ -989,7 +989,7 @@
       "id": "C361",
       "title": "第7章 京城：场景、NPC 与素材",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C353",
         "W201",
@@ -1004,7 +1004,7 @@
       "id": "C362",
       "title": "第7章 京城：任务、对白与情境幽默",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C361",
         "W202",
@@ -1020,7 +1020,7 @@
       "id": "P381",
       "title": "配置前四章 24 件 Core 装备",
       "phase": "cross-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C333",
         "G109",
@@ -1034,7 +1034,7 @@
       "id": "W210",
       "title": "实现全局错误恢复面板",
       "phase": "ux",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F010",
         "F012"
@@ -1046,7 +1046,7 @@
       "id": "W211",
       "title": "实现老板键暂停与恢复",
       "phase": "ux",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F012",
         "W207",
@@ -1059,7 +1059,7 @@
       "id": "W212",
       "title": "实现四结局判定引擎与 Ending Screen",
       "phase": "world",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F004",
         "F005",
@@ -1091,7 +1091,7 @@
       "id": "C371",
       "title": "第8章 武林大会：场景、NPC 与素材",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C363",
         "W201",
@@ -1106,7 +1106,7 @@
       "id": "C372",
       "title": "第8章 武林大会：任务、对白与情境幽默",
       "phase": "chapter-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C371",
         "W202",
@@ -1140,7 +1140,7 @@
       "id": "P382",
       "title": "配置后四章 24 件 Core 装备",
       "phase": "cross-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C373",
         "P381"
@@ -1152,7 +1152,7 @@
       "id": "P383",
       "title": "补齐 12 模板与 24 个 Core 敌人变体",
       "phase": "cross-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C373",
         "G105"
@@ -1164,7 +1164,7 @@
       "id": "P384",
       "title": "完成四结局文本、演出与可达路径",
       "phase": "cross-content",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "C373",
         "W212",
@@ -1206,7 +1206,7 @@
       "id": "Q401",
       "title": "完成发布级内容校验器",
       "phase": "qa",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "P386",
         "H225"
@@ -1218,7 +1218,7 @@
       "id": "Q402",
       "title": "补齐系统单元与集成测试矩阵",
       "phase": "qa",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "Q401"
       ],
@@ -1229,7 +1229,7 @@
       "id": "Q403",
       "title": "建立八章快照 E2E 套件",
       "phase": "qa",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "P386",
         "Q401"
@@ -1241,7 +1241,7 @@
       "id": "Q404",
       "title": "实现创角到结局的完整黄金路径 E2E",
       "phase": "qa",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "Q402",
         "Q403",
@@ -1254,7 +1254,7 @@
       "id": "Q405",
       "title": "实现加辣梗与全迷惑选项作死路径",
       "phase": "qa",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "Q404",
         "H225"
@@ -1279,7 +1279,7 @@
       "id": "Q407",
       "title": "完成五视口与无障碍验收",
       "phase": "qa",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "Q404",
         "W208",
@@ -1304,7 +1304,7 @@
       "id": "Q409",
       "title": "完成离线包与 GitHub Pages 发布流水线",
       "phase": "release",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "Q406",
         "Q407",
@@ -1317,7 +1317,7 @@
       "id": "Q410",
       "title": "执行 1.0 Core 最终验收",
       "phase": "release",
-      "status": "pending",
+      "status": "blocked",
       "dependsOn": [
         "Q405",
         "Q409"
@@ -1440,7 +1440,7 @@
       "id": "O610",
       "title": "Optional：验收 5–8 小时通关后内容",
       "phase": "optional",
-      "status": "pending",
+      "status": "blocked",
       "dependsOn": [
         "O601",
         "O602",

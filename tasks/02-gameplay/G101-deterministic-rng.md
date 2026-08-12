@@ -3,7 +3,7 @@ id: G101
 title: 实现可保存的确定性 RNG
 phase: gameplay
 depends_on: [F015]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -43,3 +43,9 @@ pnpm build
 - 不提前实现后续任务或 Optional 内容。
 - 不在 React 组件中复制领域公式。
 - 不用占位数据、远程资源或跳过测试伪装完成。
+
+## 执行记录
+
+- 新增可序列化 `DeterministicRng`，支持 seed/state、nextInt/nextFloat/weightedPick/fork；fork 不消耗父序列，禁止依赖 `Math.random`。
+- GameSaveV2 RNG 增加 seed 字段，覆盖快照恢复后 100 次一致性、领域隔离 fork、非法范围和空权重池。
+- 验证结果：`pnpm lint`、`pnpm test -- src/systems/rng`、`pnpm build` 均通过。

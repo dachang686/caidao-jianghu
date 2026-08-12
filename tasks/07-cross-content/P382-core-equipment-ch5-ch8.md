@@ -3,7 +3,7 @@ id: P382
 title: 配置后四章 24 件 Core 装备
 phase: cross-content
 depends_on: [C373, P381]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -45,3 +45,11 @@ pnpm build
 - 不补 Optional 数量来掩盖 Core 缺口。
 - 不通过刷怪、等待或经济墙延长时长。
 - 不改变已确认的纯离线和单主角边界。
+
+## 执行记录
+
+- 配置后四章 24 件 Core 装备，声明区域/敌人/锻造来源和 0–5 强化曲线，合并到 48 件 Core 装备注册与锻造、商店、掉落体系。
+
+## 验证记录
+
+- `pnpm content:validate`、全量单测连续 3 次和 `pnpm build` 均通过；构建仅保留非阻断的 Vite 分包提示。

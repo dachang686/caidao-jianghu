@@ -45,3 +45,23 @@ pnpm build
 - 不提前实现后续任务或 Optional 内容。
 - 不在 React 组件中复制领域公式。
 - 不用占位数据、远程资源或跳过测试伪装完成。
+
+## 执行记录
+
+- 新增 `src/screens/BattleScreen/index.tsx`，将战斗状态选择、快捷键和动作派发集中在页面适配层；`ScreenShell` 与 `screens/index.ts` 已切换到新页面入口。
+- 新增 `src/components/battle/` 下的战斗单位、敌方意图、战斗日志和 6 槽技能栏组件。组件只消费 selector 视图并派发 `useSkill`、`retryBattle`、`leaveBattle`，伤害与架势结算仍由 store/领域适配层负责。
+- 扩展战斗状态以展示架势、诚实敌方意图和阶段反馈；日志上限从 8 条提升为 50 条，快捷键 1–6 与按钮禁用原因共享同一冷却/内力判断。
+- 新增完整桌面/移动响应式样式，360px 无横向溢出，技能与操作目标保持可触摸尺寸；减少动态效果时保留文本、边框和颜色静态反馈。
+- 补充胜利、战败重试、二阶段、键盘快捷键和移动端流程 E2E。另修正采集 validator 的可选材料目录兼容传递，使 foundation 与旧校验调用均保持正确边界。
+
+## 验证记录
+
+- `pnpm lint` ✅
+- `pnpm test` ✅（40 个测试文件、127 个测试）
+- `pnpm test:e2e` ✅（14 个桌面/移动 E2E）
+- `pnpm build` ✅
+- `pnpm content:validate` ✅（1 章；Node loader 的实验性 warning 不影响退出码）
+
+## 风险与边界
+
+- 当前页面接入的是仓库已有的 Demo Zustand 战斗状态；后续章节 Boss、完整 16 技能内容和食物领域在其对应任务接入，页面不自行复制领域公式。

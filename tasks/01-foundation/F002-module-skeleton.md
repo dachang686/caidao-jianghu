@@ -3,7 +3,7 @@ id: F002
 title: 建立模块目录骨架与导入边界
 phase: foundation
 depends_on: [F001]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -47,3 +47,9 @@ pnpm build
 - 不提前实现依赖本任务的后续系统。
 - 不修改 `docs/PLAN_v2.md` 的产品范围。
 - 不用占位、远程资源或弱化测试伪装完成。
+
+## 执行记录
+
+- 新增 `screens`、`components`、`systems`、`content`、`stores`、`types`、`validators` 七个公开入口，并在入口中记录依赖方向。
+- 未迁移现有 Demo 的 `App`、`src/game/store` 或运行时行为。
+- 验证结果：`pnpm lint`、`pnpm test`、`pnpm build` 均通过。
