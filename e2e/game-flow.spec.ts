@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/caidao-jianghu/')
   await page.evaluate(async () => {
     await new Promise<void>((resolve) => {
-      const request = indexedDB.deleteDatabase('caidao-jianghu')
+      const request = indexedDB.deleteDatabase('caidao-jianghu-v2')
       request.onsuccess = () => resolve()
       request.onerror = () => resolve()
     })
@@ -69,6 +69,22 @@ test('刷新页面后可以继续小愚村旅程', async ({ page }) => {
   await page.reload()
   await expect(page.getByText('续刀客', { exact: true }).first()).toBeVisible()
   await expect(page.getByText('和不正经老头聊聊')).toBeVisible()
+})
+
+test('世界地图只允许进入已解锁区域，并可回到当前章节', async ({ page }) => {
+  await startJourney(page)
+  await page.getByTestId('open-world-map').click()
+  await expect(page.getByTestId('world-map-screen')).toBeVisible()
+  await expect(page.getByRole('button', { name: '进入小愚村' })).toBeEnabled()
+  await expect(page.getByRole('button', { name: /清河县：先在小愚村完成白大侠/ })).toBeDisabled()
+
+  await page.getByRole('button', { name: '进入小愚村' }).click()
+  await expect(page.getByTestId('location-screen')).toContainText('小愚村悦来客栈')
+  await page.waitForTimeout(350)
+  await page.reload()
+  await expect(page.getByTestId('location-screen')).toContainText('小愚村悦来客栈')
+  await page.getByRole('button', { name: '进入当前章节' }).click()
+  await expect(page.locator('.village-stage')).toBeVisible()
 })
 
 test('江湖页会在宽屏与手机视口重新排布，不让场景与信息面板重叠', async ({ page }, testInfo) => {
@@ -258,6 +274,23 @@ test('锻造与烹饪页面支持预览、原子提交和返回江湖', async ({
   await page.getByTestId('recipe-back').click()
   await expect(page.getByText('江湖传闻')).toBeVisible()
 
+  await page.locator('[data-hotspot="old-man"]').click()
+  await page.getByRole('button', { name: /弟子愿闻其详/ }).click()
+  await page.locator('[data-hotspot="bai-daxia"]').click()
+  await page.getByRole('button', { name: '菜刀已饥渴难耐' }).click()
+  const firstSkill = page.locator('[data-skill-slot]').first()
+  for (let turn = 0; turn < 45; turn += 1) {
+    if (await page.getByTestId('battle-victory').isVisible()) break
+    if (await page.getByTestId('battle-defeat').isVisible()) {
+      await page.getByTestId('battle-retry').click()
+      continue
+    }
+    await firstSkill.click()
+  }
+  await expect(page.getByTestId('battle-victory')).toBeVisible()
+  await page.getByRole('button', { name: '回到小愚村' }).click()
+  await page.getByTestId('open-ch02').click()
+
   await page.getByTestId('open-crafting').click()
   await expect(page.getByRole('heading', { name: '铁匠铺' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth))
@@ -266,7 +299,7 @@ test('锻造与烹饪页面支持预览、原子提交和返回江湖', async ({
   await expect(page.getByTestId('recipe-status')).toContainText('锻造完成')
   await expect(page.getByText('3/5', { exact: true }).first()).toBeVisible()
   await page.getByTestId('recipe-back').click()
-  await expect(page.getByText('江湖传闻')).toBeVisible()
+  await expect(page.getByText('县城传闻')).toBeVisible()
 })
 
 test('图鉴在手机视口支持分类、键盘聚焦和触摸浏览', async ({ page }) => {

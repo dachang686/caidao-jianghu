@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Button } from '../components/game-ui'
-import { useGameStore } from '../stores'
+import { useRootGameStore } from '../stores'
 import { TALENTS } from '../game/data'
 import type { TalentId } from '../game/types'
 
 export function CreationScreen() {
   const [name, setName] = useState('小虾米')
   const [talent, setTalent] = useState<TalentId>('reckless')
-  const startNewGame = useGameStore((state) => state.startNewGame)
-  const setScreen = useGameStore((state) => state.setScreen)
+  const startNewGame = useRootGameStore((state) => state.startNewGame)
+  const setScreen = useRootGameStore((state) => state.setScreen)
   return (
     <main className="creation-screen scenic-surface">
       <section className="creation-scroll">

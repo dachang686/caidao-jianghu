@@ -1,15 +1,15 @@
 import { useMemo, useRef, useState } from 'react'
 import { RecipeWorkbench } from '../../components/recipes'
 import { coreCookingItems, coreCookingRecipes } from '../../content/recipes/cooking'
-import { useRecipeStore } from '../../stores/recipe-store'
+import { useRootGameStore } from '../../stores'
 import { toCookingRecipeViews } from '../recipe-views'
 
 export function CookingScreen() {
-  const inventory = useRecipeStore((state) => state.inventory)
-  const chapter = useRecipeStore((state) => state.chapter)
-  const statusMessage = useRecipeStore((state) => state.statusMessage)
-  const cook = useRecipeStore((state) => state.cook)
-  const close = useRecipeStore((state) => state.close)
+  const inventory = useRootGameStore((state) => state.inventoryState)
+  const chapter = useRootGameStore((state) => Number(state.world.currentChapter.slice(2)))
+  const statusMessage = useRootGameStore((state) => state.workshopMessage)
+  const cook = useRootGameStore((state) => state.cookRecipe)
+  const close = useRootGameStore((state) => state.closeWorkshop)
   const [selectedRecipeId, setSelectedRecipeId] = useState(String(coreCookingRecipes[0]?.id ?? ''))
   const [submittingRecipeId, setSubmittingRecipeId] = useState<string | null>(null)
   const submitLock = useRef<string | null>(null)

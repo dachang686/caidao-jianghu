@@ -5,7 +5,7 @@ import elderSprite from '../assets/characters/elder.webp'
 import catSprite from '../assets/characters/cat.webp'
 import { OverlayPanel } from '../components/OverlayPanel'
 import { Button, Meter } from '../components/game-ui'
-import { useGameStore } from '../stores'
+import { useRootGameStore } from '../stores'
 
 const navItems = [
   { id: 'guide', icon: '🗺️', label: '江湖故事' },
@@ -15,11 +15,11 @@ const navItems = [
 ] as const
 
 export function MenuScreen() {
-  const player = useGameStore((state) => state.player)
-  const setScreen = useGameStore((state) => state.setScreen)
-  const setPanel = useGameStore((state) => state.setPanel)
-  const settings = useGameStore((state) => state.settings)
-  const setSettings = useGameStore((state) => state.setSettings)
+  const player = useRootGameStore((state) => state.player)
+  const setScreen = useRootGameStore((state) => state.setScreen)
+  const setPanel = useRootGameStore((state) => state.setPanel)
+  const settings = useRootGameStore((state) => state.settings)
+  const setSettings = useRootGameStore((state) => state.setSettings)
 
   return (
     <main className="menu-screen scenic-surface" style={{ '--menu-art': `url(${menuBackground})` } as CSSProperties}>

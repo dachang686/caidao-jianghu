@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { GameSaveV2 } from '../../types/save'
+import { m1RuntimeSaveSchema } from '../../game/save'
 
 const id = z.string().min(1)
 function uniqueIdArray(max?: number) {
@@ -36,6 +37,57 @@ const skillSchema = z.object({
   activeSkillIds: uniqueIdArray(6),
   skillPoints: z.number().int().nonnegative(),
 }).strict()
+
+const equipmentLoadoutSchema = z.object({
+  weapon: id.nullable(),
+  head: id.nullable(),
+  body: id.nullable(),
+  feet: id.nullable(),
+  accessory: id.nullable(),
+  manual: id.nullable(),
+}).strict()
+
+const foodBuffSnapshotSchema = z.object({
+  version: z.literal(1),
+  active: z.array(z.object({
+    buffId: id,
+    remainingBattles: z.number().int().positive().max(3),
+    negativeTurns: z.number().int().nonnegative().max(2),
+  }).strict()),
+  battleTick: z.number().int().nonnegative(),
+  processedBattleEventIds: uniqueIds,
+  processedActionIds: uniqueIds,
+}).strict()
+
+const strengtheningStatDeltaSchema = z.object({
+  attack: z.number().optional(),
+  defense: z.number().optional(),
+  maxHp: z.number().optional(),
+  maxQi: z.number().optional(),
+  posture: z.number().optional(),
+  accuracy: z.number().optional(),
+  dodge: z.number().optional(),
+  crit: z.number().optional(),
+}).strict()
+
+const strengtheningAttemptSchema = z.object({
+  key: id,
+  fromLevel: z.number().int().min(0).max(5),
+  toLevel: z.number().int().min(0).max(5),
+  success: z.boolean(),
+  roll: z.number().min(0).max(1),
+  cost: z.object({ silver: z.number().nonnegative(), materialId: id, materialCount: z.number().int().positive() }).strict(),
+}).strict()
+
+const equipmentStrengtheningSchema = z.array(z.object({
+  equipmentId: id,
+  level: z.number().int().min(0).max(5),
+  bonus: strengtheningStatDeltaSchema,
+  attemptCount: z.number().int().nonnegative(),
+  history: z.array(strengtheningAttemptSchema),
+}).strict()).superRefine((entries, context) => {
+  if (new Set(entries.map((entry) => entry.equipmentId)).size !== entries.length) context.addIssue({ code: z.ZodIssueCode.custom, message: '装备强化记录不得重复' })
+})
 
 const sectSchema = z.object({
   unlocked: z.boolean(),
@@ -133,6 +185,9 @@ export const gameSaveV2Schema = z.object({
   tasks: z.array(taskSchema),
   items: z.array(itemStackSchema),
   skills: skillSchema,
+  equipmentLoadout: equipmentLoadoutSchema,
+  equipmentStrengthening: equipmentStrengtheningSchema,
+  foodBuffs: foodBuffSnapshotSchema,
   recipeIds: uniqueIds,
   sect: sectSchema,
   commissions: z.object({ activeIds: uniqueIds, completedIds: uniqueIds }).strict(),
@@ -146,6 +201,7 @@ export const gameSaveV2Schema = z.object({
   settings: settingsSchema,
   contentKeys: uniqueIds,
   defeatedEnemyIds: uniqueIds,
+  m1: m1RuntimeSaveSchema.optional(),
 }).strict()
 
 export type ParsedGameSaveV2 = z.infer<typeof gameSaveV2Schema>
@@ -184,6 +240,9 @@ export function createMinimalGameSaveV2(): GameSaveV2 {
     tasks: [],
     items: [],
     skills: { unlockedSkillIds: [], activeSkillIds: [], skillPoints: 0 },
+    equipmentLoadout: { weapon: null, head: null, body: null, feet: null, accessory: null, manual: null },
+    equipmentStrengthening: [],
+    foodBuffs: { version: 1, active: [], battleTick: 0, processedBattleEventIds: [], processedActionIds: [] },
     recipeIds: [],
     sect: { unlocked: false, facilities: { training: 0, kitchen: 0, forge: 0, intel: 0 }, discipleIds: [], seenDiscipleDialogueIds: [], dispatches: [] },
     commissions: { activeIds: [], completedIds: [] },

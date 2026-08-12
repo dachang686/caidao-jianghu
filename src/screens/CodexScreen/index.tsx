@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ALL_UNLOCKABLES } from '../../content/unlockables'
-import { useGameStore } from '../../stores'
+import { useRootGameStore } from '../../stores'
 import type { UnlockableDefinition, UnlockableView } from '../../types/unlockable'
 import { UnlockableEngine } from '../../systems/unlocks'
 
@@ -32,7 +32,7 @@ function formatBonus(view: UnlockableView): string | null {
 }
 
 export function CodexScreen() {
-  const unlockables = useGameStore((state) => state.unlockables)
+  const unlockables = useRootGameStore((state) => state.unlockables)
   const [kind, setKind] = useState<UnlockableDefinition['kind']>('npc')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const engine = useMemo(() => new UnlockableEngine(ALL_UNLOCKABLES, unlockables), [unlockables])

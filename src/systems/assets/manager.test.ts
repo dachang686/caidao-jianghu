@@ -68,4 +68,25 @@ describe('区域资源生命周期', () => {
     manager.dispose()
     expect(manager.snapshot().cache).toHaveLength(0)
   })
+
+  it('切换区域会释放上一个区域的资源，缓存只保留全局和当前区域', async () => {
+    const fake = createLoader()
+    const manager = new AssetLifecycleManager(CORE_ASSET_MANIFEST, { loader: fake.loader })
+    const [village, qinghe] = CORE_ASSET_MANIFEST.regions
+
+    await manager.preloadGlobal()
+    await manager.enterRegion(village!.regionId)
+    await manager.enterRegion(qinghe!.regionId)
+
+    const afterSwitch = manager.snapshot()
+    expect(afterSwitch.currentRegionId).toBe(qinghe!.regionId)
+    expect(afterSwitch.cache.some((entry) => entry.id === asAssetId('asset:image:xiaoyu-village'))).toBe(false)
+    expect(afterSwitch.cache.map((entry) => entry.id)).toEqual(expect.arrayContaining(qinghe!.assetIds))
+
+    await manager.enterRegion(village!.regionId)
+    await manager.enterRegion(qinghe!.regionId)
+    const afterRepeat = manager.snapshot()
+    expect(afterRepeat.cache).toHaveLength(afterSwitch.cache.length)
+    expect(afterRepeat.cache.every((entry) => entry.references > 0)).toBe(true)
+  })
 })

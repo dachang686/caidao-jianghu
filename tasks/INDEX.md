@@ -23,11 +23,11 @@
 | 008 | ✅ | [F008 定义 GameSaveV2 与运行状态边界](./01-foundation/F008-save-v2-schema.md) | F003 | 基础架构 |
 | 009 | ✅ | [F009 实现多档位存储与安全导入导出](./01-foundation/F009-save-slots-import-export.md) | F008 | 基础架构 |
 | 010 | ✅ | [F010 实现增量迁移与崩溃恢复](./01-foundation/F010-save-migration-session-recovery.md) | F009 | 基础架构 |
-| 011 | ⬜ | [F011 拆分 Zustand 领域 slices](./01-foundation/F011-zustand-domain-slices.md) | F005、F006、F008 | 基础架构 |
+| 011 | ✅ | [F011 拆分 Zustand 领域 slices](./01-foundation/F011-zustand-domain-slices.md) | F005、F006、F008 | 基础架构 |
 | 012 | ✅ | [F012 拆分 Screen 壳与 App 调度](./01-foundation/F012-screen-shell-decomposition.md) | F011 | 基础架构 |
 | 013 | ✅ | [F013 实现 LocalTextProvider 统一文本出口](./01-foundation/F013-local-text-provider.md) | F003、F006 | 基础架构 |
 | 014 | ✅ | [F014 实现 ComedyDirector 调度内核](./01-foundation/F014-comedy-director-kernel.md) | F004、F005、F006 | 基础架构 |
-| 015 | ⬜ | [F015 完成 M1 基础架构集成验收](./01-foundation/F015-m1-foundation-integration.md) | F007、F010、F012、F013、F014 | 基础架构 |
+| 015 | ✅ | [F015 完成 M1 基础架构集成验收](./01-foundation/F015-m1-foundation-integration.md) | F007、F010、F012、F013、F014 | 基础架构 |
 | 016 | ✅ | [G101 实现可保存的确定性 RNG](./02-gameplay/G101-deterministic-rng.md) | F015 | 玩法引擎 |
 | 017 | ✅ | [G102 实现战斗回合状态机](./02-gameplay/G102-combat-turn-state-machine.md) | G101、F005、F006 | 玩法引擎 |
 | 018 | ✅ | [G103 实现伤害、状态与冷却结算](./02-gameplay/G103-damage-status-cooldown.md) | G102 | 玩法引擎 |
@@ -41,7 +41,7 @@
 | 026 | ✅ | [G111 实现确定性装备强化 +5](./02-gameplay/G111-seeded-strengthening.md) | G101、G109、G110 | 玩法引擎 |
 | 027 | ⬜ | [G116 实现武学树与六槽配置页面](./02-gameplay/G116-skill-tree-screen.md) | G108、F012 | 玩法界面 |
 | 028 | ⬜ | [G117 实现背包与装备页面](./02-gameplay/G117-inventory-equipment-screen.md) | G109、G111、F012 | 玩法界面 |
-| 029 | ⬜ | [W201 实现世界地图、地点状态与区域懒加载](./03-world-ui/W201-world-location-loader.md) | F015 | 世界系统 |
+| 029 | ✅ | [W201 实现世界地图、地点状态与区域懒加载](./03-world-ui/W201-world-location-loader.md) | F015 | 世界系统 |
 | 030 | ✅ | [W202 实现任务状态机与幂等交付](./03-world-ui/W202-quest-engine.md) | F004、F005、F006、F007 | 世界系统 |
 | 031 | ✅ | [S241 实现门派状态与四设施升级](./05-sect/S241-sect-state-facilities.md) | G109、G110、W202 | 门派系统 |
 | 032 | ✅ | [W203 实现声明式对话引擎](./03-world-ui/W203-dialogue-engine.md) | F004、F005、F013、W202 | 世界系统 |
@@ -64,7 +64,7 @@
 | 049 | ✅ | [H224 实现 memePack、三档密度与本地文案调度](./04-humor/H224-meme-pack-density.md) | F013、F014、W207 | 四层幽默 |
 | 050 | ✅ | [S246 制作 6 名 Core 门人与经营反馈内容](./05-sect/S246-six-core-disciples.md) | S242、S244、H221、H224 | 门派内容 |
 | 051 | ✅ | [W208 完成五档视口响应式应用壳](./03-world-ui/W208-responsive-app-shell.md) | F012、W201、W207 | 体验适配 |
-| 052 | ⬜ | [W209 实现区域资源与音频生命周期](./03-world-ui/W209-asset-audio-lifecycle.md) | W201、W207 | 资源平台 |
+| 052 | ✅ | [W209 实现区域资源与音频生命周期](./03-world-ui/W209-asset-audio-lifecycle.md) | W201、W207 | 资源平台 |
 | 053 | ✅ | [C301 第1章 小愚村：场景、NPC 与素材](./06-chapters/C301-ch01-scene-assets.md) | F015、W201、W204、W205、W209 | 章节内容 |
 | 054 | ✅ | [C302 第1章 小愚村：任务、对白与情境幽默](./06-chapters/C302-ch01-quests-dialogue.md) | C301、W202、W203、H221、H222、H224 | 章节内容 |
 | 055 | ✅ | [H223 实现喜剧演出节拍运行时](./04-humor/H223-presentation-cue-runtime.md) | F014、G115、W207、W209 | 四层幽默 |

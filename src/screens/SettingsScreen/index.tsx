@@ -1,5 +1,5 @@
 import { useState, type KeyboardEvent, type ReactNode } from 'react'
-import { useGameStore } from '../../stores'
+import { useRootGameStore } from '../../stores'
 import { assignKey, getBindingLabel, INPUT_ACTIONS, INPUT_ACTION_LABELS, resetKeyBindings } from '../../systems/input'
 import type { InputAction } from '../../types/settings'
 
@@ -26,9 +26,9 @@ const DIFFICULTY_OPTIONS = [
 ] as const
 
 export function SettingsScreen({ footer }: SettingsScreenProps) {
-  const settings = useGameStore((state) => state.settings)
-  const setSettings = useGameStore((state) => state.setSettings)
-  const screen = useGameStore((state) => state.screen)
+  const settings = useRootGameStore((state) => state.settings)
+  const setSettings = useRootGameStore((state) => state.setSettings)
+  const screen = useRootGameStore((state) => state.screen)
   const [capturingAction, setCapturingAction] = useState<InputAction | null>(null)
   const [status, setStatus] = useState('')
   const difficultyLocked = screen === 'battle'

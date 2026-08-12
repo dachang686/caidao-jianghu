@@ -1,19 +1,12 @@
 import { expect, test, type Page } from '@playwright/test'
+import { clearV2Save, wrapM1Snapshot, writeV2AutoSave } from './helpers/journey'
 
 async function clearSave(page: Page) {
-  await page.goto('/caidao-jianghu/')
-  await page.evaluate(async () => {
-    await new Promise<void>((resolve) => {
-      const request = indexedDB.deleteDatabase('caidao-jianghu')
-      request.onsuccess = () => resolve()
-      request.onerror = () => resolve()
-      request.onblocked = () => resolve()
-    })
-  })
+  await clearV2Save(page)
 }
 
 async function seedChapterFourSnapshot(page: Page) {
-  await page.evaluate(async () => {
+  const m1 = await page.evaluate(() => {
     const save = {
       version: 1,
       savedAt: new Date().toISOString(),
@@ -89,21 +82,9 @@ async function seedChapterFourSnapshot(page: Page) {
       rngState: 987654321,
       unlockables: { version: 1, unlockedIds: [], claimedRewardIds: [], processedEventIds: [] },
     }
-    await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open('caidao-jianghu', 1)
-      request.onerror = () => reject(request.error)
-      request.onupgradeneeded = () => {
-        if (!request.result.objectStoreNames.contains('saves')) request.result.createObjectStore('saves')
-      }
-      request.onsuccess = () => {
-        const database = request.result
-        const transaction = database.transaction('saves', 'readwrite')
-        transaction.objectStore('saves').put(save, 'slot-1')
-        transaction.oncomplete = () => { database.close(); resolve() }
-        transaction.onerror = () => reject(transaction.error)
-      }
-    })
+    return save
   })
+  await writeV2AutoSave(page, wrapM1Snapshot('ch04', m1))
   await page.reload()
 }
 

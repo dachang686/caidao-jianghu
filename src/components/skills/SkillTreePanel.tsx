@@ -1,44 +1,44 @@
 import { useMemo, useState } from 'react'
 import { allActiveSkills, allPassiveSkills, coreActiveSkills, CORE_PASSIVE_SKILLS } from '../../content/skills'
-import type { SkillSchool, SkillProgressState } from '../../types/skill'
-import {
-  SkillLoadoutError,
-  SkillRegistry,
-  createSkillProgressState,
-  equipSkill,
-  reorderSkillSlots,
-  resetSkillPoints,
-  unlockSkill,
-  unequipSkill,
-} from '../../systems/skills'
+import type { SkillSchool } from '../../types/skill'
+import { SkillRegistry } from '../../systems/skills'
+import { useRootGameStore } from '../../stores'
 import { Button } from '../game-ui'
+import { SKILLS } from '../../game/data'
+import type { SkillId } from '../../game/types'
 
 const schoolLabels: Record<SkillSchool, string> = { dao: '菜刀猛攻', mouth: '嘴遁控制', survival: '苟命反击', misc: '江湖杂学' }
 const icons: Record<SkillSchool, string> = { dao: '✦', mouth: '☄', survival: '☯', misc: '卦' }
 
-export function SkillTreePanel({ playerLevel, optionalEnabled = false, onClose }: { playerLevel: number; optionalEnabled?: boolean; onClose: () => void }) {
+function skillName(registry: SkillRegistry, skillId: string): string {
+  if (registry.has(skillId)) return registry.get(skillId).name
+  return SKILLS[skillId as SkillId]?.name ?? skillId
+}
+
+export function SkillTreePanel({ optionalEnabled = false, onClose }: { optionalEnabled?: boolean; onClose: () => void }) {
   const activeSkills = optionalEnabled ? allActiveSkills : coreActiveSkills
   const passiveSkills = optionalEnabled ? allPassiveSkills : CORE_PASSIVE_SKILLS
   const registry = useMemo(() => new SkillRegistry(activeSkills), [activeSkills])
-  const [state, setState] = useState<SkillProgressState>(() => createSkillProgressState(Math.max(1, Math.min(30, playerLevel))))
+  const state = useRootGameStore((store) => store.skillProgress)
+  const unlockActiveSkill = useRootGameStore((store) => store.unlockActiveSkill)
+  const equipActiveSkill = useRootGameStore((store) => store.equipActiveSkill)
+  const unequipActiveSkill = useRootGameStore((store) => store.unequipActiveSkill)
+  const reorderActiveSkills = useRootGameStore((store) => store.reorderActiveSkills)
+  const resetActiveSkills = useRootGameStore((store) => store.resetActiveSkills)
   const [filter, setFilter] = useState<SkillSchool | 'all'>('all')
-  const [message, setMessage] = useState('技能点每级获得 1 点；前置和六槽限制由领域规则检查。')
+  const [message, setMessage] = useState('技能点、前置和六槽限制由当前存档的领域规则检查。')
   const visibleSkills = activeSkills.filter((skill) => filter === 'all' || skill.school === filter)
   const availablePoints = state.earnedSkillPoints - state.spentSkillPoints
   const freeSlot = state.loadout.findIndex((slot) => slot === null)
 
-  const run = (action: () => SkillProgressState) => {
-    try {
-      setState(action())
-      setMessage('操作成功：派生属性会从基础状态重新计算。')
-    } catch (error) {
-      setMessage(error instanceof SkillLoadoutError ? error.message : '技能操作失败')
-    }
+  const run = (action: () => void, success = '操作成功：战斗技能栏已同步更新。') => {
+    action()
+    setMessage(success)
   }
 
   const reset = () => {
     if (!window.confirm('确认免费重置全部技能点？已获得技能点不会丢失。')) return
-    run(() => resetSkillPoints(state))
+    run(resetActiveSkills, '技能点已重置，空槽不会进入战斗。')
   }
 
   return <div className="skill-tree-panel" data-testid="skill-tree-panel">
@@ -49,7 +49,7 @@ export function SkillTreePanel({ playerLevel, optionalEnabled = false, onClose }
       {(Object.keys(schoolLabels) as SkillSchool[]).map((school) => <button key={school} className={filter === school ? 'is-selected' : ''} onClick={() => setFilter(school)}>{icons[school]} {schoolLabels[school]}</button>)}
     </div>
     <div className="skill-slot-strip" aria-label="六个技能槽">
-      {state.loadout.map((skillId, slot) => <div className="skill-slot" key={`${slot}-${skillId ?? 'empty'}`}><small>槽位 {slot + 1}</small><b>{skillId ? registry.get(skillId).name : '空'}</b><div><button disabled={!skillId} onClick={() => run(() => unequipSkill(state, slot))}>卸下</button>{slot > 0 && <button onClick={() => run(() => reorderSkillSlots(state, slot, slot - 1))} aria-label={`槽位 ${slot + 1} 前移`}>←</button>}</div></div>)}
+      {state.loadout.map((skillId, slot) => <div className="skill-slot" key={`${slot}-${skillId ?? 'empty'}`}><small>槽位 {slot + 1}</small><b>{skillId ? skillName(registry, skillId) : '空'}</b><div><button disabled={!skillId} onClick={() => run(() => unequipActiveSkill(slot))}>卸下</button>{slot > 0 && <button onClick={() => run(() => reorderActiveSkills(slot, slot - 1))} aria-label={`槽位 ${slot + 1} 前移`}>←</button>}</div></div>)}
     </div>
     <div className="skill-card-grid">
       {visibleSkills.map((skill) => {
@@ -60,7 +60,7 @@ export function SkillTreePanel({ playerLevel, optionalEnabled = false, onClose }
           <div className="skill-card-top"><span className={`skill-card-icon skill-card-icon--${skill.school}`}>{icons[skill.school]}</span><div><h3>{skill.name}</h3><small>{schoolLabels[skill.school]} · 内力 {skill.qiCost} · 冷却 {skill.cooldown}</small></div></div>
           <p>{skill.description}</p><p className="skill-preview">预览：{skill.preview.summary}</p><small>前置：{prerequisites}</small>
           {skill.statusNotes?.map((note) => <small key={note}>说明：{note}</small>)}
-          <div className="skill-card-actions"><Button disabled={unlocked || availablePoints < 1} onClick={() => run(() => unlockSkill(state, registry, String(skill.id)))}>{unlocked ? '已解锁' : '解锁（1点）'}</Button>{unlocked && <Button disabled={equippedSlot >= 0 || freeSlot < 0} onClick={() => run(() => equipSkill(state, registry, String(skill.id), freeSlot))}>{equippedSlot >= 0 ? `已装配 · 槽 ${equippedSlot + 1}` : freeSlot < 0 ? '六槽已满' : '装配'}</Button>}</div>
+          <div className="skill-card-actions"><Button disabled={unlocked || availablePoints < 1} onClick={() => run(() => unlockActiveSkill(String(skill.id)))}>{unlocked ? '已解锁' : '解锁（1点）'}</Button>{unlocked && <Button disabled={equippedSlot >= 0 || freeSlot < 0} onClick={() => run(() => equipActiveSkill(String(skill.id), freeSlot))}>{equippedSlot >= 0 ? `已装配 · 槽 ${equippedSlot + 1}` : freeSlot < 0 ? '六槽已满' : '装配'}</Button>}</div>
         </article>
       })}
     </div>

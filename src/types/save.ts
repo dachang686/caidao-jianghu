@@ -1,8 +1,11 @@
-import type { ChapterId, ContentKey, EndingId, EnemyId, ItemId, QuestId, RecipeId, SkillId } from './ids'
+import type { ChapterId, ContentKey, EndingId, EnemyId, ItemId, QuestId, RecipeId } from './ids'
 import type { NpcSnapshot } from './npc'
 import type { KeyBindingMap } from './settings'
 import type { UnlockableSnapshot } from './unlockable'
 import type { WorldNavigationSnapshot } from './world'
+import type { GameSaveV1 } from '../game/types'
+import type { FoodBuffSnapshot } from './food'
+import type { StrengtheningAttempt, StrengtheningStatDelta } from './strengthening'
 
 export interface SaveTaskState {
   readonly questId: QuestId
@@ -16,9 +19,26 @@ export interface SaveItemStack {
 }
 
 export interface SaveSkillState {
-  readonly unlockedSkillIds: readonly SkillId[]
-  readonly activeSkillIds: readonly SkillId[]
+  readonly unlockedSkillIds: readonly string[]
+  readonly activeSkillIds: readonly string[]
   readonly skillPoints: number
+}
+
+export interface SaveEquipmentLoadout {
+  readonly weapon: string | null
+  readonly head: string | null
+  readonly body: string | null
+  readonly feet: string | null
+  readonly accessory: string | null
+  readonly manual: string | null
+}
+
+export interface SaveEquipmentStrengthening {
+  readonly equipmentId: string
+  readonly level: number
+  readonly bonus: StrengtheningStatDelta
+  readonly attemptCount: number
+  readonly history: readonly StrengtheningAttempt[]
 }
 
 export interface SaveSectState {
@@ -92,6 +112,9 @@ export interface GameSaveV2 {
   readonly tasks: readonly SaveTaskState[]
   readonly items: readonly SaveItemStack[]
   readonly skills: SaveSkillState
+  readonly equipmentLoadout: SaveEquipmentLoadout
+  readonly equipmentStrengthening: readonly SaveEquipmentStrengthening[]
+  readonly foodBuffs: FoodBuffSnapshot
   readonly recipeIds: readonly RecipeId[]
   readonly sect: SaveSectState
   readonly commissions: SaveCommissionState
@@ -101,6 +124,11 @@ export interface GameSaveV2 {
   readonly settings: SaveSettings
   readonly contentKeys: readonly ContentKey[]
   readonly defeatedEnemyIds: readonly EnemyId[]
+  /**
+   * M1 仍由旧屏幕渲染完整角色战斗态。该快照是 V2 存档的一部分，
+   * 用于无损恢复；后续章节完成领域迁移后再逐段收缩，不能由 UI 临时态替代。
+   */
+  readonly m1?: GameSaveV1
 }
 
 export type SaveSlotId = 'manual-1' | 'manual-2' | 'manual-3' | 'auto' | 'backup'

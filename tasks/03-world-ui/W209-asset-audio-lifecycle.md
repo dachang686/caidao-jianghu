@@ -3,7 +3,7 @@ id: W209
 title: 实现区域资源与音频生命周期
 phase: platform
 depends_on: [W201, W207]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -47,11 +47,11 @@ pnpm build
 
 ## 执行记录
 
-- 新增 `src/types/assets.ts` 与 `src/content/assets/core.ts`：登记 6 个 Core 本地 WebP、用途、源文件大小、单资源预算、全局资源和小愚村区域资源预算；ContentManifest 同时登记资源入口与地点引用。
-- 新增 `src/systems/assets/`：校验同源/随包资源、拒绝跨域资源，按全局与区域 scope 做引用计数，进入区域预加载，切换/离开/销毁时释放 Image、Audio 引用；重复进入不会重复加载。
-- 新增 `src/systems/audio/` 并保留 `src/game/audio.ts` 兼容出口：首次用户手势激活 AudioContext，BGM、普通 SFX、搞笑 SFX 使用独立音量，振荡器引用有生命周期回收，SFX 实际并发上限为 6；无 AudioContext 时静默降级，减少动态效果不削弱日志和状态反馈。
-- 将资源服务接入 Foundation/StoreServices/App 应用壳，不把资源判断复制到 Screen；新增设置中的“搞笑音效”音量，并为 V1/V2 存档提供默认迁移值。
-- 修正了 Vite 开发态同源资源 URL 被误判为远程的问题；跨域 URL 仍由校验器拒绝。
+- 全部图片均由本地 WebP 资源清单登记用途与预算；校验器拒绝跨域来源，运行时不会引入第三方资源请求。
+- `AssetLifecycleManager` 按全局/区域引用计数加载资源；切换区域会释放上一地区资源，反复切换后缓存只保留全局资源与当前地区资源。
+- `App` 根据 RootGameStore 的当前区域驱动资源生命周期；音频直接使用 `systems/audio`，已移除旧的 `game/audio` 转发入口。
+- AudioContext 仅在首次用户手势激活；BGM、普通 SFX、搞笑 SFX 独立音量，SFX 并发不超过 6，静音和减少动态时仍保留界面与日志反馈。
+- 验证：`pnpm lint`、`pnpm test -- src/systems/assets src/systems/audio`（7 passed）、`pnpm build` 均通过。
 
 ## 验证记录
 

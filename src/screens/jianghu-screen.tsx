@@ -1,63 +1,73 @@
 import type { CSSProperties } from 'react'
-import villageBackground from '../assets/backgrounds/xiaoyu-village.webp'
-import heroSprite from '../assets/characters/hero.webp'
-import elderSprite from '../assets/characters/elder.webp'
-import baiSprite from '../assets/characters/bai.webp'
-import catSprite from '../assets/characters/cat.webp'
-import auntSprite from '../assets/characters/aunt.webp'
-import qingheMarketBackground from '../assets/backgrounds/qinghe-market.webp'
-import bangsiSprite from '../assets/characters/qinghe-bangsi.webp'
-import blackwindFortressBackground from '../assets/backgrounds/blackwind-fortress.webp'
-import blackwindLedgerKeeperSprite from '../assets/characters/blackwind-ledger-keeper.webp'
-import blackwindRunnerSprite from '../assets/characters/blackwind-runner.webp'
-import blackwindCookSprite from '../assets/characters/blackwind-cook.webp'
-import blackwindLeaderSprite from '../assets/characters/blackwind-leader.webp'
-import qingyunMountainBackground from '../assets/backgrounds/qingyun-mountain.webp'
-import qingyunDiscipleSprite from '../assets/characters/qingyun-disciple.webp'
-import qingyunHerbalistSprite from '../assets/characters/qingyun-herbalist.webp'
-import qingyunBellKeeperSprite from '../assets/characters/qingyun-bell-keeper.webp'
-import qingyunMasterSprite from '../assets/characters/qingyun-master.webp'
-import westernRelayBackground from '../assets/backgrounds/western-relay.webp'
-import westernCourierSprite from '../assets/characters/western-courier.webp'
-import westernTeaKeeperSprite from '../assets/characters/western-tea-keeper.webp'
-import westernGuardSprite from '../assets/characters/western-guard.webp'
-import twinBanditsSprite from '../assets/characters/twin-bandits.webp'
-import donghaiTownBackground from '../assets/backgrounds/donghai-town.webp'
-import donghaiBoatwomanSprite from '../assets/characters/donghai-boatwoman.webp'
-import shellVendorSprite from '../assets/characters/shell-vendor.webp'
-import tideBellKeeperSprite from '../assets/characters/tide-bell-keeper.webp'
-import tideMasterSprite from '../assets/characters/tide-master.webp'
-import capitalRankingBackground from '../assets/backgrounds/capital-ranking.webp'
-import capitalClerkSprite from '../assets/characters/capital-clerk.webp'
-import capitalRegistrarSprite from '../assets/characters/capital-registrar.webp'
-import capitalStorytellerSprite from '../assets/characters/capital-storyteller.webp'
-import rankingGovernorSprite from '../assets/characters/ranking-governor.webp'
-import martialConventionBackground from '../assets/backgrounds/martial-convention.webp'
-import conventionUsherSprite from '../assets/characters/convention-usher.webp'
-import sectRepresentativeSprite from '../assets/characters/sect-representative.webp'
-import noodleVendorSprite from '../assets/characters/noodle-vendor.webp'
-import conventionJudgeSprite from '../assets/characters/convention-judge.webp'
-import rankingMasterSprite from '../assets/characters/ranking-master.webp'
 import { OverlayPanel } from '../components/OverlayPanel'
 import { Button, Meter } from '../components/game-ui'
-import { useGameStore } from '../stores'
-import { useRecipeStore } from '../stores/recipe-store'
+import { useRootGameStore } from '../stores'
 import { QUEST_LABELS } from '../game/data'
+import { CORE_ASSET_IDS, CORE_ASSETS } from '../content/assets'
+import type { AssetId } from '../types/ids'
+
+const assetSources = new Map(CORE_ASSETS.map((asset) => [asset.id, asset.src]))
+
+function assetSrc(id: AssetId): string {
+  const src = assetSources.get(id)
+  if (!src) throw new Error(`资源清单缺少「${id}」。`)
+  return src
+}
+
+const villageBackground = assetSrc(CORE_ASSET_IDS.villageBackground)
+const heroSprite = assetSrc(CORE_ASSET_IDS.hero)
+const elderSprite = assetSrc(CORE_ASSET_IDS.elder)
+const baiSprite = assetSrc(CORE_ASSET_IDS.bai)
+const catSprite = assetSrc(CORE_ASSET_IDS.cat)
+const auntSprite = assetSrc(CORE_ASSET_IDS.aunt)
+const qingheMarketBackground = assetSrc(CORE_ASSET_IDS.qingheMarketBackground)
+const bangsiSprite = assetSrc(CORE_ASSET_IDS.qingheBangsi)
+const blackwindFortressBackground = assetSrc(CORE_ASSET_IDS.blackwindFortressBackground)
+const blackwindLedgerKeeperSprite = assetSrc(CORE_ASSET_IDS.blackwindLedgerKeeper)
+const blackwindRunnerSprite = assetSrc(CORE_ASSET_IDS.blackwindRunner)
+const blackwindCookSprite = assetSrc(CORE_ASSET_IDS.blackwindCook)
+const blackwindLeaderSprite = assetSrc(CORE_ASSET_IDS.blackwindLeader)
+const qingyunMountainBackground = assetSrc(CORE_ASSET_IDS.qingyunMountainBackground)
+const qingyunDiscipleSprite = assetSrc(CORE_ASSET_IDS.qingyunDisciple)
+const qingyunHerbalistSprite = assetSrc(CORE_ASSET_IDS.qingyunHerbalist)
+const qingyunBellKeeperSprite = assetSrc(CORE_ASSET_IDS.qingyunBellKeeper)
+const qingyunMasterSprite = assetSrc(CORE_ASSET_IDS.qingyunMaster)
+const westernRelayBackground = assetSrc(CORE_ASSET_IDS.westernRelayBackground)
+const westernCourierSprite = assetSrc(CORE_ASSET_IDS.westernCourier)
+const westernTeaKeeperSprite = assetSrc(CORE_ASSET_IDS.westernTeaKeeper)
+const westernGuardSprite = assetSrc(CORE_ASSET_IDS.westernGuard)
+const twinBanditsSprite = assetSrc(CORE_ASSET_IDS.twinBandits)
+const donghaiTownBackground = assetSrc(CORE_ASSET_IDS.donghaiTownBackground)
+const donghaiBoatwomanSprite = assetSrc(CORE_ASSET_IDS.donghaiBoatwoman)
+const shellVendorSprite = assetSrc(CORE_ASSET_IDS.shellVendor)
+const tideBellKeeperSprite = assetSrc(CORE_ASSET_IDS.tideBellKeeper)
+const tideMasterSprite = assetSrc(CORE_ASSET_IDS.tideMaster)
+const capitalRankingBackground = assetSrc(CORE_ASSET_IDS.capitalRankingBackground)
+const capitalClerkSprite = assetSrc(CORE_ASSET_IDS.capitalClerk)
+const capitalRegistrarSprite = assetSrc(CORE_ASSET_IDS.capitalRegistrar)
+const capitalStorytellerSprite = assetSrc(CORE_ASSET_IDS.capitalStoryteller)
+const rankingGovernorSprite = assetSrc(CORE_ASSET_IDS.rankingGovernor)
+const martialConventionBackground = assetSrc(CORE_ASSET_IDS.martialConventionBackground)
+const conventionUsherSprite = assetSrc(CORE_ASSET_IDS.conventionUsher)
+const sectRepresentativeSprite = assetSrc(CORE_ASSET_IDS.sectRepresentative)
+const noodleVendorSprite = assetSrc(CORE_ASSET_IDS.noodleVendor)
+const conventionJudgeSprite = assetSrc(CORE_ASSET_IDS.conventionJudge)
+const rankingMasterSprite = assetSrc(CORE_ASSET_IDS.rankingMaster)
 
 export function JianghuScreen() {
-  const player = useGameStore((state) => state.player)!
-  const quests = useGameStore((state) => state.quests)
-  const world = useGameStore((state) => state.world)
-  const openDialogue = useGameStore((state) => state.openDialogue)
-  const recordNpcClick = useGameStore((state) => state.recordNpcClick)
-  const setPanel = useGameStore((state) => state.setPanel)
-  const toggleBossKey = useGameStore((state) => state.toggleBossKey)
-  const activeDialogue = useGameStore((state) => state.activeDialogue)
-  const narrator = useGameStore((state) => state.narrator)
-  const dismissNarrator = useGameStore((state) => state.dismissNarrator)
-  const openCrafting = useRecipeStore((state) => state.openCrafting)
-  const openCooking = useRecipeStore((state) => state.openCooking)
-  const startChapterTwo = useGameStore((state) => state.startChapterTwo)
+  const player = useRootGameStore((state) => state.player)!
+  const quests = useRootGameStore((state) => state.quests)
+  const world = useRootGameStore((state) => state.world)
+  const openDialogue = useRootGameStore((state) => state.openDialogue)
+  const recordNpcClick = useRootGameStore((state) => state.recordNpcClick)
+  const setPanel = useRootGameStore((state) => state.setPanel)
+  const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
+  const activeDialogue = useRootGameStore((state) => state.activeDialogue)
+  const narrator = useRootGameStore((state) => state.narrator)
+  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
+  const openCrafting = useRootGameStore((state) => state.openCrafting)
+  const openCooking = useRootGameStore((state) => state.openCooking)
+  const startChapterTwo = useRootGameStore((state) => state.startChapterTwo)
 
   if (world.currentChapter === 'ch02') return <QingheScreen />
   if (world.currentChapter === 'ch03') return <BlackwindScreen />
@@ -76,7 +86,7 @@ export function JianghuScreen() {
     <main className="jianghu-screen scenic-surface" style={{ '--village-art': `url(${villageBackground})` } as CSSProperties}>
       <header className="jianghu-header">
         <div className="game-mark"><span>菜刀</span>闯江湖<small>无厘头武侠单机小游戏</small></div>
-        <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button></div>
+        <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div>
       </header>
 
       <aside className="status-panel paper-panel">
@@ -114,23 +124,23 @@ export function JianghuScreen() {
 }
 
 function QingheScreen() {
-  const player = useGameStore((state) => state.player)!
-  const world = useGameStore((state) => state.world)
-  const setPanel = useGameStore((state) => state.setPanel)
-  const toggleBossKey = useGameStore((state) => state.toggleBossKey)
-  const narrator = useGameStore((state) => state.narrator)
-  const dismissNarrator = useGameStore((state) => state.dismissNarrator)
-  const completeInvestigation = useGameStore((state) => state.completeChapterTwoInvestigation)
-  const startBattle = useGameStore((state) => state.startBattle)
-  const openCrafting = useRecipeStore((state) => state.openCrafting)
-  const openCooking = useRecipeStore((state) => state.openCooking)
-  const startChapterThree = useGameStore((state) => state.startChapterThree)
+  const player = useRootGameStore((state) => state.player)!
+  const world = useRootGameStore((state) => state.world)
+  const setPanel = useRootGameStore((state) => state.setPanel)
+  const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
+  const narrator = useRootGameStore((state) => state.narrator)
+  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
+  const completeInvestigation = useRootGameStore((state) => state.completeChapterTwoInvestigation)
+  const startBattle = useRootGameStore((state) => state.startBattle)
+  const openCrafting = useRootGameStore((state) => state.openCrafting)
+  const openCooking = useRootGameStore((state) => state.openCooking)
+  const startChapterThree = useRootGameStore((state) => state.startChapterThree)
 
   return (
     <main className="jianghu-screen scenic-surface qinghe-screen" style={{ '--village-art': `url(${qingheMarketBackground})` } as CSSProperties}>
       <header className="jianghu-header">
         <div className="game-mark"><span>菜刀</span>闯江湖<small>第二章 · 清河县</small></div>
-        <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button></div>
+        <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div>
       </header>
       <aside className="status-panel paper-panel"><div className="status-person"><div className="portrait">侠</div><div><b>{player.name}</b><span className="rank-badge">清河访客</span><p>等级：{player.level}</p><p>生命：{player.hp}/{player.maxHp}<Meter value={player.hp} max={player.maxHp} /></p><p>内力：{player.qi}/{player.maxQi}<Meter value={player.qi} max={player.maxQi} tone="blue" /></p></div></div><div className="currency-row">🪙 银两：{player.silver}<span>🏆 {player.titles.length}</span></div></aside>
       <aside className="quest-panel paper-panel"><h2>清河县主线</h2><div className={`quest-row quest-row--${world.ch02MainlineComplete ? 'complete' : 'active'}`}><b>[主线] 百晓榜缺页</b><span>{world.ch02MainlineComplete ? '线索已经对上，准备接受核验' : '调查榜单、茶摊和河边药篮'}</span><em>{world.ch02MainlineComplete ? '✓' : '0/1'}</em></div></aside>
@@ -141,7 +151,7 @@ function QingheScreen() {
         <button className="npc npc--bai" data-hotspot="qinghe-bangsi" onClick={() => startBattle('ch02')} disabled={!world.ch02BossReady || world.ch02BangsiDefeated}><i><img src={bangsiSprite} alt="" /></i><b>榜下捕快</b><q>{world.ch02BangsiDefeated ? '已核验，暂不复查。' : world.ch02BossReady ? '出示线索，接受核验！' : '先把线索整理齐。'}</q></button>
         <div className="village-controls" aria-label="街市移动提示"><span>↑</span><span>←</span><span>→</span><span>↓</span></div>
       </section>
-      <div className="scene-actions"><Button className="battle-call" data-testid="ch02-investigate" onClick={completeInvestigation} disabled={world.ch02MainlineComplete}>🔎 调查百晓榜</Button><Button data-testid="ch02-battle-call" onClick={() => startBattle('ch02')} disabled={!world.ch02BossReady || world.ch02BangsiDefeated}>⚔ {world.ch02BangsiDefeated ? '榜下捕快服了' : '挑战榜下捕快'}</Button>{world.ch02BangsiDefeated && <Button data-testid="open-ch03" onClick={startChapterThree}>→ 前往黑风寨</Button>}<Button data-testid="open-crafting" onClick={openCrafting} disabled={!world.systemUnlocks.forging}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
+      <div className="scene-actions"><Button className="battle-call" data-testid="ch02-investigate" onClick={completeInvestigation} disabled={world.ch02MainlineComplete}>🔎 调查百晓榜</Button><Button data-testid="ch02-battle-call" onClick={() => startBattle('ch02')} disabled={!world.ch02BossReady || world.ch02BangsiDefeated}>⚔ {world.ch02BangsiDefeated ? '榜下捕快服了' : '挑战榜下捕快'}</Button>{world.ch02BangsiDefeated && <Button data-testid="open-ch03" onClick={startChapterThree}>→ 前往黑风寨</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
       <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')}>📘 武功</Button><Button onClick={() => setPanel('equipment')} disabled={!world.systemUnlocks.equipment}>⚔ 装备</Button></nav>
       <button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
       {narrator && <button className="narrator-toast" onClick={dismissNarrator} aria-label="关闭旁白">{narrator}<small>点此收起</small></button>}
@@ -151,23 +161,23 @@ function QingheScreen() {
 }
 
 function BlackwindScreen() {
-  const player = useGameStore((state) => state.player)!
-  const world = useGameStore((state) => state.world)
-  const setPanel = useGameStore((state) => state.setPanel)
-  const toggleBossKey = useGameStore((state) => state.toggleBossKey)
-  const narrator = useGameStore((state) => state.narrator)
-  const dismissNarrator = useGameStore((state) => state.dismissNarrator)
-  const completeInvestigation = useGameStore((state) => state.completeChapterThreeInvestigation)
-  const startBattle = useGameStore((state) => state.startBattle)
-  const openCrafting = useRecipeStore((state) => state.openCrafting)
-  const openCooking = useRecipeStore((state) => state.openCooking)
-  const startChapterFour = useGameStore((state) => state.startChapterFour)
+  const player = useRootGameStore((state) => state.player)!
+  const world = useRootGameStore((state) => state.world)
+  const setPanel = useRootGameStore((state) => state.setPanel)
+  const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
+  const narrator = useRootGameStore((state) => state.narrator)
+  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
+  const completeInvestigation = useRootGameStore((state) => state.completeChapterThreeInvestigation)
+  const startBattle = useRootGameStore((state) => state.startBattle)
+  const openCrafting = useRootGameStore((state) => state.openCrafting)
+  const openCooking = useRootGameStore((state) => state.openCooking)
+  const startChapterFour = useRootGameStore((state) => state.startChapterFour)
 
   return (
     <main className="jianghu-screen scenic-surface blackwind-screen" style={{ '--village-art': `url(${blackwindFortressBackground})` } as CSSProperties}>
       <header className="jianghu-header">
         <div className="game-mark"><span>菜刀</span>闯江湖<small>第三章 · 黑风寨</small></div>
-        <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button></div>
+        <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div>
       </header>
       <aside className="status-panel paper-panel"><div className="status-person"><div className="portrait">侠</div><div><b>{player.name}</b><span className="rank-badge">黑风来客</span><p>等级：{player.level}</p><p>生命：{player.hp}/{player.maxHp}<Meter value={player.hp} max={player.maxHp} /></p><p>内力：{player.qi}/{player.maxQi}<Meter value={player.qi} max={player.maxQi} tone="blue" /></p></div></div><div className="currency-row">🪙 银两：{player.silver}<span>🏆 {player.titles.length}</span></div></aside>
       <aside className="quest-panel paper-panel"><h2>黑风寨主线</h2><div className={`quest-row quest-row--${world.ch03MainlineComplete ? 'complete' : 'active'}`}><b>[主线] 山寨也要冲榜</b><span>{world.ch03MainlineComplete ? '账榜、百味刀谱与传令已经对齐' : '调查账榜、灶房和瞭望台'}</span><em>{world.ch03MainlineComplete ? '✓' : '0/1'}</em></div></aside>
@@ -180,7 +190,7 @@ function BlackwindScreen() {
         <button className="npc npc--hero" data-hotspot="blackwind-leader" onClick={() => startBattle('ch03')} disabled={!world.ch03BossReady || world.ch03BlackwindLeaderDefeated}><i><img src={blackwindLeaderSprite} alt="" /></i><b>黑风寨主</b><q>{world.ch03BlackwindLeaderDefeated ? '空旗收好，败北有效。' : world.ch03BossReady ? '来验收你的冲榜方案！' : '先把账榜和刀谱对齐。'}</q></button>
         <div className="village-controls" aria-label="山寨移动提示"><span>↑</span><span>←</span><span>→</span><span>↓</span></div>
       </section>
-      <div className="scene-actions"><Button className="battle-call" data-testid="ch03-investigate" onClick={completeInvestigation} disabled={world.ch03MainlineComplete}>🔎 调查黑风寨账榜</Button><Button data-testid="ch03-battle-call" onClick={() => startBattle('ch03')} disabled={!world.ch03BossReady || world.ch03BlackwindLeaderDefeated}>⚔ {world.ch03BlackwindLeaderDefeated ? '黑风寨主服了' : '挑战黑风寨主'}</Button>{world.ch03BlackwindLeaderDefeated && <Button data-testid="open-ch04" onClick={startChapterFour}>→ 前往青云山</Button>}<Button data-testid="open-crafting" onClick={openCrafting} disabled={!world.systemUnlocks.forging}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking} disabled={!world.systemUnlocks.cooking}>🍲 后厨</Button></div>
+      <div className="scene-actions"><Button className="battle-call" data-testid="ch03-investigate" onClick={completeInvestigation} disabled={world.ch03MainlineComplete}>🔎 调查黑风寨账榜</Button><Button data-testid="ch03-battle-call" onClick={() => startBattle('ch03')} disabled={!world.ch03BossReady || world.ch03BlackwindLeaderDefeated}>⚔ {world.ch03BlackwindLeaderDefeated ? '黑风寨主服了' : '挑战黑风寨主'}</Button>{world.ch03BlackwindLeaderDefeated && <Button data-testid="open-ch04" onClick={startChapterFour}>→ 前往青云山</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
       {world.ch03BlackwindLeaderDefeated && <div className="paper-panel" data-testid="ch03-unlocks"><strong>技能树、烹饪已解锁</strong><span>{world.nextChapterUnlocked ? '下一章与结局资格已开放。' : '自动存档点已写入。'}</span></div>}
       <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')} disabled={!world.systemUnlocks.skillTree}>📘 武功</Button><Button onClick={() => setPanel('equipment')} disabled={!world.systemUnlocks.equipment}>⚔ 装备</Button></nav>
       <button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
@@ -191,23 +201,23 @@ function BlackwindScreen() {
 }
 
 function QingyunScreen() {
-  const player = useGameStore((state) => state.player)!
-  const world = useGameStore((state) => state.world)
-  const setPanel = useGameStore((state) => state.setPanel)
-  const toggleBossKey = useGameStore((state) => state.toggleBossKey)
-  const narrator = useGameStore((state) => state.narrator)
-  const dismissNarrator = useGameStore((state) => state.dismissNarrator)
-  const completeInvestigation = useGameStore((state) => state.completeChapterFourInvestigation)
-  const startBattle = useGameStore((state) => state.startBattle)
-  const startChapterFive = useGameStore((state) => state.startChapterFive)
-  const openCrafting = useRecipeStore((state) => state.openCrafting)
-  const openCooking = useRecipeStore((state) => state.openCooking)
+  const player = useRootGameStore((state) => state.player)!
+  const world = useRootGameStore((state) => state.world)
+  const setPanel = useRootGameStore((state) => state.setPanel)
+  const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
+  const narrator = useRootGameStore((state) => state.narrator)
+  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
+  const completeInvestigation = useRootGameStore((state) => state.completeChapterFourInvestigation)
+  const startBattle = useRootGameStore((state) => state.startBattle)
+  const startChapterFive = useRootGameStore((state) => state.startChapterFive)
+  const openCrafting = useRootGameStore((state) => state.openCrafting)
+  const openCooking = useRootGameStore((state) => state.openCooking)
 
   return (
     <main className="jianghu-screen scenic-surface qingyun-screen" style={{ '--village-art': `url(${qingyunMountainBackground})` } as CSSProperties}>
       <header className="jianghu-header">
         <div className="game-mark"><span>菜刀</span>闯江湖<small>第四章 · 青云山</small></div>
-        <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button></div>
+        <div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div>
       </header>
       <aside className="status-panel paper-panel"><div className="status-person"><div className="portrait">侠</div><div><b>{player.name}</b><span className="rank-badge">青云访客</span><p>等级：{player.level}</p><p>生命：{player.hp}/{player.maxHp}<Meter value={player.hp} max={player.maxHp} /></p><p>内力：{player.qi}/{player.maxQi}<Meter value={player.qi} max={player.maxQi} tone="blue" /></p></div></div><div className="currency-row">🪙 银两：{player.silver}<span>🏆 {player.titles.length}</span></div></aside>
       <aside className="quest-panel paper-panel"><h2>青云山主线</h2><div className={`quest-row quest-row--${world.ch04MainlineComplete ? 'complete' : 'active'}`}><b>[主线] 门规也要讲证据</b><span>{world.ch04MainlineComplete ? '名册、药圃与听云钟已经对齐' : '调查山门、云台药圃和听云台'}</span><em>{world.ch04MainlineComplete ? '✓' : '0/1'}</em></div></aside>
@@ -220,7 +230,7 @@ function QingyunScreen() {
         <button className="npc npc--hero" data-hotspot="qingyun-master" onClick={() => startBattle('ch04')} disabled={!world.ch04BossReady || world.ch04QingyunMasterDefeated}><i><img src={qingyunMasterSprite} alt="" /></i><b>青云掌门</b><q>{world.ch04QingyunMasterDefeated ? '名帖留下，规则写短。' : world.ch04BossReady ? '来验收最后一条门规！' : '先把山门证据对齐。'}</q></button>
         <div className="village-controls" aria-label="山门移动提示"><span>↑</span><span>←</span><span>→</span><span>↓</span></div>
       </section>
-      <div className="scene-actions"><Button className="battle-call" data-testid="ch04-investigate" onClick={completeInvestigation} disabled={world.ch04MainlineComplete}>🔎 调查青云山门规</Button><Button data-testid="ch04-battle-call" onClick={() => startBattle('ch04')} disabled={!world.ch04BossReady || world.ch04QingyunMasterDefeated}>⚔ {world.ch04QingyunMasterDefeated ? '青云掌门服了' : '挑战青云掌门'}</Button>{world.ch04QingyunMasterDefeated && <Button data-testid="open-ch05" onClick={startChapterFive}>→ 前往西域驿路</Button>}<Button data-testid="open-crafting" onClick={openCrafting} disabled={!world.systemUnlocks.forging}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking} disabled={!world.systemUnlocks.cooking}>🍲 后厨</Button></div>
+      <div className="scene-actions"><Button className="battle-call" data-testid="ch04-investigate" onClick={completeInvestigation} disabled={world.ch04MainlineComplete}>🔎 调查青云山门规</Button><Button data-testid="ch04-battle-call" onClick={() => startBattle('ch04')} disabled={!world.ch04BossReady || world.ch04QingyunMasterDefeated}>⚔ {world.ch04QingyunMasterDefeated ? '青云掌门服了' : '挑战青云掌门'}</Button>{world.ch04QingyunMasterDefeated && <Button data-testid="open-ch05" onClick={startChapterFive}>→ 前往西域驿路</Button>}<Button data-testid="open-crafting" onClick={openCrafting}>🔨 铁匠铺</Button><Button data-testid="open-cooking" onClick={openCooking}>🍲 后厨</Button></div>
       {world.ch04QingyunMasterDefeated && <div className="paper-panel" data-testid="ch04-unlocks"><strong>意图进阶、装备强化已解锁</strong><span>{world.nextChapterUnlocked ? '下一章与结局资格已开放。' : '自动存档点已写入。'}</span></div>}
       <nav className="action-stack"><Button onClick={() => setPanel('inventory')}>🎒 背包</Button><Button onClick={() => setPanel('skills')} disabled={!world.systemUnlocks.skillTree}>📘 武功</Button><Button onClick={() => setPanel('equipment')} disabled={!world.systemUnlocks.equipmentStrengthening}>⚔ 装备强化</Button></nav>
       <button className="boss-key-button" aria-label="老板键" onClick={toggleBossKey}>▦</button>
@@ -239,20 +249,20 @@ const LATER_CHAPTER_CONFIG = {
 } as const
 
 function LaterChapterScreen({ chapter }: { chapter: LaterChapterId }) {
-  const player = useGameStore((state) => state.player)!
-  const world = useGameStore((state) => state.world)
-  const setPanel = useGameStore((state) => state.setPanel)
-  const toggleBossKey = useGameStore((state) => state.toggleBossKey)
-  const narrator = useGameStore((state) => state.narrator)
-  const dismissNarrator = useGameStore((state) => state.dismissNarrator)
-  const startBattle = useGameStore((state) => state.startBattle)
-  const completeFive = useGameStore((state) => state.completeChapterFiveInvestigation)
-  const completeSix = useGameStore((state) => state.completeChapterSixInvestigation)
-  const completeSeven = useGameStore((state) => state.completeChapterSevenInvestigation)
-  const completeEight = useGameStore((state) => state.completeChapterEightInvestigation)
-  const startSix = useGameStore((state) => state.startChapterSix)
-  const startSeven = useGameStore((state) => state.startChapterSeven)
-  const startEight = useGameStore((state) => state.startChapterEight)
+  const player = useRootGameStore((state) => state.player)!
+  const world = useRootGameStore((state) => state.world)
+  const setPanel = useRootGameStore((state) => state.setPanel)
+  const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
+  const narrator = useRootGameStore((state) => state.narrator)
+  const dismissNarrator = useRootGameStore((state) => state.dismissNarrator)
+  const startBattle = useRootGameStore((state) => state.startBattle)
+  const completeFive = useRootGameStore((state) => state.completeChapterFiveInvestigation)
+  const completeSix = useRootGameStore((state) => state.completeChapterSixInvestigation)
+  const completeSeven = useRootGameStore((state) => state.completeChapterSevenInvestigation)
+  const completeEight = useRootGameStore((state) => state.completeChapterEightInvestigation)
+  const startSix = useRootGameStore((state) => state.startChapterSix)
+  const startSeven = useRootGameStore((state) => state.startChapterSeven)
+  const startEight = useRootGameStore((state) => state.startChapterEight)
   const config = LATER_CHAPTER_CONFIG[chapter]
   const mainlineComplete = world[config.mainlineKey]
   const ready = world[config.readyKey]
@@ -261,7 +271,7 @@ function LaterChapterScreen({ chapter }: { chapter: LaterChapterId }) {
   const openNext = chapter === 'ch05' ? startSix : chapter === 'ch06' ? startSeven : chapter === 'ch07' ? startEight : undefined
   return (
     <main className={`jianghu-screen scenic-surface later-chapter-screen later-${chapter}`} style={{ '--village-art': `url(${config.art})` } as CSSProperties}>
-      <header className="jianghu-header"><div className="game-mark"><span>菜刀</span>闯江湖<small>{config.subtitle}</small></div><div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button></div></header>
+      <header className="jianghu-header"><div className="game-mark"><span>菜刀</span>闯江湖<small>{config.subtitle}</small></div><div className="header-tools"><button onClick={() => setPanel('codex')}>🏆<span>成就</span></button><button onClick={() => setPanel('codex')}>📚<span>图鉴</span></button><button onClick={() => setPanel('settings')}>⚙<span>设置</span></button><button onClick={() => setPanel('guide')}>?<span>帮助</span></button><button data-testid="open-world-map" onClick={() => useRootGameStore.getState().openWorldMap()}>🗺<span>地图</span></button></div></header>
       <aside className="status-panel paper-panel"><div className="status-person"><div className="portrait">侠</div><div><b>{player.name}</b><span className="rank-badge">{config.rank}</span><p>等级：{player.level}</p><p>生命：{player.hp}/{player.maxHp}<Meter value={player.hp} max={player.maxHp} /></p><p>内力：{player.qi}/{player.maxQi}<Meter value={player.qi} max={player.maxQi} tone="blue" /></p></div></div><div className="currency-row">🪙 银两：{player.silver}<span>🏆 {player.titles.length}</span></div></aside>
       <aside className="quest-panel paper-panel"><h2>{config.title}主线</h2><div className={`quest-row quest-row--${mainlineComplete ? 'complete' : 'active'}`}><b>[主线] {config.subtitle.replace(/^第[五六七八]章 · /, '')}</b><span>{mainlineComplete ? '证据已经对齐，准备接受 Boss 验收' : config.investigation}</span><em>{mainlineComplete ? '✓' : '0/1'}</em></div></aside>
       <aside className="rumor-panel paper-panel"><h2>章节传闻</h2><p>{defeated ? `${config.bossName}已经承认：${config.unlocks}可以正式落地。` : `${config.bossName}正在等你把最后一条证据写进刀谱。`}</p></aside>
@@ -280,14 +290,14 @@ function QuestRow({ id, status }: { id: 'firstSteps' | 'findCat' | 'challengeBai
 }
 
 function DialogueOverlay() {
-  const activeDialogue = useGameStore((state) => state.activeDialogue)
-  const closeDialogue = useGameStore((state) => state.closeDialogue)
-  const meetOldMan = useGameStore((state) => state.meetOldMan)
-  const acceptCatQuest = useGameStore((state) => state.acceptCatQuest)
-  const resolveCatQuest = useGameStore((state) => state.resolveCatQuest)
-  const startBattle = useGameStore((state) => state.startBattle)
-  const world = useGameStore((state) => state.world)
-  const maybeNarrate = useGameStore((state) => state.maybeNarrate)
+  const activeDialogue = useRootGameStore((state) => state.activeDialogue)
+  const closeDialogue = useRootGameStore((state) => state.closeDialogue)
+  const meetOldMan = useRootGameStore((state) => state.meetOldMan)
+  const acceptCatQuest = useRootGameStore((state) => state.acceptCatQuest)
+  const resolveCatQuest = useRootGameStore((state) => state.resolveCatQuest)
+  const startBattle = useRootGameStore((state) => state.startBattle)
+  const world = useRootGameStore((state) => state.world)
+  const maybeNarrate = useRootGameStore((state) => state.maybeNarrate)
 
   const content = {
     oldMan: { name: '不正经老头', text: world.oldManMet ? '江湖路远，别把菜刀当扇子摇。' : '少年，看你骨骼惊奇，不如拜我为师？学费先欠着。', choices: [

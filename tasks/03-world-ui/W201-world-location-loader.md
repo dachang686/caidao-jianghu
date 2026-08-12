@@ -3,7 +3,7 @@ id: W201
 title: 实现世界地图、地点状态与区域懒加载
 phase: world
 depends_on: [F015]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -49,8 +49,7 @@ pnpm build
 
 ## 执行记录
 
-- 基线：Manifest 只有章节索引，运行时同步读取 `ch01`，没有区域解锁、当前位置、返回栈或世界/地点页面契约；Vite 提示同一章节被静态和动态导入。
-- 实现：新增区域索引、世界导航状态、条件解锁、可读锁定原因、进入/返回与非法存档回退；V2 存档保存世界导航快照；新增 WorldMap/Location 页面容器和区域加载器，失败返回可重试错误并缓存成功内容。
-- 分包：同步读取隔离到仅供构建校验/旧测试使用的 `src/content/sync-loader.ts`，foundation 启动改为异步加载；构建产出独立 `ch01-*.js` chunk，去除静态/动态导入冲突警告。
-- 验证：`pnpm lint`、`pnpm content:validate`、`pnpm test -- src/systems/world`、`pnpm test`（27 files / 78 tests）、`pnpm test:e2e`（8 passed，桌面/移动）、`pnpm build` 均通过。
-- 风险：当前 Manifest 只登记小愚村，其他区域没有入口，符合本任务禁止提前生成占位区域的约束。
+- 将 `WorldMapScreen`、`LocationScreen` 接入 `ScreenShell`；RootGameStore 成为区域解锁、进入、重试、返回地图和回到当前章节的唯一入口。
+- 区域内容经 `WorldRegionLoader` 按需导入。生产构建产出独立 `ch01` 至 `ch08` chunk，未加载章节不在初始 JavaScript chunk。
+- V2 存档保存 `worldNavigation` 及地点 UI 状态；刷新后重新校验导航并异步恢复合法地点。锁定区域按钮不可进入且显示解锁原因。
+- 验证：`pnpm lint`、`pnpm test -- src/stores/root-store.test.ts src/systems/world`（22 passed）、`pnpm test:e2e -- e2e/game-flow.spec.ts`（23 passed / 1 skipped）、`pnpm build` 均通过。

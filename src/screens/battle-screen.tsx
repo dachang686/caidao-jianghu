@@ -2,17 +2,17 @@ import { useEffect } from 'react'
 import baiSprite from '../assets/characters/bai.webp'
 import heroSprite from '../assets/characters/hero.webp'
 import { Button, Meter } from '../components/game-ui'
-import { useGameStore } from '../stores'
-import { audioDirector } from '../game/audio'
+import { useRootGameStore } from '../stores'
+import { audioDirector } from '../systems/audio'
 import { SKILLS } from '../game/data'
 import type { SkillId } from '../game/types'
 
 export function BattleScreen() {
-  const player = useGameStore((state) => state.player)!
-  const battle = useGameStore((state) => state.battle)!
-  const useSkill = useGameStore((state) => state.useSkill)
-  const retryBattle = useGameStore((state) => state.retryBattle)
-  const leaveBattle = useGameStore((state) => state.leaveBattle)
+  const player = useRootGameStore((state) => state.player)!
+  const battle = useRootGameStore((state) => state.battle)!
+  const useSkill = useRootGameStore((state) => state.useSkill)
+  const retryBattle = useRootGameStore((state) => state.retryBattle)
+  const leaveBattle = useRootGameStore((state) => state.leaveBattle)
   const lastLog = battle.logs.at(-1)
   useEffect(() => {
     if (!lastLog) return

@@ -120,7 +120,7 @@
       "id": "F011",
       "title": "拆分 Zustand 领域 slices",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F005",
         "F006",
@@ -169,7 +169,7 @@
       "id": "F015",
       "title": "完成 M1 基础架构集成验收",
       "phase": "foundation",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F007",
         "F010",
@@ -339,7 +339,7 @@
       "id": "W201",
       "title": "实现世界地图、地点状态与区域懒加载",
       "phase": "world",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "F015"
       ],
@@ -642,7 +642,7 @@
       "id": "W209",
       "title": "实现区域资源与音频生命周期",
       "phase": "platform",
-      "status": "pending",
+      "status": "done",
       "dependsOn": [
         "W201",
         "W207"

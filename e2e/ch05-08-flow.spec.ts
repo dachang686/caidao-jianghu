@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { clearV2Save, wrapM1Snapshot, writeV2AutoSave } from './helpers/journey'
 
 type Chapter = 'ch05' | 'ch06' | 'ch07' | 'ch08'
 const CHAPTERS: Record<Chapter, { title: string; boss: string; unlocks: string; investigation: string }> = {
@@ -9,12 +10,11 @@ const CHAPTERS: Record<Chapter, { title: string; boss: string; unlocks: string; 
 }
 
 async function clearSave(page: Page) {
-  await page.goto('/caidao-jianghu/')
-  await page.evaluate(async () => await new Promise<void>((resolve) => { const request = indexedDB.deleteDatabase('caidao-jianghu'); request.onsuccess = () => resolve(); request.onerror = () => resolve(); request.onblocked = () => resolve() }))
+  await clearV2Save(page)
 }
 
 async function seedChapter(page: Page, chapter: Chapter) {
-  await page.evaluate(async (currentChapter) => {
+  const m1 = await page.evaluate((currentChapter) => {
     const save = {
       version: 1, savedAt: new Date().toISOString(), screen: 'jianghu',
       player: { name: '后四章快照客', talent: 'thickSkinned', level: 4, experience: 500, nextLevelExperience: 700, hp: 500, maxHp: 500, qi: 80, maxQi: 80, silver: 500, moral: 0, stats: { attack: 80, defense: 80, speed: 10, crit: .1, dodge: .08, accuracy: .99 }, inventory: ['stalePill', 'erguotou', 'rustyCleaver', 'qingyunMark'], equippedWeapon: 'rustyCleaver', activeSkills: ['basicSlash', 'cleaverWhirl', 'mockery', 'playDead'], titles: [] },
@@ -23,8 +23,9 @@ async function seedChapter(page: Page, chapter: Chapter) {
       settings: { reducedMotion: false, masterMuted: true, bgmEnabled: false, sfxEnabled: false, sillySfxEnabled: false, masterVolume: 1, musicVolume: .55, sfxVolume: .75, sillyVolume: .8, memeDensity: 'standard', textSpeed: 'standard', difficulty: 'standard', keyBindings: { confirm: ['Enter', 'Space'], cancel: ['Escape'], nextTab: ['Tab'], skill1: ['Digit1'], skill2: ['Digit2'], skill3: ['Digit3'], skill4: ['Digit4'], skill5: ['Digit5'], skill6: ['Digit6'] }, aiEnhancement: { enabled: false, provider: 'none' } },
       rngState: 987654321, unlockables: { version: 1, unlockedIds: [], claimedRewardIds: [], processedEventIds: [] },
     }
-    await new Promise<void>((resolve, reject) => { const request = indexedDB.open('caidao-jianghu', 1); request.onerror = () => reject(request.error); request.onupgradeneeded = () => { if (!request.result.objectStoreNames.contains('saves')) request.result.createObjectStore('saves') }; request.onsuccess = () => { const database = request.result; const transaction = database.transaction('saves', 'readwrite'); transaction.objectStore('saves').put(save, 'slot-1'); transaction.oncomplete = () => { database.close(); resolve() }; transaction.onerror = () => reject(transaction.error) } })
+    return save
   }, chapter)
+  await writeV2AutoSave(page, wrapM1Snapshot(chapter, m1))
   await page.reload()
 }
 

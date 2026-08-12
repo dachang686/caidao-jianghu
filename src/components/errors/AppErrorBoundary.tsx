@@ -1,20 +1,22 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
-import { exportSave, loadSave, parseImportedSave } from '../../game/save'
-import type { GameSaveV1 } from '../../game/types'
+import { exportGameSave, parseGameSaveExport } from '../../systems/save'
+import type { SaveRepository } from '../../systems/save'
+import type { GameSaveV2 } from '../../types/save'
 import type { ScreenId } from '../../game/types'
 
-export const LEGACY_UI_RECOVERY_KEY = 'caidao-jianghu:ui-recovery-v1'
+export const UI_RECOVERY_KEY = 'caidao-jianghu:ui-recovery-v2'
 
-export function rememberUiRecoverySave(save: GameSaveV1 | null): void {
+export function rememberUiRecoverySave(save: GameSaveV2 | null): void {
   if (!save) return
-  try { window.sessionStorage.setItem(LEGACY_UI_RECOVERY_KEY, JSON.stringify(save)) } catch { /* 临时存储不可用时仍保留当前错误面板。 */ }
+  try { window.sessionStorage.setItem(UI_RECOVERY_KEY, exportGameSave(save)) } catch { /* 临时存储不可用时仍保留当前错误面板。 */ }
 }
 
 interface AppErrorBoundaryProps {
   readonly children: ReactNode
-  readonly makeSave: () => GameSaveV1 | null
-  readonly hydrateSave: (save: GameSaveV1) => void
+  readonly makeSave: () => GameSaveV2 | null
+  readonly hydrateSave: (save: GameSaveV2) => void
   readonly setScreen: (screen: ScreenId) => void
+  readonly saveRepository?: SaveRepository
 }
 
 interface AppErrorBoundaryState {
@@ -46,7 +48,7 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
 
   private recoverAuto = async (): Promise<void> => {
     try {
-      const save = await loadSave()
+      const save = await this.props.saveRepository?.load('auto')
       if (!save) { this.setState({ message: '没有找到可验证的自动档；当前备份未被清除。' }); return }
       this.props.hydrateSave(save)
       this.clearError()
@@ -57,9 +59,9 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
 
   private recoverTemporary = (): void => {
     try {
-      const raw = window.sessionStorage.getItem(LEGACY_UI_RECOVERY_KEY)
+      const raw = window.sessionStorage.getItem(UI_RECOVERY_KEY)
       if (!raw) { this.setState({ message: '没有找到可验证的临时档；当前备份未被清除。' }); return }
-      const save = parseImportedSave(raw)
+      const save = parseGameSaveExport(raw)
       this.props.hydrateSave(save)
       this.clearError()
     } catch {
@@ -70,7 +72,7 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
   private exportCurrent = (): void => {
     const save = this.props.makeSave()
     if (!save) { this.setState({ message: '当前没有可导出的有效档案。' }); return }
-    const href = URL.createObjectURL(new Blob([exportSave(save)], { type: 'application/json' }))
+    const href = URL.createObjectURL(new Blob([exportGameSave(save)], { type: 'application/json' }))
     const link = document.createElement('a')
     link.href = href
     link.download = 'caidao-jianghu-recovery.json'

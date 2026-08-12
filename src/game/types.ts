@@ -1,4 +1,4 @@
-export type ScreenId = 'menu' | 'creation' | 'jianghu' | 'battle' | 'crafting' | 'cooking' | 'ending'
+export type ScreenId = 'menu' | 'creation' | 'jianghu' | 'battle' | 'crafting' | 'cooking' | 'ending' | 'worldMap' | 'location'
 
 export type TalentId = 'reckless' | 'clever' | 'thickSkinned'
 
@@ -36,7 +36,7 @@ export interface PlayerState {
   stats: CombatStats
   inventory: ItemId[]
   equippedWeapon: ItemId | null
-  activeSkills: SkillId[]
+  activeSkills: string[]
   titles: TitleId[]
 }
 
@@ -136,7 +136,7 @@ export interface BattleIntent {
 
 export interface BattleState {
   enemy: EnemyState
-  playerCooldowns: Partial<Record<SkillId, number>>
+  playerCooldowns: Readonly<Record<string, number>>
   playerStatuses: BattleStatus[]
   playerPosture: BattlePosture
   enemyPosture: BattlePosture

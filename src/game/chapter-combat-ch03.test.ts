@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { settleCh03BossVictory } from './chapter-combat-ch03'
-import { useGameStore } from './store'
+import { useRootGameStore } from '../stores'
 
 describe('第 3 章黑风寨主胜利事务', () => {
   beforeEach(() => {
-    useGameStore.getState().startNewGame('黑风快照客', 'reckless')
+    useRootGameStore.getState().startNewGame('黑风快照客', 'reckless')
   })
 
   it('一次性发放黑风寨令、技能树/烹饪解锁、自动档和后续门槛', () => {
-    const state = useGameStore.getState()
+    const state = useRootGameStore.getState()
     const result = settleCh03BossVictory({
       player: state.player!,
       quests: state.quests,
@@ -41,7 +41,7 @@ describe('第 3 章黑风寨主胜利事务', () => {
   })
 
   it('重复结算不会重复增加奖励或事件', () => {
-    const state = useGameStore.getState()
+    const state = useRootGameStore.getState()
     const first = settleCh03BossVictory({
       player: state.player!,
       quests: state.quests,

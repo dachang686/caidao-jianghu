@@ -11,3 +11,4 @@
 [0812/171851.375:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
 [0812/171852.666:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
 [0812/171852.976:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)
+[0812/180228.865:WARNING:services\audio\sync_reader.cc:154] ASR: No room in socket buffer.: 管道正關閉中。 (0xE8)

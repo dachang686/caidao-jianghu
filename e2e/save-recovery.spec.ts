@@ -1,15 +1,16 @@
 import { expect, test } from '@playwright/test'
 import { readFileSync } from 'node:fs'
-import { clearLegacySave, startNewGame } from './helpers/journey'
+import { exportGameSave, parseGameSaveExport } from '../src/systems/save'
+import { clearV2Save, startNewGame } from './helpers/journey'
 
-async function corruptLegacyAutomaticSave(page: import('@playwright/test').Page): Promise<void> {
+async function corruptV2AutomaticSave(page: import('@playwright/test').Page): Promise<void> {
   await page.evaluate(async () => await new Promise<void>((resolve, reject) => {
-    const request = indexedDB.open('caidao-jianghu', 1)
+    const request = indexedDB.open('caidao-jianghu-v2', 1)
     request.onerror = () => reject(request.error)
     request.onsuccess = () => {
       const database = request.result
-      const transaction = database.transaction('saves', 'readwrite')
-      transaction.objectStore('saves').put({ broken: true }, 'slot-1')
+      const transaction = database.transaction('save-records', 'readwrite')
+      transaction.objectStore('save-records').put({ broken: true }, 'auto')
       transaction.oncomplete = () => { database.close(); resolve() }
       transaction.onerror = () => reject(transaction.error)
     }
@@ -18,10 +19,10 @@ async function corruptLegacyAutomaticSave(page: import('@playwright/test').Page)
 
 test.describe('存档恢复与失败边界', () => {
   test('损坏自动档显示恢复面板，临时档恢复后不覆盖原损坏记录', async ({ page }) => {
-    await clearLegacySave(page)
+    await clearV2Save(page)
     await startNewGame(page, '恢复客')
     await page.waitForTimeout(450)
-    await corruptLegacyAutomaticSave(page)
+    await corruptV2AutomaticSave(page)
     await page.reload()
 
     const panel = page.getByTestId('save-recovery-panel')
@@ -38,7 +39,7 @@ test.describe('存档恢复与失败边界', () => {
   })
 
   test('玩家可通过可见设置面板导出并导入合法存档，非法 JSON 不覆盖当前档', async ({ page }) => {
-    await clearLegacySave(page)
+    await clearV2Save(page)
     await startNewGame(page, '导出客')
     await page.waitForTimeout(450)
     await page.locator('.header-tools button').nth(2).click()
@@ -48,13 +49,16 @@ test.describe('存档恢复与失败边界', () => {
     const download = await downloadPromise
     const downloadPath = await download.path()
     expect(downloadPath).not.toBeNull()
-    const exported = JSON.parse(readFileSync(downloadPath!, 'utf8')) as { player: { name: string } }
-    exported.player.name = '导入客'
+    const exported = parseGameSaveExport(readFileSync(downloadPath!, 'utf8'))
+    const imported = {
+      ...exported,
+      m1: exported.m1 ? { ...exported.m1, player: { ...exported.m1.player, name: '导入客' } } : undefined,
+    }
 
     await page.locator('input[type="file"]').setInputFiles({
       name: 'imported-save.json',
       mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify(exported)),
+      buffer: Buffer.from(exportGameSave(imported)),
     })
     await expect(page.getByText('导入客', { exact: true }).first()).toBeVisible()
 

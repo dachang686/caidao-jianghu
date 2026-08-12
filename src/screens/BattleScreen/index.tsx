@@ -14,10 +14,11 @@ import type { BattleSkillView, BattleStatusView } from '../../components/battle'
 import { Button } from '../../components/game-ui'
 import { getSkillUnavailableReason } from '../../systems/combat/cooldown'
 import { resolveInputAction } from '../../systems/input'
-import { useGameStore } from '../../stores'
-import { audioDirector } from '../../game/audio'
+import { useRootGameStore } from '../../stores'
+import { audioDirector } from '../../systems/audio'
 import { SKILLS } from '../../game/data'
 import { CORE_PRESENTATION_CUES } from '../../content/comedy'
+import { coreActiveSkills } from '../../content/skills'
 import type { BattleState, SkillId } from '../../game/types'
 
 const STATUS_LABELS: Record<string, string> = {
@@ -27,11 +28,27 @@ const STATUS_LABELS: Record<string, string> = {
   feignedDeath: '装死中',
 }
 
-const SKILL_ICONS: Record<SkillId, string> = {
+const SKILL_ICONS: Record<string, string> = {
   basicSlash: '〽',
   cleaverWhirl: '✦',
   mockery: '☄',
   playDead: '☯',
+  'dao:blade-dance': '✦',
+  'dao:heavy-chop': '〽',
+  'dao:pan-breaker': '▰',
+  'dao:finishing-cut': '↯',
+  'mouth:verbal-duel': '☄',
+  'mouth:rumor': '☍',
+  'mouth:counterargument': '↩',
+  'mouth:truth-or-dare': '⚑',
+  'survival:play-dead': '☯',
+  'survival:iron-head': '●',
+  'survival:roll-away': '↗',
+  'survival:second-wind': '✚',
+  'misc:baijiu': '♨',
+  'misc:expired-panacea': '◈',
+  'misc:armor-disclaimer': '▣',
+  'misc:improvise': '※',
 }
 
 const CH01_VICTORY_PRESENTATION_CUE = CORE_PRESENTATION_CUES.find((cue) => cue.id === 'presentation:ch01:bai:defeat')!
@@ -47,16 +64,22 @@ function toStatusViews(statuses: readonly { id: string; turns: number }[]): read
   return statuses.map((status) => ({ id: status.id, turns: status.turns, label: STATUS_LABELS[status.id] ?? status.id }))
 }
 
-function getDisabledReason(skillId: SkillId | null, player: NonNullable<ReturnType<typeof useGameStore.getState>['player']>, battle: BattleState): string | undefined {
-  if (!skillId) return '暂无招式'
-  if (battle.turn !== 'player') return '等待战斗结算'
-  return getSkillUnavailableReason(battle.playerCooldowns, skillId, SKILLS[skillId].qiCost, player.qi)?.message
+function skillDefinition(skillId: string) {
+  const core = coreActiveSkills.find((skill) => String(skill.id) === skillId)
+  if (core) return core
+  return SKILLS[skillId as SkillId]
 }
 
-function createSkillViews(player: NonNullable<ReturnType<typeof useGameStore.getState>['player']>, battle: BattleState, useSkill: (skillId: SkillId) => void): readonly BattleSkillView[] {
+function getDisabledReason(skillId: string | null, player: NonNullable<ReturnType<typeof useRootGameStore.getState>['player']>, battle: BattleState): string | undefined {
+  if (!skillId) return '暂无招式'
+  if (battle.turn !== 'player') return '等待战斗结算'
+  return getSkillUnavailableReason(battle.playerCooldowns, skillId, skillDefinition(skillId)?.qiCost, player.qi)?.message
+}
+
+function createSkillViews(player: NonNullable<ReturnType<typeof useRootGameStore.getState>['player']>, battle: BattleState, useSkill: (skillId: string) => void): readonly BattleSkillView[] {
   return Array.from({ length: 6 }, (_, index) => {
     const skillId = player.activeSkills[index] ?? null
-    const definition = skillId ? SKILLS[skillId] : undefined
+    const definition = skillId ? skillDefinition(skillId) : undefined
     const disabledReason = getDisabledReason(skillId, player, battle)
     return {
       slot: index + 1,
@@ -73,13 +96,13 @@ function createSkillViews(player: NonNullable<ReturnType<typeof useGameStore.get
 }
 
 export function BattleScreen() {
-  const player = useGameStore((state) => state.player)!
-  const battle = useGameStore((state) => state.battle)!
-  const useSkill = useGameStore((state) => state.useSkill)
-  const retryBattle = useGameStore((state) => state.retryBattle)
-  const leaveBattle = useGameStore((state) => state.leaveBattle)
-  const settings = useGameStore((state) => state.settings)
-  const keyBindings = useGameStore((state) => state.settings.keyBindings)
+  const player = useRootGameStore((state) => state.player)!
+  const battle = useRootGameStore((state) => state.battle)!
+  const useSkill = useRootGameStore((state) => state.useSkill)
+  const retryBattle = useRootGameStore((state) => state.retryBattle)
+  const leaveBattle = useRootGameStore((state) => state.leaveBattle)
+  const settings = useRootGameStore((state) => state.settings)
+  const keyBindings = useRootGameStore((state) => state.settings.keyBindings)
   const lastLog = battle.logs.at(-1)
   const phaseTwo = battle.enemy.phase === 2
   const isBangsi = battle.enemy.id === 'bangsi'

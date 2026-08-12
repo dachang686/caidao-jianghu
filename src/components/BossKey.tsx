@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { useGameStore } from '../stores'
+import { useRootGameStore } from '../stores'
 
 export function BossKey() {
-  const toggleBossKey = useGameStore((state) => state.toggleBossKey)
-  const player = useGameStore((state) => state.player)
+  const toggleBossKey = useRootGameStore((state) => state.toggleBossKey)
+  const player = useRootGameStore((state) => state.player)
   const returnButton = useRef<HTMLButtonElement>(null)
   const previousFocus = useRef<HTMLElement | null>(null)
   useEffect(() => {

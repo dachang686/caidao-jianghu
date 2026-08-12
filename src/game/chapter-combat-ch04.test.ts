@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { settleCh04BossVictory } from './chapter-combat-ch04'
-import { useGameStore } from './store'
+import { useRootGameStore } from '../stores'
 
 describe('第 4 章青云掌门胜利事务', () => {
   beforeEach(() => {
-    useGameStore.getState().startNewGame('青云快照客', 'reckless')
+    useRootGameStore.getState().startNewGame('青云快照客', 'reckless')
   })
 
   it('一次性发放青云名帖、意图进阶/装备强化解锁、自动档和后续门槛', () => {
-    const state = useGameStore.getState()
+    const state = useRootGameStore.getState()
     const result = settleCh04BossVictory({
       player: state.player!,
       quests: state.quests,
@@ -41,7 +41,7 @@ describe('第 4 章青云掌门胜利事务', () => {
   })
 
   it('重复结算不会重复增加奖励或事件', () => {
-    const state = useGameStore.getState()
+    const state = useRootGameStore.getState()
     const first = settleCh04BossVictory({
       player: state.player!,
       quests: state.quests,

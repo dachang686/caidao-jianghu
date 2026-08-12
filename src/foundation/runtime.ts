@@ -5,7 +5,8 @@ import { ch01GatheringItems } from '../content/gathering/ch01'
 import { EventBus } from '../systems/events'
 import { AssetLifecycleManager } from '../systems/assets'
 import { LocalTextProvider } from '../systems/providers'
-import { createMemorySaveStorage, SaveRepository } from '../systems/save'
+import { createIndexedDbSaveRepository, SaveRepository } from '../systems/save'
+import { createWorldRegionLoader } from '../systems/world'
 import { assertValidContent } from '../validators/content'
 import type { ChapterContent } from '../content/loader'
 
@@ -15,6 +16,7 @@ export interface FoundationRuntime {
   readonly saveRepository: SaveRepository
   readonly textProvider: LocalTextProvider
   readonly assetManager: AssetLifecycleManager
+  readonly regionLoader: ReturnType<typeof createWorldRegionLoader>
 }
 
 export async function createFoundationRuntime(): Promise<FoundationRuntime> {
@@ -26,9 +28,10 @@ export async function createFoundationRuntime(): Promise<FoundationRuntime> {
   return {
     chapter,
     eventBus: new EventBus(),
-    // The UI keeps its legacy V1 adapter for this Demo; the injected repository is the M1 V2 boundary.
-    saveRepository: new SaveRepository(createMemorySaveStorage()),
+    // 浏览器运行时直接使用 V2 仓库；测试可以按需注入 memory storage。
+    saveRepository: createIndexedDbSaveRepository(),
     textProvider: new LocalTextProvider(CORE_MEME_PACK),
     assetManager: new AssetLifecycleManager(contentManifest.assetManifest),
+    regionLoader: createWorldRegionLoader(),
   }
 }

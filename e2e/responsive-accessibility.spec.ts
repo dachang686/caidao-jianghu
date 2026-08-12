@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { clearLegacySave, startNewGame } from './helpers/journey'
+import { clearV2Save, startNewGame } from './helpers/journey'
 
 const VIEWPORTS = [
   { name: 'small-phone', width: 360, height: 800 },
@@ -21,7 +21,7 @@ async function assertContained(page: import('@playwright/test').Page, selector: 
 
 test.describe('响应式与可访问性审计', () => {
   test('菜单、江湖页、设置、图鉴和老板键在五档视口可操作', async ({ page }) => {
-    await clearLegacySave(page)
+    await clearV2Save(page)
     for (const viewport of VIEWPORTS) {
       await page.setViewportSize(viewport)
       await expect(page.getByRole('button', { name: /开始游戏/ })).toBeVisible()

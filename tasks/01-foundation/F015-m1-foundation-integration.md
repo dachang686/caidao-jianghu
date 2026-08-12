@@ -3,7 +3,7 @@ id: F015
 title: 完成 M1 基础架构集成验收
 phase: foundation
 depends_on: [F007, F010, F012, F013, F014]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -51,6 +51,7 @@ pnpm build
 
 ## 执行记录
 
-- 新增启动时 foundation runtime：校验并加载小愚村 Manifest，注入 EventBus、SaveRepository、LocalTextProvider；不把服务实例写入 Zustand。
-- 保留旧 V1 存档适配和 Demo 数值以保证刷新兼容，同时补充创角→教学→白大侠胜利集成断言。
-- 验证结果：`pnpm lint`、`pnpm content:validate`、`pnpm test`、`pnpm test:e2e`、`pnpm build` 均通过。
+- 启动时 foundation runtime 校验并加载小愚村 Manifest，注入 EventBus、IndexedDB V2 SaveRepository、LocalTextProvider；服务实例不进入 Zustand。
+- App、面板和错误恢复均直接读写 V2 `auto` 槽；M1 运行态作为受 Zod 校验的 V2 快照保存，删除旧 V1 IndexedDB 路径。
+- V2 快照覆盖小愚村及第 2–8 章流程、刷新恢复、损坏档恢复、导入导出；所有文本仍通过 LocalTextProvider。
+- 验证结果：`pnpm lint`、`pnpm content:validate`、`pnpm test`（80 文件 / 241 用例）、分组 `pnpm test:e2e`（含全部 63 用例，1 个移动端布局用例按设计跳过）、`pnpm build` 均通过。

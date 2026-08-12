@@ -3,7 +3,7 @@ id: F011
 title: 拆分 Zustand 领域 slices
 phase: foundation
 depends_on: [F005, F006, F008]
-status: pending
+status: done
 executor_hint: "gpt 5.6-luna"
 ---
 
@@ -47,6 +47,6 @@ pnpm build
 
 ## 执行记录
 
-- 新增 `RootGameStore` 兼容根入口及 player/quest/battle/world/settings/shell slice 类型边界，App 已切换到 `src/stores` 公开入口。
-- EventBus、SaveRepository、TextProvider 通过独立服务注入容器管理，不写入 Zustand 状态；旧 `src/game/store` 保留为现有 Demo 的兼容实现。
-- 验证结果：`pnpm lint`、`pnpm test`、`pnpm build` 均通过。
+- 运行时唯一 Zustand 实例迁至 `src/stores/root-store.ts`，并按 player/quest/battle/world/settings/shell 初始化领域状态；服务继续通过独立注入容器管理。
+- 删除 `src/game/store.ts`，所有页面和测试直接使用 `useRootGameStore`，不存在旧 store 兼容入口或双实例。
+- 验证结果：`pnpm lint`、`pnpm test`（80 文件 / 241 用例）、`pnpm build` 均通过。

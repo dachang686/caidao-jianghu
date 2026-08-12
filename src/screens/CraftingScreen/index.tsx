@@ -1,16 +1,16 @@
 import { useMemo, useRef, useState } from 'react'
 import { RecipeWorkbench } from '../../components/recipes'
 import { coreForgingEquipment, coreForgingItems, coreForgingRecipes } from '../../content/recipes/forging'
-import { useRecipeStore } from '../../stores/recipe-store'
+import { useRootGameStore } from '../../stores'
 import { toForgingRecipeViews } from '../recipe-views'
 
 export function CraftingScreen() {
-  const inventory = useRecipeStore((state) => state.inventory)
-  const equipmentIds = useRecipeStore((state) => state.equipmentIds)
-  const chapter = useRecipeStore((state) => state.chapter)
-  const statusMessage = useRecipeStore((state) => state.statusMessage)
-  const craft = useRecipeStore((state) => state.craft)
-  const close = useRecipeStore((state) => state.close)
+  const inventory = useRootGameStore((state) => state.inventoryState)
+  const equipmentIds = useRootGameStore((state) => state.equipmentIds)
+  const chapter = useRootGameStore((state) => Number(state.world.currentChapter.slice(2)))
+  const statusMessage = useRootGameStore((state) => state.workshopMessage)
+  const craft = useRootGameStore((state) => state.craftRecipe)
+  const close = useRootGameStore((state) => state.closeWorkshop)
   const [selectedRecipeId, setSelectedRecipeId] = useState(String(coreForgingRecipes[0]?.id ?? ''))
   const [submittingRecipeId, setSubmittingRecipeId] = useState<string | null>(null)
   const submitLock = useRef<string | null>(null)

@@ -1,20 +1,76 @@
 import { expect, type Page } from '@playwright/test'
+import { calculateSaveChecksum, createMinimalGameSaveV2, parseGameSaveV2 } from '../../src/systems/save'
+import { m1RuntimeSaveSchema } from '../../src/game/save'
+import type { GameSaveV2 } from '../../src/types/save'
 
-export async function clearLegacySave(page: Page): Promise<void> {
+export async function clearV2Save(page: Page): Promise<void> {
   await page.goto('/caidao-jianghu/')
-  await page.evaluate(async () => await new Promise<void>((resolve, reject) => {
-    const request = indexedDB.open('caidao-jianghu', 1)
+  await page.evaluate(async () => await new Promise<void>((resolve) => {
+    const request = indexedDB.deleteDatabase('caidao-jianghu-v2')
+    request.onsuccess = () => resolve()
+    request.onerror = () => resolve()
+    request.onblocked = () => resolve()
+  }))
+  await page.reload()
+}
+
+export async function writeV2AutoSave(page: Page, save: GameSaveV2): Promise<void> {
+  const serialized = JSON.stringify(save)
+  const record = {
+    save,
+    checksum: calculateSaveChecksum(save),
+    summary: {
+      slotId: 'auto',
+      savedAt: save.savedAt,
+      chapterId: save.chapterId,
+      level: save.player.level,
+      itemCount: save.items.reduce((sum, item) => sum + item.count, 0),
+      byteLength: new TextEncoder().encode(serialized).byteLength,
+    },
+  }
+  await page.evaluate(async (nextRecord) => await new Promise<void>((resolve, reject) => {
+    const request = indexedDB.open('caidao-jianghu-v2', 1)
     request.onerror = () => reject(request.error)
-    request.onupgradeneeded = () => { if (!request.result.objectStoreNames.contains('saves')) request.result.createObjectStore('saves') }
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains('save-records')) request.result.createObjectStore('save-records')
+      if (!request.result.objectStoreNames.contains('save-summaries')) request.result.createObjectStore('save-summaries')
+    }
     request.onsuccess = () => {
       const database = request.result
-      const transaction = database.transaction('saves', 'readwrite')
-      transaction.objectStore('saves').clear()
+      const transaction = database.transaction(['save-records', 'save-summaries'], 'readwrite')
+      transaction.objectStore('save-records').put(nextRecord, 'auto')
+      transaction.objectStore('save-summaries').put(nextRecord.summary, 'auto')
       transaction.oncomplete = () => { database.close(); resolve() }
       transaction.onerror = () => reject(transaction.error)
     }
-  }))
-  await page.reload()
+  }), record)
+}
+
+export function wrapM1Snapshot(chapterId: GameSaveV2['chapterId'], input: unknown): GameSaveV2 {
+  const m1 = m1RuntimeSaveSchema.parse(input)
+  const itemCounts = new Map<string, number>()
+  m1.player.inventory.forEach((itemId) => itemCounts.set(itemId, (itemCounts.get(itemId) ?? 0) + 1))
+  const base = createMinimalGameSaveV2()
+  return parseGameSaveV2({
+    ...base,
+    savedAt: m1.savedAt,
+    chapterId,
+    player: {
+      level: m1.player.level,
+      experience: m1.player.experience,
+      moral: m1.player.moral,
+      fame: 0,
+      wealth: m1.player.silver,
+      sectProsperity: 0,
+    },
+    tasks: m1.quests.map((quest) => ({ questId: quest.id, status: quest.status === 'complete' ? 'completed' : quest.status, progress: quest.progress })),
+    items: [...itemCounts.entries()].map(([itemId, count]) => ({ itemId, count })),
+    skills: { unlockedSkillIds: m1.player.activeSkills, activeSkillIds: m1.player.activeSkills, skillPoints: 0 },
+    settings: m1.settings,
+    unlockables: m1.unlockables,
+    rng: { algorithm: 'mulberry32', seed: 987654321, state: m1.rngState },
+    m1,
+  })
 }
 
 export async function startNewGame(page: Page, name = '黄金路径客'): Promise<void> {
@@ -108,7 +164,7 @@ async function setAllMemeDensities(page: Page): Promise<void> {
 
 export async function completeFullJourney(page: Page, options: { chaos?: boolean } = {}): Promise<void> {
   const chaos = options.chaos === true
-  await clearLegacySave(page)
+  await clearV2Save(page)
   await startNewGame(page, chaos ? '混沌路径客' : '黄金路径客')
   if (chaos) await setAllMemeDensities(page)
   await runCh01(page, chaos)

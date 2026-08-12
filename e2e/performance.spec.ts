@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test'
-import { clearLegacySave, startNewGame } from './helpers/journey'
+import { clearV2Save, startNewGame } from './helpers/journey'
 
 test.describe('性能与资源预算', () => {
   test('首屏资源、布局和重复面板打开保持在预算内', async ({ page }) => {
-    await clearLegacySave(page)
+    await clearV2Save(page)
     await startNewGame(page, '性能客')
     await page.waitForLoadState('networkidle')
 

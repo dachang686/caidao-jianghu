@@ -1,8 +1,6 @@
-import type { SkillId } from '../../game/types'
-
 export interface BattleSkillView {
   readonly slot: number
-  readonly skillId: SkillId | null
+  readonly skillId: string | null
   readonly name: string
   readonly description: string
   readonly icon: string

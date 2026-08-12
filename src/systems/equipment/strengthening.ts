@@ -7,6 +7,7 @@ import type {
   StrengtheningState,
   StrengtheningStatDelta,
 } from '../../types/strengthening'
+import type { DerivedCombatStats } from '../../types/skill'
 import { strengtheningBalance } from '../../content/balance/strengthening'
 
 export class StrengtheningError extends Error {
@@ -120,6 +121,19 @@ export function attemptStrengthening(
   return { state: applyStrengtheningResult(state, result), result }
 }
 
+export function applyStrengtheningBonuses(base: DerivedCombatStats, bonuses: readonly StrengtheningStatDelta[]): DerivedCombatStats {
+  const next = { ...base }
+  bonuses.forEach((bonus) => {
+    ;(['attack', 'defense', 'maxHp', 'maxQi', 'posture', 'accuracy', 'dodge', 'crit'] as const).forEach((stat) => {
+      next[stat] += bonus[stat] ?? 0
+    })
+  })
+  return {
+    ...next,
+    maxHp: Math.max(1, next.maxHp), maxQi: Math.max(0, next.maxQi), attack: Math.max(0, next.attack), defense: Math.max(0, next.defense), posture: Math.max(1, next.posture),
+    accuracy: Math.max(0, Math.min(1, next.accuracy)), dodge: Math.max(0, Math.min(1, next.dodge)), crit: Math.max(0, Math.min(1, next.crit)),
+  }
+}
+
 export const strengthenEquipment = attemptStrengthening
 export const applyStrengthening = applyStrengtheningResult
-

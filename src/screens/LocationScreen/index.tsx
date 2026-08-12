@@ -6,6 +6,7 @@ export interface LocationScreenProps {
   readonly error?: RegionLoadError
   readonly onRetry: () => void
   readonly onReturnToMap: () => void
+  readonly onEnterChapter?: () => void
   readonly onReturnToPreviousLocation?: () => void
   readonly canReturnToPreviousLocation?: boolean
 }
@@ -17,6 +18,7 @@ export function LocationScreen({
   error,
   onRetry,
   onReturnToMap,
+  onEnterChapter,
   onReturnToPreviousLocation,
   canReturnToPreviousLocation = false,
 }: LocationScreenProps) {
@@ -47,6 +49,7 @@ export function LocationScreen({
       <nav className="location-navigation" aria-label="地点导航">
         {canReturnToPreviousLocation && onReturnToPreviousLocation && <button type="button" onClick={onReturnToPreviousLocation}>返回上一地点</button>}
         <button type="button" onClick={onReturnToMap}>打开世界地图</button>
+        {onEnterChapter && <button type="button" onClick={onEnterChapter}>进入当前章节</button>}
       </nav>
     </main>
   )

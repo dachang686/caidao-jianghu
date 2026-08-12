@@ -6,4 +6,5 @@ export {
   createStrengtheningState,
   rollStrengthening,
   strengthenEquipment,
+  applyStrengtheningBonuses,
 } from './strengthening'
